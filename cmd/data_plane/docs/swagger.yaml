@@ -1,0 +1,9 @@
+basePath: /api/v1
+host: localhost
+info:
+  contact: {}
+  description: Open Privacy Vault Data Plane API.
+  title: Open Privacy Vault Data Plane API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
