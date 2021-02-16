@@ -22,30 +22,30 @@ type ScopeCreate struct {
 	hooks    []Hook
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (sc *ScopeCreate) SetCreatedAt(t time.Time) *ScopeCreate {
-	sc.mutation.SetCreatedAt(t)
+// SetCreateTime sets the "create_time" field.
+func (sc *ScopeCreate) SetCreateTime(t time.Time) *ScopeCreate {
+	sc.mutation.SetCreateTime(t)
 	return sc
 }
 
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (sc *ScopeCreate) SetNillableCreatedAt(t *time.Time) *ScopeCreate {
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (sc *ScopeCreate) SetNillableCreateTime(t *time.Time) *ScopeCreate {
 	if t != nil {
-		sc.SetCreatedAt(*t)
+		sc.SetCreateTime(*t)
 	}
 	return sc
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (sc *ScopeCreate) SetUpdatedAt(t time.Time) *ScopeCreate {
-	sc.mutation.SetUpdatedAt(t)
+// SetUpdateTime sets the "update_time" field.
+func (sc *ScopeCreate) SetUpdateTime(t time.Time) *ScopeCreate {
+	sc.mutation.SetUpdateTime(t)
 	return sc
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (sc *ScopeCreate) SetNillableUpdatedAt(t *time.Time) *ScopeCreate {
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (sc *ScopeCreate) SetNillableUpdateTime(t *time.Time) *ScopeCreate {
 	if t != nil {
-		sc.SetUpdatedAt(*t)
+		sc.SetUpdateTime(*t)
 	}
 	return sc
 }
@@ -53,6 +53,20 @@ func (sc *ScopeCreate) SetNillableUpdatedAt(t *time.Time) *ScopeCreate {
 // SetNonce sets the "nonce" field.
 func (sc *ScopeCreate) SetNonce(u uuid.UUID) *ScopeCreate {
 	sc.mutation.SetNonce(u)
+	return sc
+}
+
+// SetType sets the "type" field.
+func (sc *ScopeCreate) SetType(s string) *ScopeCreate {
+	sc.mutation.SetType(s)
+	return sc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (sc *ScopeCreate) SetNillableType(s *string) *ScopeCreate {
+	if s != nil {
+		sc.SetType(*s)
+	}
 	return sc
 }
 
@@ -143,13 +157,13 @@ func (sc *ScopeCreate) SaveX(ctx context.Context) *Scope {
 
 // defaults sets the default values of the builder before save.
 func (sc *ScopeCreate) defaults() {
-	if _, ok := sc.mutation.CreatedAt(); !ok {
-		v := scope.DefaultCreatedAt()
-		sc.mutation.SetCreatedAt(v)
+	if _, ok := sc.mutation.CreateTime(); !ok {
+		v := scope.DefaultCreateTime()
+		sc.mutation.SetCreateTime(v)
 	}
-	if _, ok := sc.mutation.UpdatedAt(); !ok {
-		v := scope.DefaultUpdatedAt()
-		sc.mutation.SetUpdatedAt(v)
+	if _, ok := sc.mutation.UpdateTime(); !ok {
+		v := scope.DefaultUpdateTime()
+		sc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := sc.mutation.Nonce(); !ok {
 		v := scope.DefaultNonce()
@@ -163,11 +177,11 @@ func (sc *ScopeCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (sc *ScopeCreate) check() error {
-	if _, ok := sc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
+	if _, ok := sc.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New("ent: missing required field \"create_time\"")}
 	}
-	if _, ok := sc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+	if _, ok := sc.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New("ent: missing required field \"update_time\"")}
 	}
 	if _, ok := sc.mutation.Nonce(); !ok {
 		return &ValidationError{Name: "nonce", err: errors.New("ent: missing required field \"nonce\"")}
@@ -201,21 +215,21 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := sc.mutation.CreatedAt(); ok {
+	if value, ok := sc.mutation.CreateTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: scope.FieldCreatedAt,
+			Column: scope.FieldCreateTime,
 		})
-		_node.CreatedAt = value
+		_node.CreateTime = value
 	}
-	if value, ok := sc.mutation.UpdatedAt(); ok {
+	if value, ok := sc.mutation.UpdateTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: scope.FieldUpdatedAt,
+			Column: scope.FieldUpdateTime,
 		})
-		_node.UpdatedAt = value
+		_node.UpdateTime = value
 	}
 	if value, ok := sc.mutation.Nonce(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -224,6 +238,14 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 			Column: scope.FieldNonce,
 		})
 		_node.Nonce = value
+	}
+	if value, ok := sc.mutation.GetType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldType,
+		})
+		_node.Type = value
 	}
 	if value, ok := sc.mutation.ExpiresAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

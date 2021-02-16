@@ -5,13 +5,13 @@ package ent
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 	"github.com/open-privacy-vault/opv/ent/fact"
+	"github.com/open-privacy-vault/opv/ent/facttype"
 	"github.com/open-privacy-vault/opv/ent/predicate"
 	"github.com/open-privacy-vault/opv/ent/scope"
 )
@@ -26,34 +26,6 @@ type FactUpdate struct {
 // Where adds a new predicate for the FactUpdate builder.
 func (fu *FactUpdate) Where(ps ...predicate.Fact) *FactUpdate {
 	fu.mutation.predicates = append(fu.mutation.predicates, ps...)
-	return fu
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (fu *FactUpdate) SetCreatedAt(t time.Time) *FactUpdate {
-	fu.mutation.SetCreatedAt(t)
-	return fu
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (fu *FactUpdate) SetNillableCreatedAt(t *time.Time) *FactUpdate {
-	if t != nil {
-		fu.SetCreatedAt(*t)
-	}
-	return fu
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (fu *FactUpdate) SetUpdatedAt(t time.Time) *FactUpdate {
-	fu.mutation.SetUpdatedAt(t)
-	return fu
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (fu *FactUpdate) SetNillableUpdatedAt(t *time.Time) *FactUpdate {
-	if t != nil {
-		fu.SetUpdatedAt(*t)
-	}
 	return fu
 }
 
@@ -82,6 +54,25 @@ func (fu *FactUpdate) SetScope(s *Scope) *FactUpdate {
 	return fu.SetScopeID(s.ID)
 }
 
+// SetFactTypeID sets the "fact_type" edge to the FactType entity by ID.
+func (fu *FactUpdate) SetFactTypeID(id uuid.UUID) *FactUpdate {
+	fu.mutation.SetFactTypeID(id)
+	return fu
+}
+
+// SetNillableFactTypeID sets the "fact_type" edge to the FactType entity by ID if the given value is not nil.
+func (fu *FactUpdate) SetNillableFactTypeID(id *uuid.UUID) *FactUpdate {
+	if id != nil {
+		fu = fu.SetFactTypeID(*id)
+	}
+	return fu
+}
+
+// SetFactType sets the "fact_type" edge to the FactType entity.
+func (fu *FactUpdate) SetFactType(f *FactType) *FactUpdate {
+	return fu.SetFactTypeID(f.ID)
+}
+
 // Mutation returns the FactMutation object of the builder.
 func (fu *FactUpdate) Mutation() *FactMutation {
 	return fu.mutation
@@ -93,12 +84,19 @@ func (fu *FactUpdate) ClearScope() *FactUpdate {
 	return fu
 }
 
+// ClearFactType clears the "fact_type" edge to the FactType entity.
+func (fu *FactUpdate) ClearFactType() *FactUpdate {
+	fu.mutation.ClearFactType()
+	return fu
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (fu *FactUpdate) Save(ctx context.Context) (int, error) {
 	var (
 		err      error
 		affected int
 	)
+	fu.defaults()
 	if len(fu.hooks) == 0 {
 		affected, err = fu.sqlSave(ctx)
 	} else {
@@ -144,6 +142,14 @@ func (fu *FactUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (fu *FactUpdate) defaults() {
+	if _, ok := fu.mutation.UpdateTime(); !ok {
+		v := fact.UpdateDefaultUpdateTime()
+		fu.mutation.SetUpdateTime(v)
+	}
+}
+
 func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -162,18 +168,11 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := fu.mutation.CreatedAt(); ok {
+	if value, ok := fu.mutation.UpdateTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldCreatedAt,
-		})
-	}
-	if value, ok := fu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: fact.FieldUpdatedAt,
+			Column: fact.FieldUpdateTime,
 		})
 	}
 	if value, ok := fu.mutation.EncryptedValue(); ok {
@@ -218,6 +217,41 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if fu.mutation.FactTypeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   fact.FactTypeTable,
+			Columns: []string{fact.FactTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: facttype.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fu.mutation.FactTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   fact.FactTypeTable,
+			Columns: []string{fact.FactTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: facttype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, fu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{fact.Label}
@@ -234,34 +268,6 @@ type FactUpdateOne struct {
 	config
 	hooks    []Hook
 	mutation *FactMutation
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (fuo *FactUpdateOne) SetCreatedAt(t time.Time) *FactUpdateOne {
-	fuo.mutation.SetCreatedAt(t)
-	return fuo
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (fuo *FactUpdateOne) SetNillableCreatedAt(t *time.Time) *FactUpdateOne {
-	if t != nil {
-		fuo.SetCreatedAt(*t)
-	}
-	return fuo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (fuo *FactUpdateOne) SetUpdatedAt(t time.Time) *FactUpdateOne {
-	fuo.mutation.SetUpdatedAt(t)
-	return fuo
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (fuo *FactUpdateOne) SetNillableUpdatedAt(t *time.Time) *FactUpdateOne {
-	if t != nil {
-		fuo.SetUpdatedAt(*t)
-	}
-	return fuo
 }
 
 // SetEncryptedValue sets the "encrypted_value" field.
@@ -289,6 +295,25 @@ func (fuo *FactUpdateOne) SetScope(s *Scope) *FactUpdateOne {
 	return fuo.SetScopeID(s.ID)
 }
 
+// SetFactTypeID sets the "fact_type" edge to the FactType entity by ID.
+func (fuo *FactUpdateOne) SetFactTypeID(id uuid.UUID) *FactUpdateOne {
+	fuo.mutation.SetFactTypeID(id)
+	return fuo
+}
+
+// SetNillableFactTypeID sets the "fact_type" edge to the FactType entity by ID if the given value is not nil.
+func (fuo *FactUpdateOne) SetNillableFactTypeID(id *uuid.UUID) *FactUpdateOne {
+	if id != nil {
+		fuo = fuo.SetFactTypeID(*id)
+	}
+	return fuo
+}
+
+// SetFactType sets the "fact_type" edge to the FactType entity.
+func (fuo *FactUpdateOne) SetFactType(f *FactType) *FactUpdateOne {
+	return fuo.SetFactTypeID(f.ID)
+}
+
 // Mutation returns the FactMutation object of the builder.
 func (fuo *FactUpdateOne) Mutation() *FactMutation {
 	return fuo.mutation
@@ -300,12 +325,19 @@ func (fuo *FactUpdateOne) ClearScope() *FactUpdateOne {
 	return fuo
 }
 
+// ClearFactType clears the "fact_type" edge to the FactType entity.
+func (fuo *FactUpdateOne) ClearFactType() *FactUpdateOne {
+	fuo.mutation.ClearFactType()
+	return fuo
+}
+
 // Save executes the query and returns the updated Fact entity.
 func (fuo *FactUpdateOne) Save(ctx context.Context) (*Fact, error) {
 	var (
 		err  error
 		node *Fact
 	)
+	fuo.defaults()
 	if len(fuo.hooks) == 0 {
 		node, err = fuo.sqlSave(ctx)
 	} else {
@@ -351,6 +383,14 @@ func (fuo *FactUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (fuo *FactUpdateOne) defaults() {
+	if _, ok := fuo.mutation.UpdateTime(); !ok {
+		v := fact.UpdateDefaultUpdateTime()
+		fuo.mutation.SetUpdateTime(v)
+	}
+}
+
 func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -374,18 +414,11 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			}
 		}
 	}
-	if value, ok := fuo.mutation.CreatedAt(); ok {
+	if value, ok := fuo.mutation.UpdateTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldCreatedAt,
-		})
-	}
-	if value, ok := fuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: fact.FieldUpdatedAt,
+			Column: fact.FieldUpdateTime,
 		})
 	}
 	if value, ok := fuo.mutation.EncryptedValue(); ok {
@@ -422,6 +455,41 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: scope.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fuo.mutation.FactTypeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   fact.FactTypeTable,
+			Columns: []string{fact.FactTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: facttype.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuo.mutation.FactTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   fact.FactTypeTable,
+			Columns: []string{fact.FactTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: facttype.FieldID,
 				},
 			},
 		}

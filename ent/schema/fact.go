@@ -1,12 +1,10 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
+	"entgo.io/ent/schema/mixin"
 )
 
 // Fact holds the schema definition for the Fact entity.
@@ -17,11 +15,6 @@ type Fact struct {
 // Fields of the Fact.
 func (Fact) Fields() []ent.Field {
 	return []ent.Field{
-		// default fields
-		field.UUID("id", uuid.UUID{}).Default(uuid.New),
-		field.Time("created_at").Default(time.Now),
-		field.Time("updated_at").Default(time.Now),
-
 		field.Bytes("encrypted_value"),
 	}
 }
@@ -30,5 +23,14 @@ func (Fact) Fields() []ent.Field {
 func (Fact) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("scope", Scope.Type).Ref("facts").Unique(),
+		edge.From("fact_type", FactType.Type).Ref("facts").Unique(),
+	}
+}
+
+// Mixin of the Fact
+func (Fact) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		BaseMixin{},
+		mixin.Time{},
 	}
 }

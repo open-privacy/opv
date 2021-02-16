@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 	"github.com/open-privacy-vault/opv/ent/fact"
+	"github.com/open-privacy-vault/opv/ent/facttype"
 	"github.com/open-privacy-vault/opv/ent/scope"
 )
 
@@ -22,30 +23,30 @@ type FactCreate struct {
 	hooks    []Hook
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (fc *FactCreate) SetCreatedAt(t time.Time) *FactCreate {
-	fc.mutation.SetCreatedAt(t)
+// SetCreateTime sets the "create_time" field.
+func (fc *FactCreate) SetCreateTime(t time.Time) *FactCreate {
+	fc.mutation.SetCreateTime(t)
 	return fc
 }
 
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (fc *FactCreate) SetNillableCreatedAt(t *time.Time) *FactCreate {
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (fc *FactCreate) SetNillableCreateTime(t *time.Time) *FactCreate {
 	if t != nil {
-		fc.SetCreatedAt(*t)
+		fc.SetCreateTime(*t)
 	}
 	return fc
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (fc *FactCreate) SetUpdatedAt(t time.Time) *FactCreate {
-	fc.mutation.SetUpdatedAt(t)
+// SetUpdateTime sets the "update_time" field.
+func (fc *FactCreate) SetUpdateTime(t time.Time) *FactCreate {
+	fc.mutation.SetUpdateTime(t)
 	return fc
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (fc *FactCreate) SetNillableUpdatedAt(t *time.Time) *FactCreate {
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (fc *FactCreate) SetNillableUpdateTime(t *time.Time) *FactCreate {
 	if t != nil {
-		fc.SetUpdatedAt(*t)
+		fc.SetUpdateTime(*t)
 	}
 	return fc
 }
@@ -79,6 +80,25 @@ func (fc *FactCreate) SetNillableScopeID(id *uuid.UUID) *FactCreate {
 // SetScope sets the "scope" edge to the Scope entity.
 func (fc *FactCreate) SetScope(s *Scope) *FactCreate {
 	return fc.SetScopeID(s.ID)
+}
+
+// SetFactTypeID sets the "fact_type" edge to the FactType entity by ID.
+func (fc *FactCreate) SetFactTypeID(id uuid.UUID) *FactCreate {
+	fc.mutation.SetFactTypeID(id)
+	return fc
+}
+
+// SetNillableFactTypeID sets the "fact_type" edge to the FactType entity by ID if the given value is not nil.
+func (fc *FactCreate) SetNillableFactTypeID(id *uuid.UUID) *FactCreate {
+	if id != nil {
+		fc = fc.SetFactTypeID(*id)
+	}
+	return fc
+}
+
+// SetFactType sets the "fact_type" edge to the FactType entity.
+func (fc *FactCreate) SetFactType(f *FactType) *FactCreate {
+	return fc.SetFactTypeID(f.ID)
 }
 
 // Mutation returns the FactMutation object of the builder.
@@ -133,13 +153,13 @@ func (fc *FactCreate) SaveX(ctx context.Context) *Fact {
 
 // defaults sets the default values of the builder before save.
 func (fc *FactCreate) defaults() {
-	if _, ok := fc.mutation.CreatedAt(); !ok {
-		v := fact.DefaultCreatedAt()
-		fc.mutation.SetCreatedAt(v)
+	if _, ok := fc.mutation.CreateTime(); !ok {
+		v := fact.DefaultCreateTime()
+		fc.mutation.SetCreateTime(v)
 	}
-	if _, ok := fc.mutation.UpdatedAt(); !ok {
-		v := fact.DefaultUpdatedAt()
-		fc.mutation.SetUpdatedAt(v)
+	if _, ok := fc.mutation.UpdateTime(); !ok {
+		v := fact.DefaultUpdateTime()
+		fc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := fc.mutation.ID(); !ok {
 		v := fact.DefaultID()
@@ -149,11 +169,11 @@ func (fc *FactCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (fc *FactCreate) check() error {
-	if _, ok := fc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
+	if _, ok := fc.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New("ent: missing required field \"create_time\"")}
 	}
-	if _, ok := fc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
+	if _, ok := fc.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New("ent: missing required field \"update_time\"")}
 	}
 	if _, ok := fc.mutation.EncryptedValue(); !ok {
 		return &ValidationError{Name: "encrypted_value", err: errors.New("ent: missing required field \"encrypted_value\"")}
@@ -187,21 +207,21 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := fc.mutation.CreatedAt(); ok {
+	if value, ok := fc.mutation.CreateTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldCreatedAt,
+			Column: fact.FieldCreateTime,
 		})
-		_node.CreatedAt = value
+		_node.CreateTime = value
 	}
-	if value, ok := fc.mutation.UpdatedAt(); ok {
+	if value, ok := fc.mutation.UpdateTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldUpdatedAt,
+			Column: fact.FieldUpdateTime,
 		})
-		_node.UpdatedAt = value
+		_node.UpdateTime = value
 	}
 	if value, ok := fc.mutation.EncryptedValue(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -222,6 +242,25 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: scope.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := fc.mutation.FactTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   fact.FactTypeTable,
+			Columns: []string{fact.FactTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: facttype.FieldID,
 				},
 			},
 		}

@@ -22,6 +22,19 @@ func (f FactFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return f(ctx, mv)
 }
 
+// The FactTypeFunc type is an adapter to allow the use of ordinary
+// function as FactType mutator.
+type FactTypeFunc func(context.Context, *ent.FactTypeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FactTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.FactTypeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FactTypeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ScopeFunc type is an adapter to allow the use of ordinary
 // function as Scope mutator.
 type ScopeFunc func(context.Context, *ent.ScopeMutation) (ent.Value, error)

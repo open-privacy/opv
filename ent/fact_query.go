@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 	"github.com/open-privacy-vault/opv/ent/fact"
+	"github.com/open-privacy-vault/opv/ent/facttype"
 	"github.com/open-privacy-vault/opv/ent/predicate"
 	"github.com/open-privacy-vault/opv/ent/scope"
 )
@@ -26,8 +27,9 @@ type FactQuery struct {
 	fields     []string
 	predicates []predicate.Fact
 	// eager-loading edges.
-	withScope *ScopeQuery
-	withFKs   bool
+	withScope    *ScopeQuery
+	withFactType *FactTypeQuery
+	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -72,6 +74,28 @@ func (fq *FactQuery) QueryScope() *ScopeQuery {
 			sqlgraph.From(fact.Table, fact.FieldID, selector),
 			sqlgraph.To(scope.Table, scope.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, fact.ScopeTable, fact.ScopeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFactType chains the current query on the "fact_type" edge.
+func (fq *FactQuery) QueryFactType() *FactTypeQuery {
+	query := &FactTypeQuery{config: fq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := fq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := fq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fact.Table, fact.FieldID, selector),
+			sqlgraph.To(facttype.Table, facttype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, fact.FactTypeTable, fact.FactTypeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
 		return fromU, nil
@@ -255,12 +279,13 @@ func (fq *FactQuery) Clone() *FactQuery {
 		return nil
 	}
 	return &FactQuery{
-		config:     fq.config,
-		limit:      fq.limit,
-		offset:     fq.offset,
-		order:      append([]OrderFunc{}, fq.order...),
-		predicates: append([]predicate.Fact{}, fq.predicates...),
-		withScope:  fq.withScope.Clone(),
+		config:       fq.config,
+		limit:        fq.limit,
+		offset:       fq.offset,
+		order:        append([]OrderFunc{}, fq.order...),
+		predicates:   append([]predicate.Fact{}, fq.predicates...),
+		withScope:    fq.withScope.Clone(),
+		withFactType: fq.withFactType.Clone(),
 		// clone intermediate query.
 		sql:  fq.sql.Clone(),
 		path: fq.path,
@@ -278,18 +303,29 @@ func (fq *FactQuery) WithScope(opts ...func(*ScopeQuery)) *FactQuery {
 	return fq
 }
 
+// WithFactType tells the query-builder to eager-load the nodes that are connected to
+// the "fact_type" edge. The optional arguments are used to configure the query builder of the edge.
+func (fq *FactQuery) WithFactType(opts ...func(*FactTypeQuery)) *FactQuery {
+	query := &FactTypeQuery{config: fq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	fq.withFactType = query
+	return fq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreateTime time.Time `json:"create_time,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Fact.Query().
-//		GroupBy(fact.FieldCreatedAt).
+//		GroupBy(fact.FieldCreateTime).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -311,11 +347,11 @@ func (fq *FactQuery) GroupBy(field string, fields ...string) *FactGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreateTime time.Time `json:"create_time,omitempty"`
 //	}
 //
 //	client.Fact.Query().
-//		Select(fact.FieldCreatedAt).
+//		Select(fact.FieldCreateTime).
 //		Scan(ctx, &v)
 //
 func (fq *FactQuery) Select(field string, fields ...string) *FactSelect {
@@ -344,11 +380,12 @@ func (fq *FactQuery) sqlAll(ctx context.Context) ([]*Fact, error) {
 		nodes       = []*Fact{}
 		withFKs     = fq.withFKs
 		_spec       = fq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			fq.withScope != nil,
+			fq.withFactType != nil,
 		}
 	)
-	if fq.withScope != nil {
+	if fq.withScope != nil || fq.withFactType != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -395,6 +432,31 @@ func (fq *FactQuery) sqlAll(ctx context.Context) ([]*Fact, error) {
 			}
 			for i := range nodes {
 				nodes[i].Edges.Scope = n
+			}
+		}
+	}
+
+	if query := fq.withFactType; query != nil {
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Fact)
+		for i := range nodes {
+			if fk := nodes[i].fact_type_facts; fk != nil {
+				ids = append(ids, *fk)
+				nodeids[*fk] = append(nodeids[*fk], nodes[i])
+			}
+		}
+		query.Where(facttype.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "fact_type_facts" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.FactType = n
 			}
 		}
 	}

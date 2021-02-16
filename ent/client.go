@@ -11,6 +11,7 @@ import (
 	"github.com/open-privacy-vault/opv/ent/migrate"
 
 	"github.com/open-privacy-vault/opv/ent/fact"
+	"github.com/open-privacy-vault/opv/ent/facttype"
 	"github.com/open-privacy-vault/opv/ent/scope"
 
 	"entgo.io/ent/dialect"
@@ -25,6 +26,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Fact is the client for interacting with the Fact builders.
 	Fact *FactClient
+	// FactType is the client for interacting with the FactType builders.
+	FactType *FactTypeClient
 	// Scope is the client for interacting with the Scope builders.
 	Scope *ScopeClient
 }
@@ -41,6 +44,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Fact = NewFactClient(c.config)
+	c.FactType = NewFactTypeClient(c.config)
 	c.Scope = NewScopeClient(c.config)
 }
 
@@ -73,10 +77,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Fact:   NewFactClient(cfg),
-		Scope:  NewScopeClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Fact:     NewFactClient(cfg),
+		FactType: NewFactTypeClient(cfg),
+		Scope:    NewScopeClient(cfg),
 	}, nil
 }
 
@@ -94,9 +99,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config: cfg,
-		Fact:   NewFactClient(cfg),
-		Scope:  NewScopeClient(cfg),
+		config:   cfg,
+		Fact:     NewFactClient(cfg),
+		FactType: NewFactTypeClient(cfg),
+		Scope:    NewScopeClient(cfg),
 	}, nil
 }
 
@@ -127,6 +133,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Fact.Use(hooks...)
+	c.FactType.Use(hooks...)
 	c.Scope.Use(hooks...)
 }
 
@@ -229,9 +236,129 @@ func (c *FactClient) QueryScope(f *Fact) *ScopeQuery {
 	return query
 }
 
+// QueryFactType queries the fact_type edge of a Fact.
+func (c *FactClient) QueryFactType(f *Fact) *FactTypeQuery {
+	query := &FactTypeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fact.Table, fact.FieldID, id),
+			sqlgraph.To(facttype.Table, facttype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, fact.FactTypeTable, fact.FactTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *FactClient) Hooks() []Hook {
 	return c.hooks.Fact
+}
+
+// FactTypeClient is a client for the FactType schema.
+type FactTypeClient struct {
+	config
+}
+
+// NewFactTypeClient returns a client for the FactType from the given config.
+func NewFactTypeClient(c config) *FactTypeClient {
+	return &FactTypeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `facttype.Hooks(f(g(h())))`.
+func (c *FactTypeClient) Use(hooks ...Hook) {
+	c.hooks.FactType = append(c.hooks.FactType, hooks...)
+}
+
+// Create returns a create builder for FactType.
+func (c *FactTypeClient) Create() *FactTypeCreate {
+	mutation := newFactTypeMutation(c.config, OpCreate)
+	return &FactTypeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FactType entities.
+func (c *FactTypeClient) CreateBulk(builders ...*FactTypeCreate) *FactTypeCreateBulk {
+	return &FactTypeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FactType.
+func (c *FactTypeClient) Update() *FactTypeUpdate {
+	mutation := newFactTypeMutation(c.config, OpUpdate)
+	return &FactTypeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FactTypeClient) UpdateOne(ft *FactType) *FactTypeUpdateOne {
+	mutation := newFactTypeMutation(c.config, OpUpdateOne, withFactType(ft))
+	return &FactTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FactTypeClient) UpdateOneID(id uuid.UUID) *FactTypeUpdateOne {
+	mutation := newFactTypeMutation(c.config, OpUpdateOne, withFactTypeID(id))
+	return &FactTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FactType.
+func (c *FactTypeClient) Delete() *FactTypeDelete {
+	mutation := newFactTypeMutation(c.config, OpDelete)
+	return &FactTypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *FactTypeClient) DeleteOne(ft *FactType) *FactTypeDeleteOne {
+	return c.DeleteOneID(ft.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *FactTypeClient) DeleteOneID(id uuid.UUID) *FactTypeDeleteOne {
+	builder := c.Delete().Where(facttype.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FactTypeDeleteOne{builder}
+}
+
+// Query returns a query builder for FactType.
+func (c *FactTypeClient) Query() *FactTypeQuery {
+	return &FactTypeQuery{config: c.config}
+}
+
+// Get returns a FactType entity by its id.
+func (c *FactTypeClient) Get(ctx context.Context, id uuid.UUID) (*FactType, error) {
+	return c.Query().Where(facttype.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FactTypeClient) GetX(ctx context.Context, id uuid.UUID) *FactType {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryFacts queries the facts edge of a FactType.
+func (c *FactTypeClient) QueryFacts(ft *FactType) *FactQuery {
+	query := &FactQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ft.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(facttype.Table, facttype.FieldID, id),
+			sqlgraph.To(fact.Table, fact.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, facttype.FactsTable, facttype.FactsColumn),
+		)
+		fromV = sqlgraph.Neighbors(ft.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FactTypeClient) Hooks() []Hook {
+	return c.hooks.FactType
 }
 
 // ScopeClient is a client for the Scope schema.

@@ -17,12 +17,14 @@ type Scope struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// CreateTime holds the value of the "create_time" field.
+	CreateTime time.Time `json:"create_time,omitempty"`
+	// UpdateTime holds the value of the "update_time" field.
+	UpdateTime time.Time `json:"update_time,omitempty"`
 	// Nonce holds the value of the "nonce" field.
 	Nonce uuid.UUID `json:"nonce,omitempty"`
+	// Type holds the value of the "type" field.
+	Type string `json:"type,omitempty"`
 	// ExpiresAt holds the value of the "expires_at" field.
 	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -53,7 +55,9 @@ func (*Scope) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case scope.FieldCreatedAt, scope.FieldUpdatedAt, scope.FieldExpiresAt:
+		case scope.FieldType:
+			values[i] = &sql.NullString{}
+		case scope.FieldCreateTime, scope.FieldUpdateTime, scope.FieldExpiresAt:
 			values[i] = &sql.NullTime{}
 		case scope.FieldID, scope.FieldNonce:
 			values[i] = &uuid.UUID{}
@@ -78,23 +82,29 @@ func (s *Scope) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil {
 				s.ID = *value
 			}
-		case scope.FieldCreatedAt:
+		case scope.FieldCreateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
 			} else if value.Valid {
-				s.CreatedAt = value.Time
+				s.CreateTime = value.Time
 			}
-		case scope.FieldUpdatedAt:
+		case scope.FieldUpdateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+				return fmt.Errorf("unexpected type %T for field update_time", values[i])
 			} else if value.Valid {
-				s.UpdatedAt = value.Time
+				s.UpdateTime = value.Time
 			}
 		case scope.FieldNonce:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field nonce", values[i])
 			} else if value != nil {
 				s.Nonce = *value
+			}
+		case scope.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				s.Type = value.String
 			}
 		case scope.FieldExpiresAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -136,12 +146,14 @@ func (s *Scope) String() string {
 	var builder strings.Builder
 	builder.WriteString("Scope(")
 	builder.WriteString(fmt.Sprintf("id=%v", s.ID))
-	builder.WriteString(", created_at=")
-	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", updated_at=")
-	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", create_time=")
+	builder.WriteString(s.CreateTime.Format(time.ANSIC))
+	builder.WriteString(", update_time=")
+	builder.WriteString(s.UpdateTime.Format(time.ANSIC))
 	builder.WriteString(", nonce=")
 	builder.WriteString(fmt.Sprintf("%v", s.Nonce))
+	builder.WriteString(", type=")
+	builder.WriteString(s.Type)
 	if v := s.ExpiresAt; v != nil {
 		builder.WriteString(", expires_at=")
 		builder.WriteString(v.Format(time.ANSIC))

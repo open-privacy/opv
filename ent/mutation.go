@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/open-privacy-vault/opv/ent/fact"
+	"github.com/open-privacy-vault/opv/ent/facttype"
 	"github.com/open-privacy-vault/opv/ent/predicate"
 	"github.com/open-privacy-vault/opv/ent/scope"
 
@@ -25,25 +26,28 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeFact  = "Fact"
-	TypeScope = "Scope"
+	TypeFact     = "Fact"
+	TypeFactType = "FactType"
+	TypeScope    = "Scope"
 )
 
 // FactMutation represents an operation that mutates the Fact nodes in the graph.
 type FactMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uuid.UUID
-	created_at      *time.Time
-	updated_at      *time.Time
-	encrypted_value *[]byte
-	clearedFields   map[string]struct{}
-	scope           *uuid.UUID
-	clearedscope    bool
-	done            bool
-	oldValue        func(context.Context) (*Fact, error)
-	predicates      []predicate.Fact
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	create_time      *time.Time
+	update_time      *time.Time
+	encrypted_value  *[]byte
+	clearedFields    map[string]struct{}
+	scope            *uuid.UUID
+	clearedscope     bool
+	fact_type        *uuid.UUID
+	clearedfact_type bool
+	done             bool
+	oldValue         func(context.Context) (*Fact, error)
+	predicates       []predicate.Fact
 }
 
 var _ ent.Mutation = (*FactMutation)(nil)
@@ -131,76 +135,76 @@ func (m *FactMutation) ID() (id uuid.UUID, exists bool) {
 	return *m.id, true
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (m *FactMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
+// SetCreateTime sets the "create_time" field.
+func (m *FactMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
 }
 
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *FactMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *FactMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the Fact entity.
+// OldCreateTime returns the old "create_time" field's value of the Fact entity.
 // If the Fact object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FactMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *FactMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldCreateTime is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+		return v, fmt.Errorf("OldCreateTime requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
 	}
-	return oldValue.CreatedAt, nil
+	return oldValue.CreateTime, nil
 }
 
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *FactMutation) ResetCreatedAt() {
-	m.created_at = nil
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *FactMutation) ResetCreateTime() {
+	m.create_time = nil
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (m *FactMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
+// SetUpdateTime sets the "update_time" field.
+func (m *FactMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
 }
 
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *FactMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *FactMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the Fact entity.
+// OldUpdateTime returns the old "update_time" field's value of the Fact entity.
 // If the Fact object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FactMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *FactMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldUpdateTime is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+		return v, fmt.Errorf("OldUpdateTime requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
 	}
-	return oldValue.UpdatedAt, nil
+	return oldValue.UpdateTime, nil
 }
 
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *FactMutation) ResetUpdatedAt() {
-	m.updated_at = nil
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *FactMutation) ResetUpdateTime() {
+	m.update_time = nil
 }
 
 // SetEncryptedValue sets the "encrypted_value" field.
@@ -278,6 +282,45 @@ func (m *FactMutation) ResetScope() {
 	m.clearedscope = false
 }
 
+// SetFactTypeID sets the "fact_type" edge to the FactType entity by id.
+func (m *FactMutation) SetFactTypeID(id uuid.UUID) {
+	m.fact_type = &id
+}
+
+// ClearFactType clears the "fact_type" edge to the FactType entity.
+func (m *FactMutation) ClearFactType() {
+	m.clearedfact_type = true
+}
+
+// FactTypeCleared returns if the "fact_type" edge to the FactType entity was cleared.
+func (m *FactMutation) FactTypeCleared() bool {
+	return m.clearedfact_type
+}
+
+// FactTypeID returns the "fact_type" edge ID in the mutation.
+func (m *FactMutation) FactTypeID() (id uuid.UUID, exists bool) {
+	if m.fact_type != nil {
+		return *m.fact_type, true
+	}
+	return
+}
+
+// FactTypeIDs returns the "fact_type" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// FactTypeID instead. It exists only for internal usage by the builders.
+func (m *FactMutation) FactTypeIDs() (ids []uuid.UUID) {
+	if id := m.fact_type; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetFactType resets all changes to the "fact_type" edge.
+func (m *FactMutation) ResetFactType() {
+	m.fact_type = nil
+	m.clearedfact_type = false
+}
+
 // Op returns the operation name.
 func (m *FactMutation) Op() Op {
 	return m.op
@@ -293,11 +336,11 @@ func (m *FactMutation) Type() string {
 // AddedFields().
 func (m *FactMutation) Fields() []string {
 	fields := make([]string, 0, 3)
-	if m.created_at != nil {
-		fields = append(fields, fact.FieldCreatedAt)
+	if m.create_time != nil {
+		fields = append(fields, fact.FieldCreateTime)
 	}
-	if m.updated_at != nil {
-		fields = append(fields, fact.FieldUpdatedAt)
+	if m.update_time != nil {
+		fields = append(fields, fact.FieldUpdateTime)
 	}
 	if m.encrypted_value != nil {
 		fields = append(fields, fact.FieldEncryptedValue)
@@ -310,10 +353,10 @@ func (m *FactMutation) Fields() []string {
 // schema.
 func (m *FactMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case fact.FieldCreatedAt:
-		return m.CreatedAt()
-	case fact.FieldUpdatedAt:
-		return m.UpdatedAt()
+	case fact.FieldCreateTime:
+		return m.CreateTime()
+	case fact.FieldUpdateTime:
+		return m.UpdateTime()
 	case fact.FieldEncryptedValue:
 		return m.EncryptedValue()
 	}
@@ -325,10 +368,10 @@ func (m *FactMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *FactMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case fact.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case fact.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
+	case fact.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case fact.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
 	case fact.FieldEncryptedValue:
 		return m.OldEncryptedValue(ctx)
 	}
@@ -340,19 +383,19 @@ func (m *FactMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *FactMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case fact.FieldCreatedAt:
+	case fact.FieldCreateTime:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCreatedAt(v)
+		m.SetCreateTime(v)
 		return nil
-	case fact.FieldUpdatedAt:
+	case fact.FieldUpdateTime:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetUpdatedAt(v)
+		m.SetUpdateTime(v)
 		return nil
 	case fact.FieldEncryptedValue:
 		v, ok := value.([]byte)
@@ -410,11 +453,11 @@ func (m *FactMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *FactMutation) ResetField(name string) error {
 	switch name {
-	case fact.FieldCreatedAt:
-		m.ResetCreatedAt()
+	case fact.FieldCreateTime:
+		m.ResetCreateTime()
 		return nil
-	case fact.FieldUpdatedAt:
-		m.ResetUpdatedAt()
+	case fact.FieldUpdateTime:
+		m.ResetUpdateTime()
 		return nil
 	case fact.FieldEncryptedValue:
 		m.ResetEncryptedValue()
@@ -425,9 +468,12 @@ func (m *FactMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FactMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.scope != nil {
 		edges = append(edges, fact.EdgeScope)
+	}
+	if m.fact_type != nil {
+		edges = append(edges, fact.EdgeFactType)
 	}
 	return edges
 }
@@ -440,13 +486,17 @@ func (m *FactMutation) AddedIDs(name string) []ent.Value {
 		if id := m.scope; id != nil {
 			return []ent.Value{*id}
 		}
+	case fact.EdgeFactType:
+		if id := m.fact_type; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FactMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -460,9 +510,12 @@ func (m *FactMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FactMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedscope {
 		edges = append(edges, fact.EdgeScope)
+	}
+	if m.clearedfact_type {
+		edges = append(edges, fact.EdgeFactType)
 	}
 	return edges
 }
@@ -473,6 +526,8 @@ func (m *FactMutation) EdgeCleared(name string) bool {
 	switch name {
 	case fact.EdgeScope:
 		return m.clearedscope
+	case fact.EdgeFactType:
+		return m.clearedfact_type
 	}
 	return false
 }
@@ -483,6 +538,9 @@ func (m *FactMutation) ClearEdge(name string) error {
 	switch name {
 	case fact.EdgeScope:
 		m.ClearScope()
+		return nil
+	case fact.EdgeFactType:
+		m.ClearFactType()
 		return nil
 	}
 	return fmt.Errorf("unknown Fact unique edge %s", name)
@@ -495,8 +553,450 @@ func (m *FactMutation) ResetEdge(name string) error {
 	case fact.EdgeScope:
 		m.ResetScope()
 		return nil
+	case fact.EdgeFactType:
+		m.ResetFactType()
+		return nil
 	}
 	return fmt.Errorf("unknown Fact edge %s", name)
+}
+
+// FactTypeMutation represents an operation that mutates the FactType nodes in the graph.
+type FactTypeMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	create_time   *time.Time
+	update_time   *time.Time
+	clearedFields map[string]struct{}
+	facts         map[uuid.UUID]struct{}
+	removedfacts  map[uuid.UUID]struct{}
+	clearedfacts  bool
+	done          bool
+	oldValue      func(context.Context) (*FactType, error)
+	predicates    []predicate.FactType
+}
+
+var _ ent.Mutation = (*FactTypeMutation)(nil)
+
+// facttypeOption allows management of the mutation configuration using functional options.
+type facttypeOption func(*FactTypeMutation)
+
+// newFactTypeMutation creates new mutation for the FactType entity.
+func newFactTypeMutation(c config, op Op, opts ...facttypeOption) *FactTypeMutation {
+	m := &FactTypeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeFactType,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withFactTypeID sets the ID field of the mutation.
+func withFactTypeID(id uuid.UUID) facttypeOption {
+	return func(m *FactTypeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *FactType
+		)
+		m.oldValue = func(ctx context.Context) (*FactType, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().FactType.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withFactType sets the old FactType of the mutation.
+func withFactType(node *FactType) facttypeOption {
+	return func(m *FactTypeMutation) {
+		m.oldValue = func(context.Context) (*FactType, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m FactTypeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m FactTypeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of FactType entities.
+func (m *FactTypeMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID
+// is only available if it was provided to the builder.
+func (m *FactTypeMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *FactTypeMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *FactTypeMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the FactType entity.
+// If the FactType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactTypeMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *FactTypeMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *FactTypeMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *FactTypeMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the FactType entity.
+// If the FactType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactTypeMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *FactTypeMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// AddFactIDs adds the "facts" edge to the Fact entity by ids.
+func (m *FactTypeMutation) AddFactIDs(ids ...uuid.UUID) {
+	if m.facts == nil {
+		m.facts = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.facts[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFacts clears the "facts" edge to the Fact entity.
+func (m *FactTypeMutation) ClearFacts() {
+	m.clearedfacts = true
+}
+
+// FactsCleared returns if the "facts" edge to the Fact entity was cleared.
+func (m *FactTypeMutation) FactsCleared() bool {
+	return m.clearedfacts
+}
+
+// RemoveFactIDs removes the "facts" edge to the Fact entity by IDs.
+func (m *FactTypeMutation) RemoveFactIDs(ids ...uuid.UUID) {
+	if m.removedfacts == nil {
+		m.removedfacts = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.removedfacts[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFacts returns the removed IDs of the "facts" edge to the Fact entity.
+func (m *FactTypeMutation) RemovedFactsIDs() (ids []uuid.UUID) {
+	for id := range m.removedfacts {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FactsIDs returns the "facts" edge IDs in the mutation.
+func (m *FactTypeMutation) FactsIDs() (ids []uuid.UUID) {
+	for id := range m.facts {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFacts resets all changes to the "facts" edge.
+func (m *FactTypeMutation) ResetFacts() {
+	m.facts = nil
+	m.clearedfacts = false
+	m.removedfacts = nil
+}
+
+// Op returns the operation name.
+func (m *FactTypeMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (FactType).
+func (m *FactTypeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *FactTypeMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.create_time != nil {
+		fields = append(fields, facttype.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, facttype.FieldUpdateTime)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *FactTypeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case facttype.FieldCreateTime:
+		return m.CreateTime()
+	case facttype.FieldUpdateTime:
+		return m.UpdateTime()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *FactTypeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case facttype.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case facttype.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	}
+	return nil, fmt.Errorf("unknown FactType field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FactTypeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case facttype.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case facttype.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown FactType field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *FactTypeMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *FactTypeMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FactTypeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown FactType numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *FactTypeMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *FactTypeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *FactTypeMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown FactType nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *FactTypeMutation) ResetField(name string) error {
+	switch name {
+	case facttype.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case facttype.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	}
+	return fmt.Errorf("unknown FactType field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *FactTypeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.facts != nil {
+		edges = append(edges, facttype.EdgeFacts)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *FactTypeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case facttype.EdgeFacts:
+		ids := make([]ent.Value, 0, len(m.facts))
+		for id := range m.facts {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *FactTypeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedfacts != nil {
+		edges = append(edges, facttype.EdgeFacts)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *FactTypeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case facttype.EdgeFacts:
+		ids := make([]ent.Value, 0, len(m.removedfacts))
+		for id := range m.removedfacts {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *FactTypeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedfacts {
+		edges = append(edges, facttype.EdgeFacts)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *FactTypeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case facttype.EdgeFacts:
+		return m.clearedfacts
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *FactTypeMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown FactType unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *FactTypeMutation) ResetEdge(name string) error {
+	switch name {
+	case facttype.EdgeFacts:
+		m.ResetFacts()
+		return nil
+	}
+	return fmt.Errorf("unknown FactType edge %s", name)
 }
 
 // ScopeMutation represents an operation that mutates the Scope nodes in the graph.
@@ -505,9 +1005,10 @@ type ScopeMutation struct {
 	op            Op
 	typ           string
 	id            *uuid.UUID
-	created_at    *time.Time
-	updated_at    *time.Time
+	create_time   *time.Time
+	update_time   *time.Time
 	nonce         *uuid.UUID
+	_type         *string
 	expires_at    *time.Time
 	clearedFields map[string]struct{}
 	facts         map[uuid.UUID]struct{}
@@ -603,76 +1104,76 @@ func (m *ScopeMutation) ID() (id uuid.UUID, exists bool) {
 	return *m.id, true
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (m *ScopeMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
+// SetCreateTime sets the "create_time" field.
+func (m *ScopeMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
 }
 
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *ScopeMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *ScopeMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the Scope entity.
+// OldCreateTime returns the old "create_time" field's value of the Scope entity.
 // If the Scope object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScopeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *ScopeMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldCreateTime is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+		return v, fmt.Errorf("OldCreateTime requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
 	}
-	return oldValue.CreatedAt, nil
+	return oldValue.CreateTime, nil
 }
 
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *ScopeMutation) ResetCreatedAt() {
-	m.created_at = nil
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *ScopeMutation) ResetCreateTime() {
+	m.create_time = nil
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (m *ScopeMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
+// SetUpdateTime sets the "update_time" field.
+func (m *ScopeMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
 }
 
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *ScopeMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *ScopeMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the Scope entity.
+// OldUpdateTime returns the old "update_time" field's value of the Scope entity.
 // If the Scope object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScopeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *ScopeMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldUpdateTime is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+		return v, fmt.Errorf("OldUpdateTime requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
 	}
-	return oldValue.UpdatedAt, nil
+	return oldValue.UpdateTime, nil
 }
 
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *ScopeMutation) ResetUpdatedAt() {
-	m.updated_at = nil
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *ScopeMutation) ResetUpdateTime() {
+	m.update_time = nil
 }
 
 // SetNonce sets the "nonce" field.
@@ -709,6 +1210,55 @@ func (m *ScopeMutation) OldNonce(ctx context.Context) (v uuid.UUID, err error) {
 // ResetNonce resets all changes to the "nonce" field.
 func (m *ScopeMutation) ResetNonce() {
 	m.nonce = nil
+}
+
+// SetType sets the "type" field.
+func (m *ScopeMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *ScopeMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Scope entity.
+// If the Scope object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ScopeMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *ScopeMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[scope.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *ScopeMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[scope.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *ScopeMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, scope.FieldType)
 }
 
 // SetExpiresAt sets the "expires_at" field.
@@ -827,15 +1377,18 @@ func (m *ScopeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ScopeMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.created_at != nil {
-		fields = append(fields, scope.FieldCreatedAt)
+	fields := make([]string, 0, 5)
+	if m.create_time != nil {
+		fields = append(fields, scope.FieldCreateTime)
 	}
-	if m.updated_at != nil {
-		fields = append(fields, scope.FieldUpdatedAt)
+	if m.update_time != nil {
+		fields = append(fields, scope.FieldUpdateTime)
 	}
 	if m.nonce != nil {
 		fields = append(fields, scope.FieldNonce)
+	}
+	if m._type != nil {
+		fields = append(fields, scope.FieldType)
 	}
 	if m.expires_at != nil {
 		fields = append(fields, scope.FieldExpiresAt)
@@ -848,12 +1401,14 @@ func (m *ScopeMutation) Fields() []string {
 // schema.
 func (m *ScopeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case scope.FieldCreatedAt:
-		return m.CreatedAt()
-	case scope.FieldUpdatedAt:
-		return m.UpdatedAt()
+	case scope.FieldCreateTime:
+		return m.CreateTime()
+	case scope.FieldUpdateTime:
+		return m.UpdateTime()
 	case scope.FieldNonce:
 		return m.Nonce()
+	case scope.FieldType:
+		return m.GetType()
 	case scope.FieldExpiresAt:
 		return m.ExpiresAt()
 	}
@@ -865,12 +1420,14 @@ func (m *ScopeMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ScopeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case scope.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case scope.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
+	case scope.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case scope.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
 	case scope.FieldNonce:
 		return m.OldNonce(ctx)
+	case scope.FieldType:
+		return m.OldType(ctx)
 	case scope.FieldExpiresAt:
 		return m.OldExpiresAt(ctx)
 	}
@@ -882,19 +1439,19 @@ func (m *ScopeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *ScopeMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case scope.FieldCreatedAt:
+	case scope.FieldCreateTime:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCreatedAt(v)
+		m.SetCreateTime(v)
 		return nil
-	case scope.FieldUpdatedAt:
+	case scope.FieldUpdateTime:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetUpdatedAt(v)
+		m.SetUpdateTime(v)
 		return nil
 	case scope.FieldNonce:
 		v, ok := value.(uuid.UUID)
@@ -902,6 +1459,13 @@ func (m *ScopeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNonce(v)
+		return nil
+	case scope.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
 		return nil
 	case scope.FieldExpiresAt:
 		v, ok := value.(time.Time)
@@ -940,6 +1504,9 @@ func (m *ScopeMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ScopeMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(scope.FieldType) {
+		fields = append(fields, scope.FieldType)
+	}
 	if m.FieldCleared(scope.FieldExpiresAt) {
 		fields = append(fields, scope.FieldExpiresAt)
 	}
@@ -957,6 +1524,9 @@ func (m *ScopeMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ScopeMutation) ClearField(name string) error {
 	switch name {
+	case scope.FieldType:
+		m.ClearType()
+		return nil
 	case scope.FieldExpiresAt:
 		m.ClearExpiresAt()
 		return nil
@@ -968,14 +1538,17 @@ func (m *ScopeMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ScopeMutation) ResetField(name string) error {
 	switch name {
-	case scope.FieldCreatedAt:
-		m.ResetCreatedAt()
+	case scope.FieldCreateTime:
+		m.ResetCreateTime()
 		return nil
-	case scope.FieldUpdatedAt:
-		m.ResetUpdatedAt()
+	case scope.FieldUpdateTime:
+		m.ResetUpdateTime()
 		return nil
 	case scope.FieldNonce:
 		m.ResetNonce()
+		return nil
+	case scope.FieldType:
+		m.ResetType()
 		return nil
 	case scope.FieldExpiresAt:
 		m.ResetExpiresAt()

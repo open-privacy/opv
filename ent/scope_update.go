@@ -29,37 +29,29 @@ func (su *ScopeUpdate) Where(ps ...predicate.Scope) *ScopeUpdate {
 	return su
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (su *ScopeUpdate) SetCreatedAt(t time.Time) *ScopeUpdate {
-	su.mutation.SetCreatedAt(t)
-	return su
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (su *ScopeUpdate) SetNillableCreatedAt(t *time.Time) *ScopeUpdate {
-	if t != nil {
-		su.SetCreatedAt(*t)
-	}
-	return su
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (su *ScopeUpdate) SetUpdatedAt(t time.Time) *ScopeUpdate {
-	su.mutation.SetUpdatedAt(t)
-	return su
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (su *ScopeUpdate) SetNillableUpdatedAt(t *time.Time) *ScopeUpdate {
-	if t != nil {
-		su.SetUpdatedAt(*t)
-	}
-	return su
-}
-
 // SetNonce sets the "nonce" field.
 func (su *ScopeUpdate) SetNonce(u uuid.UUID) *ScopeUpdate {
 	su.mutation.SetNonce(u)
+	return su
+}
+
+// SetType sets the "type" field.
+func (su *ScopeUpdate) SetType(s string) *ScopeUpdate {
+	su.mutation.SetType(s)
+	return su
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (su *ScopeUpdate) SetNillableType(s *string) *ScopeUpdate {
+	if s != nil {
+		su.SetType(*s)
+	}
+	return su
+}
+
+// ClearType clears the value of the "type" field.
+func (su *ScopeUpdate) ClearType() *ScopeUpdate {
+	su.mutation.ClearType()
 	return su
 }
 
@@ -130,6 +122,7 @@ func (su *ScopeUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	su.defaults()
 	if len(su.hooks) == 0 {
 		affected, err = su.sqlSave(ctx)
 	} else {
@@ -175,6 +168,14 @@ func (su *ScopeUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (su *ScopeUpdate) defaults() {
+	if _, ok := su.mutation.UpdateTime(); !ok {
+		v := scope.UpdateDefaultUpdateTime()
+		su.mutation.SetUpdateTime(v)
+	}
+}
+
 func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -193,18 +194,11 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := su.mutation.CreatedAt(); ok {
+	if value, ok := su.mutation.UpdateTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: scope.FieldCreatedAt,
-		})
-	}
-	if value, ok := su.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: scope.FieldUpdatedAt,
+			Column: scope.FieldUpdateTime,
 		})
 	}
 	if value, ok := su.mutation.Nonce(); ok {
@@ -212,6 +206,19 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUUID,
 			Value:  value,
 			Column: scope.FieldNonce,
+		})
+	}
+	if value, ok := su.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldType,
+		})
+	}
+	if su.mutation.TypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: scope.FieldType,
 		})
 	}
 	if value, ok := su.mutation.ExpiresAt(); ok {
@@ -299,37 +306,29 @@ type ScopeUpdateOne struct {
 	mutation *ScopeMutation
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (suo *ScopeUpdateOne) SetCreatedAt(t time.Time) *ScopeUpdateOne {
-	suo.mutation.SetCreatedAt(t)
-	return suo
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (suo *ScopeUpdateOne) SetNillableCreatedAt(t *time.Time) *ScopeUpdateOne {
-	if t != nil {
-		suo.SetCreatedAt(*t)
-	}
-	return suo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (suo *ScopeUpdateOne) SetUpdatedAt(t time.Time) *ScopeUpdateOne {
-	suo.mutation.SetUpdatedAt(t)
-	return suo
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (suo *ScopeUpdateOne) SetNillableUpdatedAt(t *time.Time) *ScopeUpdateOne {
-	if t != nil {
-		suo.SetUpdatedAt(*t)
-	}
-	return suo
-}
-
 // SetNonce sets the "nonce" field.
 func (suo *ScopeUpdateOne) SetNonce(u uuid.UUID) *ScopeUpdateOne {
 	suo.mutation.SetNonce(u)
+	return suo
+}
+
+// SetType sets the "type" field.
+func (suo *ScopeUpdateOne) SetType(s string) *ScopeUpdateOne {
+	suo.mutation.SetType(s)
+	return suo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (suo *ScopeUpdateOne) SetNillableType(s *string) *ScopeUpdateOne {
+	if s != nil {
+		suo.SetType(*s)
+	}
+	return suo
+}
+
+// ClearType clears the value of the "type" field.
+func (suo *ScopeUpdateOne) ClearType() *ScopeUpdateOne {
+	suo.mutation.ClearType()
 	return suo
 }
 
@@ -400,6 +399,7 @@ func (suo *ScopeUpdateOne) Save(ctx context.Context) (*Scope, error) {
 		err  error
 		node *Scope
 	)
+	suo.defaults()
 	if len(suo.hooks) == 0 {
 		node, err = suo.sqlSave(ctx)
 	} else {
@@ -445,6 +445,14 @@ func (suo *ScopeUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (suo *ScopeUpdateOne) defaults() {
+	if _, ok := suo.mutation.UpdateTime(); !ok {
+		v := scope.UpdateDefaultUpdateTime()
+		suo.mutation.SetUpdateTime(v)
+	}
+}
+
 func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -468,18 +476,11 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			}
 		}
 	}
-	if value, ok := suo.mutation.CreatedAt(); ok {
+	if value, ok := suo.mutation.UpdateTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: scope.FieldCreatedAt,
-		})
-	}
-	if value, ok := suo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: scope.FieldUpdatedAt,
+			Column: scope.FieldUpdateTime,
 		})
 	}
 	if value, ok := suo.mutation.Nonce(); ok {
@@ -487,6 +488,19 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Type:   field.TypeUUID,
 			Value:  value,
 			Column: scope.FieldNonce,
+		})
+	}
+	if value, ok := suo.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldType,
+		})
+	}
+	if suo.mutation.TypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: scope.FieldType,
 		})
 	}
 	if value, ok := suo.mutation.ExpiresAt(); ok {

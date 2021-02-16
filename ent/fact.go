@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/open-privacy-vault/opv/ent/fact"
+	"github.com/open-privacy-vault/opv/ent/facttype"
 	"github.com/open-privacy-vault/opv/ent/scope"
 )
 
@@ -18,25 +19,28 @@ type Fact struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// CreateTime holds the value of the "create_time" field.
+	CreateTime time.Time `json:"create_time,omitempty"`
+	// UpdateTime holds the value of the "update_time" field.
+	UpdateTime time.Time `json:"update_time,omitempty"`
 	// EncryptedValue holds the value of the "encrypted_value" field.
 	EncryptedValue []byte `json:"encrypted_value,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FactQuery when eager-loading is set.
-	Edges       FactEdges `json:"edges"`
-	scope_facts *uuid.UUID
+	Edges           FactEdges `json:"edges"`
+	fact_type_facts *uuid.UUID
+	scope_facts     *uuid.UUID
 }
 
 // FactEdges holds the relations/edges for other nodes in the graph.
 type FactEdges struct {
 	// Scope holds the value of the scope edge.
 	Scope *Scope `json:"scope,omitempty"`
+	// FactType holds the value of the fact_type edge.
+	FactType *FactType `json:"fact_type,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ScopeOrErr returns the Scope value or an error if the edge
@@ -53,6 +57,20 @@ func (e FactEdges) ScopeOrErr() (*Scope, error) {
 	return nil, &NotLoadedError{edge: "scope"}
 }
 
+// FactTypeOrErr returns the FactType value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e FactEdges) FactTypeOrErr() (*FactType, error) {
+	if e.loadedTypes[1] {
+		if e.FactType == nil {
+			// The edge fact_type was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: facttype.Label}
+		}
+		return e.FactType, nil
+	}
+	return nil, &NotLoadedError{edge: "fact_type"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Fact) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -60,11 +78,13 @@ func (*Fact) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case fact.FieldEncryptedValue:
 			values[i] = &[]byte{}
-		case fact.FieldCreatedAt, fact.FieldUpdatedAt:
+		case fact.FieldCreateTime, fact.FieldUpdateTime:
 			values[i] = &sql.NullTime{}
 		case fact.FieldID:
 			values[i] = &uuid.UUID{}
-		case fact.ForeignKeys[0]: // scope_facts
+		case fact.ForeignKeys[0]: // fact_type_facts
+			values[i] = &uuid.UUID{}
+		case fact.ForeignKeys[1]: // scope_facts
 			values[i] = &uuid.UUID{}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Fact", columns[i])
@@ -87,17 +107,17 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil {
 				f.ID = *value
 			}
-		case fact.FieldCreatedAt:
+		case fact.FieldCreateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
 			} else if value.Valid {
-				f.CreatedAt = value.Time
+				f.CreateTime = value.Time
 			}
-		case fact.FieldUpdatedAt:
+		case fact.FieldUpdateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+				return fmt.Errorf("unexpected type %T for field update_time", values[i])
 			} else if value.Valid {
-				f.UpdatedAt = value.Time
+				f.UpdateTime = value.Time
 			}
 		case fact.FieldEncryptedValue:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -106,6 +126,12 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 				f.EncryptedValue = *value
 			}
 		case fact.ForeignKeys[0]:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field fact_type_facts", values[i])
+			} else if value != nil {
+				f.fact_type_facts = value
+			}
+		case fact.ForeignKeys[1]:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field scope_facts", values[i])
 			} else if value != nil {
@@ -119,6 +145,11 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 // QueryScope queries the "scope" edge of the Fact entity.
 func (f *Fact) QueryScope() *ScopeQuery {
 	return (&FactClient{config: f.config}).QueryScope(f)
+}
+
+// QueryFactType queries the "fact_type" edge of the Fact entity.
+func (f *Fact) QueryFactType() *FactTypeQuery {
+	return (&FactClient{config: f.config}).QueryFactType(f)
 }
 
 // Update returns a builder for updating this Fact.
@@ -144,10 +175,10 @@ func (f *Fact) String() string {
 	var builder strings.Builder
 	builder.WriteString("Fact(")
 	builder.WriteString(fmt.Sprintf("id=%v", f.ID))
-	builder.WriteString(", created_at=")
-	builder.WriteString(f.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", updated_at=")
-	builder.WriteString(f.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", create_time=")
+	builder.WriteString(f.CreateTime.Format(time.ANSIC))
+	builder.WriteString(", update_time=")
+	builder.WriteString(f.UpdateTime.Format(time.ANSIC))
 	builder.WriteString(", encrypted_value=")
 	builder.WriteString(fmt.Sprintf("%v", f.EncryptedValue))
 	builder.WriteByte(')')
