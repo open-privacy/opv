@@ -16,16 +16,16 @@ test:
 	go test -race -covermode=atomic -coverprofile=coverage.txt ./pkg/...
 
 build:
-	go build -o build/data_plane ./cmd/data_plane
-	go build -o build/control_plane ./cmd/control_plane
-	go build -o build/proxy_plane ./cmd/proxy_plane
+	go build -o build/dataplane ./cmd/dataplane
+	go build -o build/controlplane ./cmd/controlplane
+	go build -o build/proxyplane ./cmd/proxyplane
 
 swag:
-	swag init -d ./cmd/data_plane -o ./cmd/data_plane/docs
-	swag init -d ./cmd/control_plane -o ./cmd/control_plane/docs
+	swag init --parseDependency -d ./cmd/dataplane -o ./cmd/dataplane/docs
+	swag init -d ./cmd/controlplane -o ./cmd/controlplane/docs
 
 run: build
-	$(MAKE) -j _run_data_plane
+	$(MAKE) -j _run_dataplane
 
-_run_data_plane:
-	./build/data_plane
+_run_dataplane:
+	./build/dataplane

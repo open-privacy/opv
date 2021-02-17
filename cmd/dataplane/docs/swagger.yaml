@@ -1,0 +1,64 @@
+basePath: /api/v1
+definitions:
+  apimodel.Scope:
+    properties:
+      create_time:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      nonce:
+        type: string
+      type:
+        type: string
+      update_time:
+        type: string
+    type: object
+  httputil.HTTPError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+host: localhost
+info:
+  contact: {}
+  description: Open Privacy Vault Data Plane API.
+  title: Open Privacy Vault Data Plane API
+  version: "1.0"
+paths:
+  /scopes/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get scope by ID
+      operationId: get-scope-by-id
+      parameters:
+      - description: Scope ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.Scope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Show a scope
+swagger: "2.0"
