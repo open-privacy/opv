@@ -24,17 +24,251 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/scopes/{id}": {
-            "get": {
-                "description": "get scope by ID",
+        "/fact_types": {
+            "post": {
+                "description": "create a fact type",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Fact"
+                ],
+                "summary": "Create a fact type",
+                "operationId": "create-fact-type",
+                "parameters": [
+                    {
+                        "description": "Create Fact Type Parameters",
+                        "name": "createFact",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.CreateFactType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.FactType"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/fact_types/{id}": {
+            "get": {
+                "description": "Show a fact type by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Fact"
+                ],
+                "summary": "Show a fact Type",
+                "operationId": "show-fact-type-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Fact Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.FactType"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/facts": {
+            "post": {
+                "description": "create a fact",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Fact"
+                ],
+                "summary": "Create a fact",
+                "operationId": "create-fact",
+                "parameters": [
+                    {
+                        "description": "Create Fact Parameters",
+                        "name": "createFact",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.CreateFact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.Fact"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/facts/{id}": {
+            "get": {
+                "description": "Show a fact by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Fact"
+                ],
+                "summary": "Show a fact",
+                "operationId": "show-fact-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Fact ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.Fact"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/scopes": {
+            "post": {
+                "description": "Create a scope",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Scope"
+                ],
+                "summary": "Create a scope",
+                "operationId": "create-scope",
+                "parameters": [
+                    {
+                        "description": "Create Scope parameters",
+                        "name": "createScope",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.CreateScope"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.Scope"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/scopes/{id}": {
+            "get": {
+                "description": "Show scope by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Scope"
+                ],
                 "summary": "Show a scope",
-                "operationId": "get-scope-by-id",
+                "operationId": "show-scope-by-id",
                 "parameters": [
                     {
                         "type": "integer",
@@ -54,19 +288,19 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "$ref": "#/definitions/apimodel.HTTPError"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "$ref": "#/definitions/apimodel.HTTPError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "$ref": "#/definitions/apimodel.HTTPError"
                         }
                     }
                 }
@@ -74,6 +308,90 @@ var doc = `{
         }
     },
     "definitions": {
+        "apimodel.CreateFact": {
+            "type": "object",
+            "properties": {
+                "fact_type_slug": {
+                    "type": "string"
+                },
+                "scope_id": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "apimodel.CreateFactType": {
+            "type": "object",
+            "properties": {
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "apimodel.CreateScope": {
+            "type": "object",
+            "properties": {
+                "expires_at": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "apimodel.Fact": {
+            "type": "object",
+            "properties": {
+                "create_time": {
+                    "type": "string"
+                },
+                "encrypted_value": {
+                    "type": "string"
+                },
+                "fact_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "scope_id": {
+                    "type": "string"
+                },
+                "update_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "apimodel.FactType": {
+            "type": "object",
+            "properties": {
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "update_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "apimodel.HTTPError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "apimodel.Scope": {
             "type": "object",
             "properties": {
@@ -86,9 +404,6 @@ var doc = `{
                 "id": {
                     "type": "string"
                 },
-                "nonce": {
-                    "type": "string"
-                },
                 "type": {
                     "type": "string"
                 },
@@ -96,19 +411,18 @@ var doc = `{
                     "type": "string"
                 }
             }
-        },
-        "httputil.HTTPError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "A scope is the unit of encryption isolation unit, usually it represents a person as a scope",
+            "name": "Scope"
+        },
+        {
+            "description": "A fact is the unit of PII information, e.g. email, address, phone number, and etc.",
+            "name": "Fact"
+        }
+    ]
 }`
 
 type swaggerInfo struct {

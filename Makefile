@@ -15,14 +15,14 @@ vendor:
 test:
 	go test -race -covermode=atomic -coverprofile=coverage.txt ./pkg/...
 
-build:
-	go build -o build/dataplane ./cmd/dataplane
-	go build -o build/controlplane ./cmd/controlplane
-	go build -o build/proxyplane ./cmd/proxyplane
-
 swag:
-	swag init --parseDependency -d ./cmd/dataplane -o ./cmd/dataplane/docs
-	swag init -d ./cmd/controlplane -o ./cmd/controlplane/docs
+	swag init --parseDependency -d ./cmd/dataplane    -o ./cmd/dataplane/docs
+	swag init --parseDependency -d ./cmd/controlplane -o ./cmd/controlplane/docs
+
+build: swag
+	go build -o build/dataplane    ./cmd/dataplane
+	go build -o build/controlplane ./cmd/controlplane
+	go build -o build/proxyplane   ./cmd/proxyplane
 
 run: build
 	$(MAKE) -j _run_dataplane

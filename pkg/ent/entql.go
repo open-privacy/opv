@@ -30,7 +30,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			fact.FieldCreateTime:     {Type: field.TypeTime, Column: fact.FieldCreateTime},
 			fact.FieldUpdateTime:     {Type: field.TypeTime, Column: fact.FieldUpdateTime},
-			fact.FieldEncryptedValue: {Type: field.TypeBytes, Column: fact.FieldEncryptedValue},
+			fact.FieldEncryptedValue: {Type: field.TypeString, Column: fact.FieldEncryptedValue},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -46,6 +46,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			facttype.FieldCreateTime: {Type: field.TypeTime, Column: facttype.FieldCreateTime},
 			facttype.FieldUpdateTime: {Type: field.TypeTime, Column: facttype.FieldUpdateTime},
+			facttype.FieldSlug:       {Type: field.TypeString, Column: facttype.FieldSlug},
+			facttype.FieldBuiltin:    {Type: field.TypeBool, Column: facttype.FieldBuiltin},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -172,8 +174,8 @@ func (f *FactFilter) WhereUpdateTime(p entql.TimeP) {
 	f.Where(p.Field(fact.FieldUpdateTime))
 }
 
-// WhereEncryptedValue applies the entql []byte predicate on the encrypted_value field.
-func (f *FactFilter) WhereEncryptedValue(p entql.BytesP) {
+// WhereEncryptedValue applies the entql string predicate on the encrypted_value field.
+func (f *FactFilter) WhereEncryptedValue(p entql.StringP) {
 	f.Where(p.Field(fact.FieldEncryptedValue))
 }
 
@@ -252,6 +254,16 @@ func (f *FactTypeFilter) WhereCreateTime(p entql.TimeP) {
 // WhereUpdateTime applies the entql time.Time predicate on the update_time field.
 func (f *FactTypeFilter) WhereUpdateTime(p entql.TimeP) {
 	f.Where(p.Field(facttype.FieldUpdateTime))
+}
+
+// WhereSlug applies the entql string predicate on the slug field.
+func (f *FactTypeFilter) WhereSlug(p entql.StringP) {
+	f.Where(p.Field(facttype.FieldSlug))
+}
+
+// WhereBuiltin applies the entql bool predicate on the builtin field.
+func (f *FactTypeFilter) WhereBuiltin(p entql.BoolP) {
+	f.Where(p.Field(facttype.FieldBuiltin))
 }
 
 // WhereHasFacts applies a predicate to check if query has an edge facts.

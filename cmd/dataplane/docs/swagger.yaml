@@ -1,5 +1,59 @@
 basePath: /api/v1
 definitions:
+  apimodel.CreateFact:
+    properties:
+      fact_type_slug:
+        type: string
+      scope_id:
+        type: string
+      value:
+        type: string
+    type: object
+  apimodel.CreateFactType:
+    properties:
+      slug:
+        type: string
+    type: object
+  apimodel.CreateScope:
+    properties:
+      expires_at:
+        type: string
+      type:
+        type: string
+    type: object
+  apimodel.Fact:
+    properties:
+      create_time:
+        type: string
+      encrypted_value:
+        type: string
+      fact_type:
+        type: string
+      id:
+        type: string
+      scope_id:
+        type: string
+      update_time:
+        type: string
+    type: object
+  apimodel.FactType:
+    properties:
+      create_time:
+        type: string
+      id:
+        type: string
+      slug:
+        type: string
+      update_time:
+        type: string
+    type: object
+  apimodel.HTTPError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   apimodel.Scope:
     properties:
       create_time:
@@ -8,18 +62,9 @@ definitions:
         type: string
       id:
         type: string
-      nonce:
-        type: string
       type:
         type: string
       update_time:
-        type: string
-    type: object
-  httputil.HTTPError:
-    properties:
-      code:
-        type: integer
-      message:
         type: string
     type: object
 host: localhost
@@ -29,12 +74,165 @@ info:
   title: Open Privacy Vault Data Plane API
   version: "1.0"
 paths:
+  /fact_types:
+    post:
+      consumes:
+      - application/json
+      description: create a fact type
+      operationId: create-fact-type
+      parameters:
+      - description: Create Fact Type Parameters
+        in: body
+        name: createFact
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.CreateFactType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.FactType'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Create a fact type
+      tags:
+      - Fact
+  /fact_types/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Show a fact type by ID
+      operationId: show-fact-type-by-id
+      parameters:
+      - description: Fact Type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.FactType'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Show a fact Type
+      tags:
+      - Fact
+  /facts:
+    post:
+      consumes:
+      - application/json
+      description: create a fact
+      operationId: create-fact
+      parameters:
+      - description: Create Fact Parameters
+        in: body
+        name: createFact
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.CreateFact'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.Fact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Create a fact
+      tags:
+      - Fact
+  /facts/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Show a fact by ID
+      operationId: show-fact-by-id
+      parameters:
+      - description: Fact ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.Fact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Show a fact
+      tags:
+      - Fact
+  /scopes:
+    post:
+      consumes:
+      - application/json
+      description: Create a scope
+      operationId: create-scope
+      parameters:
+      - description: Create Scope parameters
+        in: body
+        name: createScope
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.CreateScope'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.Scope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Create a scope
+      tags:
+      - Scope
   /scopes/{id}:
     get:
       consumes:
       - application/json
-      description: get scope by ID
-      operationId: get-scope-by-id
+      description: Show scope by ID
+      operationId: show-scope-by-id
       parameters:
       - description: Scope ID
         in: path
@@ -51,14 +249,21 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/httputil.HTTPError'
+            $ref: '#/definitions/apimodel.HTTPError'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/httputil.HTTPError'
+            $ref: '#/definitions/apimodel.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/httputil.HTTPError'
+            $ref: '#/definitions/apimodel.HTTPError'
       summary: Show a scope
+      tags:
+      - Scope
 swagger: "2.0"
+tags:
+- description: A scope is the unit of encryption isolation unit, usually it represents a person as a scope
+  name: Scope
+- description: A fact is the unit of PII information, e.g. email, address, phone number, and etc.
+  name: Fact

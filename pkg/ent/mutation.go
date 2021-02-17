@@ -39,7 +39,7 @@ type FactMutation struct {
 	id               *uuid.UUID
 	create_time      *time.Time
 	update_time      *time.Time
-	encrypted_value  *[]byte
+	encrypted_value  *string
 	clearedFields    map[string]struct{}
 	scope            *uuid.UUID
 	clearedscope     bool
@@ -208,12 +208,12 @@ func (m *FactMutation) ResetUpdateTime() {
 }
 
 // SetEncryptedValue sets the "encrypted_value" field.
-func (m *FactMutation) SetEncryptedValue(b []byte) {
-	m.encrypted_value = &b
+func (m *FactMutation) SetEncryptedValue(s string) {
+	m.encrypted_value = &s
 }
 
 // EncryptedValue returns the value of the "encrypted_value" field in the mutation.
-func (m *FactMutation) EncryptedValue() (r []byte, exists bool) {
+func (m *FactMutation) EncryptedValue() (r string, exists bool) {
 	v := m.encrypted_value
 	if v == nil {
 		return
@@ -224,7 +224,7 @@ func (m *FactMutation) EncryptedValue() (r []byte, exists bool) {
 // OldEncryptedValue returns the old "encrypted_value" field's value of the Fact entity.
 // If the Fact object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FactMutation) OldEncryptedValue(ctx context.Context) (v []byte, err error) {
+func (m *FactMutation) OldEncryptedValue(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldEncryptedValue is only allowed on UpdateOne operations")
 	}
@@ -398,7 +398,7 @@ func (m *FactMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdateTime(v)
 		return nil
 	case fact.FieldEncryptedValue:
-		v, ok := value.([]byte)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -568,6 +568,8 @@ type FactTypeMutation struct {
 	id            *uuid.UUID
 	create_time   *time.Time
 	update_time   *time.Time
+	slug          *string
+	builtin       *bool
 	clearedFields map[string]struct{}
 	facts         map[uuid.UUID]struct{}
 	removedfacts  map[uuid.UUID]struct{}
@@ -734,6 +736,78 @@ func (m *FactTypeMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
+// SetSlug sets the "slug" field.
+func (m *FactTypeMutation) SetSlug(s string) {
+	m.slug = &s
+}
+
+// Slug returns the value of the "slug" field in the mutation.
+func (m *FactTypeMutation) Slug() (r string, exists bool) {
+	v := m.slug
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlug returns the old "slug" field's value of the FactType entity.
+// If the FactType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactTypeMutation) OldSlug(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldSlug is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldSlug requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlug: %w", err)
+	}
+	return oldValue.Slug, nil
+}
+
+// ResetSlug resets all changes to the "slug" field.
+func (m *FactTypeMutation) ResetSlug() {
+	m.slug = nil
+}
+
+// SetBuiltin sets the "builtin" field.
+func (m *FactTypeMutation) SetBuiltin(b bool) {
+	m.builtin = &b
+}
+
+// Builtin returns the value of the "builtin" field in the mutation.
+func (m *FactTypeMutation) Builtin() (r bool, exists bool) {
+	v := m.builtin
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBuiltin returns the old "builtin" field's value of the FactType entity.
+// If the FactType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactTypeMutation) OldBuiltin(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldBuiltin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldBuiltin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBuiltin: %w", err)
+	}
+	return oldValue.Builtin, nil
+}
+
+// ResetBuiltin resets all changes to the "builtin" field.
+func (m *FactTypeMutation) ResetBuiltin() {
+	m.builtin = nil
+}
+
 // AddFactIDs adds the "facts" edge to the Fact entity by ids.
 func (m *FactTypeMutation) AddFactIDs(ids ...uuid.UUID) {
 	if m.facts == nil {
@@ -801,12 +875,18 @@ func (m *FactTypeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FactTypeMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 4)
 	if m.create_time != nil {
 		fields = append(fields, facttype.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, facttype.FieldUpdateTime)
+	}
+	if m.slug != nil {
+		fields = append(fields, facttype.FieldSlug)
+	}
+	if m.builtin != nil {
+		fields = append(fields, facttype.FieldBuiltin)
 	}
 	return fields
 }
@@ -820,6 +900,10 @@ func (m *FactTypeMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case facttype.FieldUpdateTime:
 		return m.UpdateTime()
+	case facttype.FieldSlug:
+		return m.Slug()
+	case facttype.FieldBuiltin:
+		return m.Builtin()
 	}
 	return nil, false
 }
@@ -833,6 +917,10 @@ func (m *FactTypeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCreateTime(ctx)
 	case facttype.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
+	case facttype.FieldSlug:
+		return m.OldSlug(ctx)
+	case facttype.FieldBuiltin:
+		return m.OldBuiltin(ctx)
 	}
 	return nil, fmt.Errorf("unknown FactType field %s", name)
 }
@@ -855,6 +943,20 @@ func (m *FactTypeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdateTime(v)
+		return nil
+	case facttype.FieldSlug:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlug(v)
+		return nil
+	case facttype.FieldBuiltin:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBuiltin(v)
 		return nil
 	}
 	return fmt.Errorf("unknown FactType field %s", name)
@@ -910,6 +1012,12 @@ func (m *FactTypeMutation) ResetField(name string) error {
 		return nil
 	case facttype.FieldUpdateTime:
 		m.ResetUpdateTime()
+		return nil
+	case facttype.FieldSlug:
+		m.ResetSlug()
+		return nil
+	case facttype.FieldBuiltin:
+		m.ResetBuiltin()
 		return nil
 	}
 	return fmt.Errorf("unknown FactType field %s", name)

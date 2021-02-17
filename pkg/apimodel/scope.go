@@ -6,12 +6,16 @@ import (
 	"github.com/google/uuid"
 )
 
-type Scope struct {
-	ID    uuid.UUID `json:"id,omitempty"`
-	Type  string    `json:"type,omitempty"`
-	Nonce uuid.UUID `json:"nonce,omitempty"`
+type CreateScope struct {
+	Type      string     `json:"type"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
+}
 
-	CreateTime time.Time  `json:"create_time,omitempty"`
-	UpdateTime time.Time  `json:"update_time,omitempty"`
+type Scope struct {
+	ID   uuid.UUID `json:"id"`
+	Type string    `json:"type"`
+
+	CreateTime time.Time  `json:"create_time"`
+	UpdateTime time.Time  `json:"update_time"`
 	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
 }

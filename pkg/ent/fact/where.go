@@ -109,7 +109,7 @@ func UpdateTime(v time.Time) predicate.Fact {
 }
 
 // EncryptedValue applies equality check predicate on the "encrypted_value" field. It's identical to EncryptedValueEQ.
-func EncryptedValue(v []byte) predicate.Fact {
+func EncryptedValue(v string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEncryptedValue), v))
 	})
@@ -268,21 +268,21 @@ func UpdateTimeLTE(v time.Time) predicate.Fact {
 }
 
 // EncryptedValueEQ applies the EQ predicate on the "encrypted_value" field.
-func EncryptedValueEQ(v []byte) predicate.Fact {
+func EncryptedValueEQ(v string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEncryptedValue), v))
 	})
 }
 
 // EncryptedValueNEQ applies the NEQ predicate on the "encrypted_value" field.
-func EncryptedValueNEQ(v []byte) predicate.Fact {
+func EncryptedValueNEQ(v string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldEncryptedValue), v))
 	})
 }
 
 // EncryptedValueIn applies the In predicate on the "encrypted_value" field.
-func EncryptedValueIn(vs ...[]byte) predicate.Fact {
+func EncryptedValueIn(vs ...string) predicate.Fact {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -299,7 +299,7 @@ func EncryptedValueIn(vs ...[]byte) predicate.Fact {
 }
 
 // EncryptedValueNotIn applies the NotIn predicate on the "encrypted_value" field.
-func EncryptedValueNotIn(vs ...[]byte) predicate.Fact {
+func EncryptedValueNotIn(vs ...string) predicate.Fact {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -316,30 +316,65 @@ func EncryptedValueNotIn(vs ...[]byte) predicate.Fact {
 }
 
 // EncryptedValueGT applies the GT predicate on the "encrypted_value" field.
-func EncryptedValueGT(v []byte) predicate.Fact {
+func EncryptedValueGT(v string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldEncryptedValue), v))
 	})
 }
 
 // EncryptedValueGTE applies the GTE predicate on the "encrypted_value" field.
-func EncryptedValueGTE(v []byte) predicate.Fact {
+func EncryptedValueGTE(v string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldEncryptedValue), v))
 	})
 }
 
 // EncryptedValueLT applies the LT predicate on the "encrypted_value" field.
-func EncryptedValueLT(v []byte) predicate.Fact {
+func EncryptedValueLT(v string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldEncryptedValue), v))
 	})
 }
 
 // EncryptedValueLTE applies the LTE predicate on the "encrypted_value" field.
-func EncryptedValueLTE(v []byte) predicate.Fact {
+func EncryptedValueLTE(v string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldEncryptedValue), v))
+	})
+}
+
+// EncryptedValueContains applies the Contains predicate on the "encrypted_value" field.
+func EncryptedValueContains(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldEncryptedValue), v))
+	})
+}
+
+// EncryptedValueHasPrefix applies the HasPrefix predicate on the "encrypted_value" field.
+func EncryptedValueHasPrefix(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldEncryptedValue), v))
+	})
+}
+
+// EncryptedValueHasSuffix applies the HasSuffix predicate on the "encrypted_value" field.
+func EncryptedValueHasSuffix(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldEncryptedValue), v))
+	})
+}
+
+// EncryptedValueEqualFold applies the EqualFold predicate on the "encrypted_value" field.
+func EncryptedValueEqualFold(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldEncryptedValue), v))
+	})
+}
+
+// EncryptedValueContainsFold applies the ContainsFold predicate on the "encrypted_value" field.
+func EncryptedValueContainsFold(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldEncryptedValue), v))
 	})
 }
 

@@ -30,8 +30,8 @@ func (fu *FactUpdate) Where(ps ...predicate.Fact) *FactUpdate {
 }
 
 // SetEncryptedValue sets the "encrypted_value" field.
-func (fu *FactUpdate) SetEncryptedValue(b []byte) *FactUpdate {
-	fu.mutation.SetEncryptedValue(b)
+func (fu *FactUpdate) SetEncryptedValue(s string) *FactUpdate {
+	fu.mutation.SetEncryptedValue(s)
 	return fu
 }
 
@@ -177,7 +177,7 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := fu.mutation.EncryptedValue(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: fact.FieldEncryptedValue,
 		})
@@ -271,8 +271,8 @@ type FactUpdateOne struct {
 }
 
 // SetEncryptedValue sets the "encrypted_value" field.
-func (fuo *FactUpdateOne) SetEncryptedValue(b []byte) *FactUpdateOne {
-	fuo.mutation.SetEncryptedValue(b)
+func (fuo *FactUpdateOne) SetEncryptedValue(s string) *FactUpdateOne {
+	fuo.mutation.SetEncryptedValue(s)
 	return fuo
 }
 
@@ -423,7 +423,7 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 	}
 	if value, ok := fuo.mutation.EncryptedValue(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: fact.FieldEncryptedValue,
 		})

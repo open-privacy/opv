@@ -15,7 +15,7 @@ type Fact struct {
 // Fields of the Fact.
 func (Fact) Fields() []ent.Field {
 	return []ent.Field{
-		field.Bytes("encrypted_value"),
+		field.String("encrypted_value"),
 	}
 }
 

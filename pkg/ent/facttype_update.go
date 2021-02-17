@@ -28,6 +28,18 @@ func (ftu *FactTypeUpdate) Where(ps ...predicate.FactType) *FactTypeUpdate {
 	return ftu
 }
 
+// SetSlug sets the "slug" field.
+func (ftu *FactTypeUpdate) SetSlug(s string) *FactTypeUpdate {
+	ftu.mutation.SetSlug(s)
+	return ftu
+}
+
+// SetBuiltin sets the "builtin" field.
+func (ftu *FactTypeUpdate) SetBuiltin(b bool) *FactTypeUpdate {
+	ftu.mutation.SetBuiltin(b)
+	return ftu
+}
+
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
 func (ftu *FactTypeUpdate) AddFactIDs(ids ...uuid.UUID) *FactTypeUpdate {
 	ftu.mutation.AddFactIDs(ids...)
@@ -154,6 +166,20 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: facttype.FieldUpdateTime,
 		})
 	}
+	if value, ok := ftu.mutation.Slug(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: facttype.FieldSlug,
+		})
+	}
+	if value, ok := ftu.mutation.Builtin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: facttype.FieldBuiltin,
+		})
+	}
 	if ftu.mutation.FactsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -224,6 +250,18 @@ type FactTypeUpdateOne struct {
 	config
 	hooks    []Hook
 	mutation *FactTypeMutation
+}
+
+// SetSlug sets the "slug" field.
+func (ftuo *FactTypeUpdateOne) SetSlug(s string) *FactTypeUpdateOne {
+	ftuo.mutation.SetSlug(s)
+	return ftuo
+}
+
+// SetBuiltin sets the "builtin" field.
+func (ftuo *FactTypeUpdateOne) SetBuiltin(b bool) *FactTypeUpdateOne {
+	ftuo.mutation.SetBuiltin(b)
+	return ftuo
 }
 
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
@@ -355,6 +393,20 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: facttype.FieldUpdateTime,
+		})
+	}
+	if value, ok := ftuo.mutation.Slug(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: facttype.FieldSlug,
+		})
+	}
+	if value, ok := ftuo.mutation.Builtin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: facttype.FieldBuiltin,
 		})
 	}
 	if ftuo.mutation.FactsCleared() {

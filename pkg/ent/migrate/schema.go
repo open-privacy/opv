@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
-		{Name: "encrypted_value", Type: field.TypeBytes},
+		{Name: "encrypted_value", Type: field.TypeString},
 		{Name: "fact_type_facts", Type: field.TypeUUID, Nullable: true},
 		{Name: "scope_facts", Type: field.TypeUUID, Nullable: true},
 	}
@@ -44,6 +44,8 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "slug", Type: field.TypeString},
+		{Name: "builtin", Type: field.TypeBool},
 	}
 	// FactTypesTable holds the schema information for the "fact_types" table.
 	FactTypesTable = &schema.Table{

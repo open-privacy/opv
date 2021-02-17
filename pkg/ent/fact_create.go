@@ -52,8 +52,8 @@ func (fc *FactCreate) SetNillableUpdateTime(t *time.Time) *FactCreate {
 }
 
 // SetEncryptedValue sets the "encrypted_value" field.
-func (fc *FactCreate) SetEncryptedValue(b []byte) *FactCreate {
-	fc.mutation.SetEncryptedValue(b)
+func (fc *FactCreate) SetEncryptedValue(s string) *FactCreate {
+	fc.mutation.SetEncryptedValue(s)
 	return fc
 }
 
@@ -225,7 +225,7 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := fc.mutation.EncryptedValue(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: fact.FieldEncryptedValue,
 		})

@@ -50,6 +50,18 @@ func (ftc *FactTypeCreate) SetNillableUpdateTime(t *time.Time) *FactTypeCreate {
 	return ftc
 }
 
+// SetSlug sets the "slug" field.
+func (ftc *FactTypeCreate) SetSlug(s string) *FactTypeCreate {
+	ftc.mutation.SetSlug(s)
+	return ftc
+}
+
+// SetBuiltin sets the "builtin" field.
+func (ftc *FactTypeCreate) SetBuiltin(b bool) *FactTypeCreate {
+	ftc.mutation.SetBuiltin(b)
+	return ftc
+}
+
 // SetID sets the "id" field.
 func (ftc *FactTypeCreate) SetID(u uuid.UUID) *FactTypeCreate {
 	ftc.mutation.SetID(u)
@@ -145,6 +157,12 @@ func (ftc *FactTypeCreate) check() error {
 	if _, ok := ftc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New("ent: missing required field \"update_time\"")}
 	}
+	if _, ok := ftc.mutation.Slug(); !ok {
+		return &ValidationError{Name: "slug", err: errors.New("ent: missing required field \"slug\"")}
+	}
+	if _, ok := ftc.mutation.Builtin(); !ok {
+		return &ValidationError{Name: "builtin", err: errors.New("ent: missing required field \"builtin\"")}
+	}
 	return nil
 }
 
@@ -189,6 +207,22 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 			Column: facttype.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := ftc.mutation.Slug(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: facttype.FieldSlug,
+		})
+		_node.Slug = value
+	}
+	if value, ok := ftc.mutation.Builtin(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: facttype.FieldBuiltin,
+		})
+		_node.Builtin = value
 	}
 	if nodes := ftc.mutation.FactsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

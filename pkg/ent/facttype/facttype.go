@@ -17,6 +17,10 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldSlug holds the string denoting the slug field in the database.
+	FieldSlug = "slug"
+	// FieldBuiltin holds the string denoting the builtin field in the database.
+	FieldBuiltin = "builtin"
 
 	// EdgeFacts holds the string denoting the facts edge name in mutations.
 	EdgeFacts = "facts"
@@ -37,6 +41,8 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldSlug,
+	FieldBuiltin,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

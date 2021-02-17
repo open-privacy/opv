@@ -5,12 +5,17 @@ import (
 	"github.com/open-privacy/opv/pkg/dataplane"
 )
 
-// @title Open Privacy Vault Data Plane API
-// @version 1.0
-// @description Open Privacy Vault Data Plane API.
-
-// @host localhost
+// @Title Open Privacy Vault Data Plane API
+// @Version 1.0
+// @Description Open Privacy Vault Data Plane API.
+// @Host localhost
 // @BasePath /api/v1
+
+// @Tag.name Scope
+// @Tag.description A scope is the unit of encryption isolation unit, usually it represents a person as a scope
+
+// @Tag.name Fact
+// @Tag.description A fact is the unit of PII information, e.g. email, address, phone number, and etc.
 func main() {
 	dataplane.StartServer()
 }

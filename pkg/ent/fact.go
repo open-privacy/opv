@@ -24,7 +24,7 @@ type Fact struct {
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// EncryptedValue holds the value of the "encrypted_value" field.
-	EncryptedValue []byte `json:"encrypted_value,omitempty"`
+	EncryptedValue string `json:"encrypted_value,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FactQuery when eager-loading is set.
 	Edges           FactEdges `json:"edges"`
@@ -77,7 +77,7 @@ func (*Fact) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case fact.FieldEncryptedValue:
-			values[i] = &[]byte{}
+			values[i] = &sql.NullString{}
 		case fact.FieldCreateTime, fact.FieldUpdateTime:
 			values[i] = &sql.NullTime{}
 		case fact.FieldID:
@@ -120,10 +120,10 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 				f.UpdateTime = value.Time
 			}
 		case fact.FieldEncryptedValue:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field encrypted_value", values[i])
-			} else if value != nil {
-				f.EncryptedValue = *value
+			} else if value.Valid {
+				f.EncryptedValue = value.String
 			}
 		case fact.ForeignKeys[0]:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -180,7 +180,7 @@ func (f *Fact) String() string {
 	builder.WriteString(", update_time=")
 	builder.WriteString(f.UpdateTime.Format(time.ANSIC))
 	builder.WriteString(", encrypted_value=")
-	builder.WriteString(fmt.Sprintf("%v", f.EncryptedValue))
+	builder.WriteString(f.EncryptedValue)
 	builder.WriteByte(')')
 	return builder.String()
 }

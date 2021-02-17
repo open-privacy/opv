@@ -3,6 +3,7 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
 )
 
@@ -13,7 +14,10 @@ type FactType struct {
 
 // Fields of the FactType.
 func (FactType) Fields() []ent.Field {
-	return nil
+	return []ent.Field{
+		field.String("slug"),
+		field.Bool("builtin"),
+	}
 }
 
 // Edges of the FactType.
