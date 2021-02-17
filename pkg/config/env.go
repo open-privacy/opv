@@ -1,6 +1,6 @@
 package config
 
-import "github.com/caarlos0/env"
+import "github.com/caarlos0/env/v6"
 
 func init() {
 	if err := env.Parse(&ENV); err != nil {
