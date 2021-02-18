@@ -1,0 +1,20 @@
+package config
+
+import "github.com/caarlos0/env/v6"
+
+func init() {
+	if err := env.Parse(&ENV); err != nil {
+		panic(err)
+	}
+}
+
+// ENV is the whole configuration of the app
+var ENV = struct {
+	Host string `env:"OPV_HOST" envDefault:"localhost"`
+
+	ControlPlanePort int `env:"OPV_CONTROL_PLANE_PORT" envDefault:"28001"`
+	ProxyPlanePort   int `env:"OPV_PROXY_PLANE_PORT" envDefault:"28002"`
+
+	DataPlanePort        int  `env:"OPV_DATA_PLANE_PORT" envDefault:"28000"`
+	DataPlaneCORSEnabled bool `env:"OPV_DATA_PLANE_CORS_ENABLED" envDefault:"true"`
+}{}
