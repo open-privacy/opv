@@ -4,8 +4,6 @@ package facttype
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -62,6 +60,8 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// DefaultBuiltin holds the default value on creation for the "builtin" field.
+	DefaultBuiltin bool
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
+	DefaultID func() string
 )

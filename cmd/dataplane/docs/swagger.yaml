@@ -4,7 +4,7 @@ definitions:
     properties:
       fact_type_slug:
         type: string
-      scope_id:
+      scope_custom_id:
         type: string
       value:
         type: string
@@ -25,15 +25,15 @@ definitions:
     properties:
       create_time:
         type: string
-      encrypted_value:
-        type: string
-      fact_type:
+      fact_type_slug:
         type: string
       id:
         type: string
-      scope_id:
+      scope_custom_id:
         type: string
       update_time:
+        type: string
+      value:
         type: string
     type: object
   apimodel.FactType:
@@ -116,7 +116,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -177,7 +177,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -238,7 +238,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:

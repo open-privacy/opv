@@ -22,7 +22,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   fact.Table,
 			Columns: fact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: fact.FieldID,
 			},
 		},
@@ -30,6 +30,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			fact.FieldCreateTime:     {Type: field.TypeTime, Column: fact.FieldCreateTime},
 			fact.FieldUpdateTime:     {Type: field.TypeTime, Column: fact.FieldUpdateTime},
+			fact.FieldHashedValue:    {Type: field.TypeString, Column: fact.FieldHashedValue},
 			fact.FieldEncryptedValue: {Type: field.TypeString, Column: fact.FieldEncryptedValue},
 		},
 	}
@@ -38,7 +39,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   facttype.Table,
 			Columns: facttype.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: facttype.FieldID,
 			},
 		},
@@ -55,7 +56,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   scope.Table,
 			Columns: scope.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: scope.FieldID,
 			},
 		},
@@ -63,9 +64,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			scope.FieldCreateTime: {Type: field.TypeTime, Column: scope.FieldCreateTime},
 			scope.FieldUpdateTime: {Type: field.TypeTime, Column: scope.FieldUpdateTime},
+			scope.FieldCustomID:   {Type: field.TypeString, Column: scope.FieldCustomID},
 			scope.FieldNonce:      {Type: field.TypeUUID, Column: scope.FieldNonce},
-			scope.FieldType:       {Type: field.TypeString, Column: scope.FieldType},
-			scope.FieldExpiresAt:  {Type: field.TypeTime, Column: scope.FieldExpiresAt},
 		},
 	}
 	graph.MustAddE(
@@ -159,8 +159,8 @@ func (f *FactFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *FactFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql string predicate on the id field.
+func (f *FactFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(fact.FieldID))
 }
 
@@ -172,6 +172,11 @@ func (f *FactFilter) WhereCreateTime(p entql.TimeP) {
 // WhereUpdateTime applies the entql time.Time predicate on the update_time field.
 func (f *FactFilter) WhereUpdateTime(p entql.TimeP) {
 	f.Where(p.Field(fact.FieldUpdateTime))
+}
+
+// WhereHashedValue applies the entql string predicate on the hashed_value field.
+func (f *FactFilter) WhereHashedValue(p entql.StringP) {
+	f.Where(p.Field(fact.FieldHashedValue))
 }
 
 // WhereEncryptedValue applies the entql string predicate on the encrypted_value field.
@@ -241,8 +246,8 @@ func (f *FactTypeFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *FactTypeFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql string predicate on the id field.
+func (f *FactTypeFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(facttype.FieldID))
 }
 
@@ -314,8 +319,8 @@ func (f *ScopeFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *ScopeFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql string predicate on the id field.
+func (f *ScopeFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(scope.FieldID))
 }
 
@@ -329,19 +334,14 @@ func (f *ScopeFilter) WhereUpdateTime(p entql.TimeP) {
 	f.Where(p.Field(scope.FieldUpdateTime))
 }
 
+// WhereCustomID applies the entql string predicate on the custom_id field.
+func (f *ScopeFilter) WhereCustomID(p entql.StringP) {
+	f.Where(p.Field(scope.FieldCustomID))
+}
+
 // WhereNonce applies the entql [16]byte predicate on the nonce field.
 func (f *ScopeFilter) WhereNonce(p entql.ValueP) {
 	f.Where(p.Field(scope.FieldNonce))
-}
-
-// WhereType applies the entql string predicate on the type field.
-func (f *ScopeFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(scope.FieldType))
-}
-
-// WhereExpiresAt applies the entql time.Time predicate on the expires_at field.
-func (f *ScopeFilter) WhereExpiresAt(p entql.TimeP) {
-	f.Where(p.Field(scope.FieldExpiresAt))
 }
 
 // WhereHasFacts applies a predicate to check if query has an edge facts.

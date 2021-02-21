@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/scope"
@@ -51,6 +50,12 @@ func (fc *FactCreate) SetNillableUpdateTime(t *time.Time) *FactCreate {
 	return fc
 }
 
+// SetHashedValue sets the "hashed_value" field.
+func (fc *FactCreate) SetHashedValue(s string) *FactCreate {
+	fc.mutation.SetHashedValue(s)
+	return fc
+}
+
 // SetEncryptedValue sets the "encrypted_value" field.
 func (fc *FactCreate) SetEncryptedValue(s string) *FactCreate {
 	fc.mutation.SetEncryptedValue(s)
@@ -58,19 +63,27 @@ func (fc *FactCreate) SetEncryptedValue(s string) *FactCreate {
 }
 
 // SetID sets the "id" field.
-func (fc *FactCreate) SetID(u uuid.UUID) *FactCreate {
-	fc.mutation.SetID(u)
+func (fc *FactCreate) SetID(s string) *FactCreate {
+	fc.mutation.SetID(s)
+	return fc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (fc *FactCreate) SetNillableID(s *string) *FactCreate {
+	if s != nil {
+		fc.SetID(*s)
+	}
 	return fc
 }
 
 // SetScopeID sets the "scope" edge to the Scope entity by ID.
-func (fc *FactCreate) SetScopeID(id uuid.UUID) *FactCreate {
+func (fc *FactCreate) SetScopeID(id string) *FactCreate {
 	fc.mutation.SetScopeID(id)
 	return fc
 }
 
 // SetNillableScopeID sets the "scope" edge to the Scope entity by ID if the given value is not nil.
-func (fc *FactCreate) SetNillableScopeID(id *uuid.UUID) *FactCreate {
+func (fc *FactCreate) SetNillableScopeID(id *string) *FactCreate {
 	if id != nil {
 		fc = fc.SetScopeID(*id)
 	}
@@ -83,13 +96,13 @@ func (fc *FactCreate) SetScope(s *Scope) *FactCreate {
 }
 
 // SetFactTypeID sets the "fact_type" edge to the FactType entity by ID.
-func (fc *FactCreate) SetFactTypeID(id uuid.UUID) *FactCreate {
+func (fc *FactCreate) SetFactTypeID(id string) *FactCreate {
 	fc.mutation.SetFactTypeID(id)
 	return fc
 }
 
 // SetNillableFactTypeID sets the "fact_type" edge to the FactType entity by ID if the given value is not nil.
-func (fc *FactCreate) SetNillableFactTypeID(id *uuid.UUID) *FactCreate {
+func (fc *FactCreate) SetNillableFactTypeID(id *string) *FactCreate {
 	if id != nil {
 		fc = fc.SetFactTypeID(*id)
 	}
@@ -175,6 +188,9 @@ func (fc *FactCreate) check() error {
 	if _, ok := fc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New("ent: missing required field \"update_time\"")}
 	}
+	if _, ok := fc.mutation.HashedValue(); !ok {
+		return &ValidationError{Name: "hashed_value", err: errors.New("ent: missing required field \"hashed_value\"")}
+	}
 	if _, ok := fc.mutation.EncryptedValue(); !ok {
 		return &ValidationError{Name: "encrypted_value", err: errors.New("ent: missing required field \"encrypted_value\"")}
 	}
@@ -198,7 +214,7 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: fact.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: fact.FieldID,
 			},
 		}
@@ -223,6 +239,14 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdateTime = value
 	}
+	if value, ok := fc.mutation.HashedValue(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fact.FieldHashedValue,
+		})
+		_node.HashedValue = value
+	}
 	if value, ok := fc.mutation.EncryptedValue(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -240,7 +264,7 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: scope.FieldID,
 				},
 			},
@@ -259,7 +283,7 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: facttype.FieldID,
 				},
 			},

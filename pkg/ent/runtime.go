@@ -36,7 +36,7 @@ func init() {
 	// factDescID is the schema descriptor for id field.
 	factDescID := factMixinFields0[0].Descriptor()
 	// fact.DefaultID holds the default value on creation for the id field.
-	fact.DefaultID = factDescID.Default.(func() uuid.UUID)
+	fact.DefaultID = factDescID.Default.(func() string)
 	facttypeMixin := schema.FactType{}.Mixin()
 	facttypeMixinFields0 := facttypeMixin[0].Fields()
 	_ = facttypeMixinFields0
@@ -54,10 +54,14 @@ func init() {
 	facttype.DefaultUpdateTime = facttypeDescUpdateTime.Default.(func() time.Time)
 	// facttype.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	facttype.UpdateDefaultUpdateTime = facttypeDescUpdateTime.UpdateDefault.(func() time.Time)
+	// facttypeDescBuiltin is the schema descriptor for builtin field.
+	facttypeDescBuiltin := facttypeFields[1].Descriptor()
+	// facttype.DefaultBuiltin holds the default value on creation for the builtin field.
+	facttype.DefaultBuiltin = facttypeDescBuiltin.Default.(bool)
 	// facttypeDescID is the schema descriptor for id field.
 	facttypeDescID := facttypeMixinFields0[0].Descriptor()
 	// facttype.DefaultID holds the default value on creation for the id field.
-	facttype.DefaultID = facttypeDescID.Default.(func() uuid.UUID)
+	facttype.DefaultID = facttypeDescID.Default.(func() string)
 	scopeMixin := schema.Scope{}.Mixin()
 	scopeMixinFields0 := scopeMixin[0].Fields()
 	_ = scopeMixinFields0
@@ -76,11 +80,11 @@ func init() {
 	// scope.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	scope.UpdateDefaultUpdateTime = scopeDescUpdateTime.UpdateDefault.(func() time.Time)
 	// scopeDescNonce is the schema descriptor for nonce field.
-	scopeDescNonce := scopeFields[0].Descriptor()
+	scopeDescNonce := scopeFields[1].Descriptor()
 	// scope.DefaultNonce holds the default value on creation for the nonce field.
 	scope.DefaultNonce = scopeDescNonce.Default.(func() uuid.UUID)
 	// scopeDescID is the schema descriptor for id field.
 	scopeDescID := scopeMixinFields0[0].Descriptor()
 	// scope.DefaultID holds the default value on creation for the id field.
-	scope.DefaultID = scopeDescID.Default.(func() uuid.UUID)
+	scope.DefaultID = scopeDescID.Default.(func() string)
 }

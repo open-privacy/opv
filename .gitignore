@@ -14,3 +14,4 @@
 vendor/
 build/
 coverage.txt
+_opv.sqlite

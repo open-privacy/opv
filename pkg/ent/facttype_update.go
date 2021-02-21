@@ -9,7 +9,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
@@ -40,15 +39,23 @@ func (ftu *FactTypeUpdate) SetBuiltin(b bool) *FactTypeUpdate {
 	return ftu
 }
 
+// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
+func (ftu *FactTypeUpdate) SetNillableBuiltin(b *bool) *FactTypeUpdate {
+	if b != nil {
+		ftu.SetBuiltin(*b)
+	}
+	return ftu
+}
+
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
-func (ftu *FactTypeUpdate) AddFactIDs(ids ...uuid.UUID) *FactTypeUpdate {
+func (ftu *FactTypeUpdate) AddFactIDs(ids ...string) *FactTypeUpdate {
 	ftu.mutation.AddFactIDs(ids...)
 	return ftu
 }
 
 // AddFacts adds the "facts" edges to the Fact entity.
 func (ftu *FactTypeUpdate) AddFacts(f ...*Fact) *FactTypeUpdate {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -67,14 +74,14 @@ func (ftu *FactTypeUpdate) ClearFacts() *FactTypeUpdate {
 }
 
 // RemoveFactIDs removes the "facts" edge to Fact entities by IDs.
-func (ftu *FactTypeUpdate) RemoveFactIDs(ids ...uuid.UUID) *FactTypeUpdate {
+func (ftu *FactTypeUpdate) RemoveFactIDs(ids ...string) *FactTypeUpdate {
 	ftu.mutation.RemoveFactIDs(ids...)
 	return ftu
 }
 
 // RemoveFacts removes "facts" edges to Fact entities.
 func (ftu *FactTypeUpdate) RemoveFacts(f ...*Fact) *FactTypeUpdate {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -147,7 +154,7 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   facttype.Table,
 			Columns: facttype.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: facttype.FieldID,
 			},
 		},
@@ -189,7 +196,7 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -205,7 +212,7 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -224,7 +231,7 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -264,15 +271,23 @@ func (ftuo *FactTypeUpdateOne) SetBuiltin(b bool) *FactTypeUpdateOne {
 	return ftuo
 }
 
+// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
+func (ftuo *FactTypeUpdateOne) SetNillableBuiltin(b *bool) *FactTypeUpdateOne {
+	if b != nil {
+		ftuo.SetBuiltin(*b)
+	}
+	return ftuo
+}
+
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
-func (ftuo *FactTypeUpdateOne) AddFactIDs(ids ...uuid.UUID) *FactTypeUpdateOne {
+func (ftuo *FactTypeUpdateOne) AddFactIDs(ids ...string) *FactTypeUpdateOne {
 	ftuo.mutation.AddFactIDs(ids...)
 	return ftuo
 }
 
 // AddFacts adds the "facts" edges to the Fact entity.
 func (ftuo *FactTypeUpdateOne) AddFacts(f ...*Fact) *FactTypeUpdateOne {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -291,14 +306,14 @@ func (ftuo *FactTypeUpdateOne) ClearFacts() *FactTypeUpdateOne {
 }
 
 // RemoveFactIDs removes the "facts" edge to Fact entities by IDs.
-func (ftuo *FactTypeUpdateOne) RemoveFactIDs(ids ...uuid.UUID) *FactTypeUpdateOne {
+func (ftuo *FactTypeUpdateOne) RemoveFactIDs(ids ...string) *FactTypeUpdateOne {
 	ftuo.mutation.RemoveFactIDs(ids...)
 	return ftuo
 }
 
 // RemoveFacts removes "facts" edges to Fact entities.
 func (ftuo *FactTypeUpdateOne) RemoveFacts(f ...*Fact) *FactTypeUpdateOne {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -371,7 +386,7 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Table:   facttype.Table,
 			Columns: facttype.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: facttype.FieldID,
 			},
 		},
@@ -418,7 +433,7 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -434,7 +449,7 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -453,7 +468,7 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},

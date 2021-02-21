@@ -19,7 +19,7 @@ swag:
 	swag init --parseDependency -d ./cmd/dataplane    -o ./cmd/dataplane/docs
 	swag init --parseDependency -d ./cmd/controlplane -o ./cmd/controlplane/docs
 
-build: swag
+build:
 	go build -o build/dataplane    ./cmd/dataplane
 	go build -o build/controlplane ./cmd/controlplane
 	go build -o build/proxyplane   ./cmd/proxyplane

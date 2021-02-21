@@ -2,8 +2,6 @@ package apimodel
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type CreateScope struct {
@@ -12,8 +10,8 @@ type CreateScope struct {
 }
 
 type Scope struct {
-	ID   uuid.UUID `json:"id"`
-	Type string    `json:"type"`
+	ID   string `json:"id"`
+	Type string `json:"type"`
 
 	CreateTime time.Time  `json:"create_time"`
 	UpdateTime time.Time  `json:"update_time"`

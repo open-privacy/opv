@@ -17,12 +17,10 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldCustomID holds the string denoting the custom_id field in the database.
+	FieldCustomID = "custom_id"
 	// FieldNonce holds the string denoting the nonce field in the database.
 	FieldNonce = "nonce"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
-	// FieldExpiresAt holds the string denoting the expires_at field in the database.
-	FieldExpiresAt = "expires_at"
 
 	// EdgeFacts holds the string denoting the facts edge name in mutations.
 	EdgeFacts = "facts"
@@ -43,9 +41,8 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldCustomID,
 	FieldNonce,
-	FieldType,
-	FieldExpiresAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -68,5 +65,5 @@ var (
 	// DefaultNonce holds the default value on creation for the "nonce" field.
 	DefaultNonce func() uuid.UUID
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
+	DefaultID func() string
 )

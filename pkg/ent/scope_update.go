@@ -5,7 +5,6 @@ package ent
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -29,61 +28,27 @@ func (su *ScopeUpdate) Where(ps ...predicate.Scope) *ScopeUpdate {
 	return su
 }
 
+// SetCustomID sets the "custom_id" field.
+func (su *ScopeUpdate) SetCustomID(s string) *ScopeUpdate {
+	su.mutation.SetCustomID(s)
+	return su
+}
+
 // SetNonce sets the "nonce" field.
 func (su *ScopeUpdate) SetNonce(u uuid.UUID) *ScopeUpdate {
 	su.mutation.SetNonce(u)
 	return su
 }
 
-// SetType sets the "type" field.
-func (su *ScopeUpdate) SetType(s string) *ScopeUpdate {
-	su.mutation.SetType(s)
-	return su
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (su *ScopeUpdate) SetNillableType(s *string) *ScopeUpdate {
-	if s != nil {
-		su.SetType(*s)
-	}
-	return su
-}
-
-// ClearType clears the value of the "type" field.
-func (su *ScopeUpdate) ClearType() *ScopeUpdate {
-	su.mutation.ClearType()
-	return su
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (su *ScopeUpdate) SetExpiresAt(t time.Time) *ScopeUpdate {
-	su.mutation.SetExpiresAt(t)
-	return su
-}
-
-// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (su *ScopeUpdate) SetNillableExpiresAt(t *time.Time) *ScopeUpdate {
-	if t != nil {
-		su.SetExpiresAt(*t)
-	}
-	return su
-}
-
-// ClearExpiresAt clears the value of the "expires_at" field.
-func (su *ScopeUpdate) ClearExpiresAt() *ScopeUpdate {
-	su.mutation.ClearExpiresAt()
-	return su
-}
-
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
-func (su *ScopeUpdate) AddFactIDs(ids ...uuid.UUID) *ScopeUpdate {
+func (su *ScopeUpdate) AddFactIDs(ids ...string) *ScopeUpdate {
 	su.mutation.AddFactIDs(ids...)
 	return su
 }
 
 // AddFacts adds the "facts" edges to the Fact entity.
 func (su *ScopeUpdate) AddFacts(f ...*Fact) *ScopeUpdate {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -102,14 +67,14 @@ func (su *ScopeUpdate) ClearFacts() *ScopeUpdate {
 }
 
 // RemoveFactIDs removes the "facts" edge to Fact entities by IDs.
-func (su *ScopeUpdate) RemoveFactIDs(ids ...uuid.UUID) *ScopeUpdate {
+func (su *ScopeUpdate) RemoveFactIDs(ids ...string) *ScopeUpdate {
 	su.mutation.RemoveFactIDs(ids...)
 	return su
 }
 
 // RemoveFacts removes "facts" edges to Fact entities.
 func (su *ScopeUpdate) RemoveFacts(f ...*Fact) *ScopeUpdate {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -182,7 +147,7 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   scope.Table,
 			Columns: scope.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: scope.FieldID,
 			},
 		},
@@ -201,37 +166,18 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: scope.FieldUpdateTime,
 		})
 	}
+	if value, ok := su.mutation.CustomID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldCustomID,
+		})
+	}
 	if value, ok := su.mutation.Nonce(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Value:  value,
 			Column: scope.FieldNonce,
-		})
-	}
-	if value, ok := su.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: scope.FieldType,
-		})
-	}
-	if su.mutation.TypeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: scope.FieldType,
-		})
-	}
-	if value, ok := su.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: scope.FieldExpiresAt,
-		})
-	}
-	if su.mutation.ExpiresAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: scope.FieldExpiresAt,
 		})
 	}
 	if su.mutation.FactsCleared() {
@@ -243,7 +189,7 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -259,7 +205,7 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -278,7 +224,7 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -306,61 +252,27 @@ type ScopeUpdateOne struct {
 	mutation *ScopeMutation
 }
 
+// SetCustomID sets the "custom_id" field.
+func (suo *ScopeUpdateOne) SetCustomID(s string) *ScopeUpdateOne {
+	suo.mutation.SetCustomID(s)
+	return suo
+}
+
 // SetNonce sets the "nonce" field.
 func (suo *ScopeUpdateOne) SetNonce(u uuid.UUID) *ScopeUpdateOne {
 	suo.mutation.SetNonce(u)
 	return suo
 }
 
-// SetType sets the "type" field.
-func (suo *ScopeUpdateOne) SetType(s string) *ScopeUpdateOne {
-	suo.mutation.SetType(s)
-	return suo
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (suo *ScopeUpdateOne) SetNillableType(s *string) *ScopeUpdateOne {
-	if s != nil {
-		suo.SetType(*s)
-	}
-	return suo
-}
-
-// ClearType clears the value of the "type" field.
-func (suo *ScopeUpdateOne) ClearType() *ScopeUpdateOne {
-	suo.mutation.ClearType()
-	return suo
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (suo *ScopeUpdateOne) SetExpiresAt(t time.Time) *ScopeUpdateOne {
-	suo.mutation.SetExpiresAt(t)
-	return suo
-}
-
-// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (suo *ScopeUpdateOne) SetNillableExpiresAt(t *time.Time) *ScopeUpdateOne {
-	if t != nil {
-		suo.SetExpiresAt(*t)
-	}
-	return suo
-}
-
-// ClearExpiresAt clears the value of the "expires_at" field.
-func (suo *ScopeUpdateOne) ClearExpiresAt() *ScopeUpdateOne {
-	suo.mutation.ClearExpiresAt()
-	return suo
-}
-
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
-func (suo *ScopeUpdateOne) AddFactIDs(ids ...uuid.UUID) *ScopeUpdateOne {
+func (suo *ScopeUpdateOne) AddFactIDs(ids ...string) *ScopeUpdateOne {
 	suo.mutation.AddFactIDs(ids...)
 	return suo
 }
 
 // AddFacts adds the "facts" edges to the Fact entity.
 func (suo *ScopeUpdateOne) AddFacts(f ...*Fact) *ScopeUpdateOne {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -379,14 +291,14 @@ func (suo *ScopeUpdateOne) ClearFacts() *ScopeUpdateOne {
 }
 
 // RemoveFactIDs removes the "facts" edge to Fact entities by IDs.
-func (suo *ScopeUpdateOne) RemoveFactIDs(ids ...uuid.UUID) *ScopeUpdateOne {
+func (suo *ScopeUpdateOne) RemoveFactIDs(ids ...string) *ScopeUpdateOne {
 	suo.mutation.RemoveFactIDs(ids...)
 	return suo
 }
 
 // RemoveFacts removes "facts" edges to Fact entities.
 func (suo *ScopeUpdateOne) RemoveFacts(f ...*Fact) *ScopeUpdateOne {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -459,7 +371,7 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Table:   scope.Table,
 			Columns: scope.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: scope.FieldID,
 			},
 		},
@@ -483,37 +395,18 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Column: scope.FieldUpdateTime,
 		})
 	}
+	if value, ok := suo.mutation.CustomID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldCustomID,
+		})
+	}
 	if value, ok := suo.mutation.Nonce(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Value:  value,
 			Column: scope.FieldNonce,
-		})
-	}
-	if value, ok := suo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: scope.FieldType,
-		})
-	}
-	if suo.mutation.TypeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: scope.FieldType,
-		})
-	}
-	if value, ok := suo.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: scope.FieldExpiresAt,
-		})
-	}
-	if suo.mutation.ExpiresAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: scope.FieldExpiresAt,
 		})
 	}
 	if suo.mutation.FactsCleared() {
@@ -525,7 +418,7 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -541,7 +434,7 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},
@@ -560,7 +453,7 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},

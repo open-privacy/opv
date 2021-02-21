@@ -50,55 +50,41 @@ func (sc *ScopeCreate) SetNillableUpdateTime(t *time.Time) *ScopeCreate {
 	return sc
 }
 
+// SetCustomID sets the "custom_id" field.
+func (sc *ScopeCreate) SetCustomID(s string) *ScopeCreate {
+	sc.mutation.SetCustomID(s)
+	return sc
+}
+
 // SetNonce sets the "nonce" field.
 func (sc *ScopeCreate) SetNonce(u uuid.UUID) *ScopeCreate {
 	sc.mutation.SetNonce(u)
 	return sc
 }
 
-// SetType sets the "type" field.
-func (sc *ScopeCreate) SetType(s string) *ScopeCreate {
-	sc.mutation.SetType(s)
-	return sc
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (sc *ScopeCreate) SetNillableType(s *string) *ScopeCreate {
-	if s != nil {
-		sc.SetType(*s)
-	}
-	return sc
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (sc *ScopeCreate) SetExpiresAt(t time.Time) *ScopeCreate {
-	sc.mutation.SetExpiresAt(t)
-	return sc
-}
-
-// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (sc *ScopeCreate) SetNillableExpiresAt(t *time.Time) *ScopeCreate {
-	if t != nil {
-		sc.SetExpiresAt(*t)
-	}
-	return sc
-}
-
 // SetID sets the "id" field.
-func (sc *ScopeCreate) SetID(u uuid.UUID) *ScopeCreate {
-	sc.mutation.SetID(u)
+func (sc *ScopeCreate) SetID(s string) *ScopeCreate {
+	sc.mutation.SetID(s)
+	return sc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (sc *ScopeCreate) SetNillableID(s *string) *ScopeCreate {
+	if s != nil {
+		sc.SetID(*s)
+	}
 	return sc
 }
 
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
-func (sc *ScopeCreate) AddFactIDs(ids ...uuid.UUID) *ScopeCreate {
+func (sc *ScopeCreate) AddFactIDs(ids ...string) *ScopeCreate {
 	sc.mutation.AddFactIDs(ids...)
 	return sc
 }
 
 // AddFacts adds the "facts" edges to the Fact entity.
 func (sc *ScopeCreate) AddFacts(f ...*Fact) *ScopeCreate {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -183,6 +169,9 @@ func (sc *ScopeCreate) check() error {
 	if _, ok := sc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New("ent: missing required field \"update_time\"")}
 	}
+	if _, ok := sc.mutation.CustomID(); !ok {
+		return &ValidationError{Name: "custom_id", err: errors.New("ent: missing required field \"custom_id\"")}
+	}
 	if _, ok := sc.mutation.Nonce(); !ok {
 		return &ValidationError{Name: "nonce", err: errors.New("ent: missing required field \"nonce\"")}
 	}
@@ -206,7 +195,7 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: scope.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: scope.FieldID,
 			},
 		}
@@ -231,6 +220,14 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdateTime = value
 	}
+	if value, ok := sc.mutation.CustomID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldCustomID,
+		})
+		_node.CustomID = value
+	}
 	if value, ok := sc.mutation.Nonce(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -238,22 +235,6 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 			Column: scope.FieldNonce,
 		})
 		_node.Nonce = value
-	}
-	if value, ok := sc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: scope.FieldType,
-		})
-		_node.Type = value
-	}
-	if value, ok := sc.mutation.ExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: scope.FieldExpiresAt,
-		})
-		_node.ExpiresAt = &value
 	}
 	if nodes := sc.mutation.FactsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -264,7 +245,7 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},

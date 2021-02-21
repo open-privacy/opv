@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/scope"
@@ -18,18 +17,20 @@ import (
 type Fact struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// CreateTime holds the value of the "create_time" field.
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// HashedValue holds the value of the "hashed_value" field.
+	HashedValue string `json:"-"`
 	// EncryptedValue holds the value of the "encrypted_value" field.
-	EncryptedValue string `json:"encrypted_value,omitempty"`
+	EncryptedValue string `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FactQuery when eager-loading is set.
 	Edges           FactEdges `json:"edges"`
-	fact_type_facts *uuid.UUID
-	scope_facts     *uuid.UUID
+	fact_type_facts *string
+	scope_facts     *string
 }
 
 // FactEdges holds the relations/edges for other nodes in the graph.
@@ -76,16 +77,14 @@ func (*Fact) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case fact.FieldEncryptedValue:
+		case fact.FieldID, fact.FieldHashedValue, fact.FieldEncryptedValue:
 			values[i] = &sql.NullString{}
 		case fact.FieldCreateTime, fact.FieldUpdateTime:
 			values[i] = &sql.NullTime{}
-		case fact.FieldID:
-			values[i] = &uuid.UUID{}
 		case fact.ForeignKeys[0]: // fact_type_facts
-			values[i] = &uuid.UUID{}
+			values[i] = &sql.NullString{}
 		case fact.ForeignKeys[1]: // scope_facts
-			values[i] = &uuid.UUID{}
+			values[i] = &sql.NullString{}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Fact", columns[i])
 		}
@@ -102,10 +101,10 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case fact.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				f.ID = *value
+			} else if value.Valid {
+				f.ID = value.String
 			}
 		case fact.FieldCreateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -119,6 +118,12 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				f.UpdateTime = value.Time
 			}
+		case fact.FieldHashedValue:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field hashed_value", values[i])
+			} else if value.Valid {
+				f.HashedValue = value.String
+			}
 		case fact.FieldEncryptedValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field encrypted_value", values[i])
@@ -126,16 +131,18 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 				f.EncryptedValue = value.String
 			}
 		case fact.ForeignKeys[0]:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field fact_type_facts", values[i])
-			} else if value != nil {
-				f.fact_type_facts = value
+			} else if value.Valid {
+				f.fact_type_facts = new(string)
+				*f.fact_type_facts = value.String
 			}
 		case fact.ForeignKeys[1]:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field scope_facts", values[i])
-			} else if value != nil {
-				f.scope_facts = value
+			} else if value.Valid {
+				f.scope_facts = new(string)
+				*f.scope_facts = value.String
 			}
 		}
 	}
@@ -179,8 +186,8 @@ func (f *Fact) String() string {
 	builder.WriteString(f.CreateTime.Format(time.ANSIC))
 	builder.WriteString(", update_time=")
 	builder.WriteString(f.UpdateTime.Format(time.ANSIC))
-	builder.WriteString(", encrypted_value=")
-	builder.WriteString(f.EncryptedValue)
+	builder.WriteString(", hashed_value=<sensitive>")
+	builder.WriteString(", encrypted_value=<sensitive>")
 	builder.WriteByte(')')
 	return builder.String()
 }

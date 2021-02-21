@@ -87,7 +87,7 @@ var doc = `{
                 "operationId": "show-fact-type-by-id",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Fact Type ID",
                         "name": "id",
                         "in": "path",
@@ -179,7 +179,7 @@ var doc = `{
                 "operationId": "show-fact-by-id",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Fact ID",
                         "name": "id",
                         "in": "path",
@@ -271,7 +271,7 @@ var doc = `{
                 "operationId": "show-scope-by-id",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Scope ID",
                         "name": "id",
                         "in": "path",
@@ -314,7 +314,7 @@ var doc = `{
                 "fact_type_slug": {
                     "type": "string"
                 },
-                "scope_id": {
+                "scope_custom_id": {
                     "type": "string"
                 },
                 "value": {
@@ -347,19 +347,19 @@ var doc = `{
                 "create_time": {
                     "type": "string"
                 },
-                "encrypted_value": {
-                    "type": "string"
-                },
-                "fact_type": {
+                "fact_type_slug": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "scope_id": {
+                "scope_custom_id": {
                     "type": "string"
                 },
                 "update_time": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }
