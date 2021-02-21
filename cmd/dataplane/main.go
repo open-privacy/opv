@@ -17,5 +17,7 @@ import (
 // @Tag.name Fact
 // @Tag.description A fact is the unit of PII information, e.g. email, address, phone number, and etc.
 func main() {
-	dataplane.StartServer()
+	dp := dataplane.MustNewDataPlane()
+	dp.Start()
+	dp.WaitForStop()
 }

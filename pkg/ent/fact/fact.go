@@ -4,8 +4,6 @@ package fact
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -17,6 +15,8 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldHashedValue holds the string denoting the hashed_value field in the database.
+	FieldHashedValue = "hashed_value"
 	// FieldEncryptedValue holds the string denoting the encrypted_value field in the database.
 	FieldEncryptedValue = "encrypted_value"
 
@@ -48,6 +48,7 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldHashedValue,
 	FieldEncryptedValue,
 }
 
@@ -80,5 +81,5 @@ var (
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
+	DefaultID func() string
 )

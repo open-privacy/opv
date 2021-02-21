@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
@@ -127,8 +126,8 @@ func (fq *FactQuery) FirstX(ctx context.Context) *Fact {
 
 // FirstID returns the first Fact ID from the query.
 // Returns a *NotFoundError when no Fact ID was found.
-func (fq *FactQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (fq *FactQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = fq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -140,7 +139,7 @@ func (fq *FactQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (fq *FactQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (fq *FactQuery) FirstIDX(ctx context.Context) string {
 	id, err := fq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -178,8 +177,8 @@ func (fq *FactQuery) OnlyX(ctx context.Context) *Fact {
 // OnlyID is like Only, but returns the only Fact ID in the query.
 // Returns a *NotSingularError when exactly one Fact ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (fq *FactQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (fq *FactQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = fq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -195,7 +194,7 @@ func (fq *FactQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (fq *FactQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (fq *FactQuery) OnlyIDX(ctx context.Context) string {
 	id, err := fq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -221,8 +220,8 @@ func (fq *FactQuery) AllX(ctx context.Context) []*Fact {
 }
 
 // IDs executes the query and returns a list of Fact IDs.
-func (fq *FactQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (fq *FactQuery) IDs(ctx context.Context) ([]string, error) {
+	var ids []string
 	if err := fq.Select(fact.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -230,7 +229,7 @@ func (fq *FactQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (fq *FactQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (fq *FactQuery) IDsX(ctx context.Context) []string {
 	ids, err := fq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -412,8 +411,8 @@ func (fq *FactQuery) sqlAll(ctx context.Context) ([]*Fact, error) {
 	}
 
 	if query := fq.withScope; query != nil {
-		ids := make([]uuid.UUID, 0, len(nodes))
-		nodeids := make(map[uuid.UUID][]*Fact)
+		ids := make([]string, 0, len(nodes))
+		nodeids := make(map[string][]*Fact)
 		for i := range nodes {
 			if fk := nodes[i].scope_facts; fk != nil {
 				ids = append(ids, *fk)
@@ -437,8 +436,8 @@ func (fq *FactQuery) sqlAll(ctx context.Context) ([]*Fact, error) {
 	}
 
 	if query := fq.withFactType; query != nil {
-		ids := make([]uuid.UUID, 0, len(nodes))
-		nodeids := make(map[uuid.UUID][]*Fact)
+		ids := make([]string, 0, len(nodes))
+		nodeids := make(map[string][]*Fact)
 		for i := range nodes {
 			if fk := nodes[i].fact_type_facts; fk != nil {
 				ids = append(ids, *fk)
@@ -483,7 +482,7 @@ func (fq *FactQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   fact.Table,
 			Columns: fact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: fact.FieldID,
 			},
 		},

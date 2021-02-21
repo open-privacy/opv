@@ -7,33 +7,32 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uuid.UUID) predicate.Fact {
+func ID(id string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uuid.UUID) predicate.Fact {
+func IDEQ(id string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uuid.UUID) predicate.Fact {
+func IDNEQ(id string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uuid.UUID) predicate.Fact {
+func IDIn(ids ...string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -50,7 +49,7 @@ func IDIn(ids ...uuid.UUID) predicate.Fact {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uuid.UUID) predicate.Fact {
+func IDNotIn(ids ...string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -67,28 +66,28 @@ func IDNotIn(ids ...uuid.UUID) predicate.Fact {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uuid.UUID) predicate.Fact {
+func IDGT(id string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uuid.UUID) predicate.Fact {
+func IDGTE(id string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uuid.UUID) predicate.Fact {
+func IDLT(id string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uuid.UUID) predicate.Fact {
+func IDLTE(id string) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
 	})
@@ -105,6 +104,13 @@ func CreateTime(v time.Time) predicate.Fact {
 func UpdateTime(v time.Time) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
+	})
+}
+
+// HashedValue applies equality check predicate on the "hashed_value" field. It's identical to HashedValueEQ.
+func HashedValue(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHashedValue), v))
 	})
 }
 
@@ -264,6 +270,117 @@ func UpdateTimeLT(v time.Time) predicate.Fact {
 func UpdateTimeLTE(v time.Time) predicate.Fact {
 	return predicate.Fact(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
+	})
+}
+
+// HashedValueEQ applies the EQ predicate on the "hashed_value" field.
+func HashedValueEQ(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueNEQ applies the NEQ predicate on the "hashed_value" field.
+func HashedValueNEQ(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueIn applies the In predicate on the "hashed_value" field.
+func HashedValueIn(vs ...string) predicate.Fact {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Fact(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldHashedValue), v...))
+	})
+}
+
+// HashedValueNotIn applies the NotIn predicate on the "hashed_value" field.
+func HashedValueNotIn(vs ...string) predicate.Fact {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Fact(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldHashedValue), v...))
+	})
+}
+
+// HashedValueGT applies the GT predicate on the "hashed_value" field.
+func HashedValueGT(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueGTE applies the GTE predicate on the "hashed_value" field.
+func HashedValueGTE(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueLT applies the LT predicate on the "hashed_value" field.
+func HashedValueLT(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueLTE applies the LTE predicate on the "hashed_value" field.
+func HashedValueLTE(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueContains applies the Contains predicate on the "hashed_value" field.
+func HashedValueContains(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueHasPrefix applies the HasPrefix predicate on the "hashed_value" field.
+func HashedValueHasPrefix(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueHasSuffix applies the HasSuffix predicate on the "hashed_value" field.
+func HashedValueHasSuffix(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueEqualFold applies the EqualFold predicate on the "hashed_value" field.
+func HashedValueEqualFold(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldHashedValue), v))
+	})
+}
+
+// HashedValueContainsFold applies the ContainsFold predicate on the "hashed_value" field.
+func HashedValueContainsFold(v string) predicate.Fact {
+	return predicate.Fact(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldHashedValue), v))
 	})
 }
 

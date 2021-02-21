@@ -36,14 +36,15 @@ type FactMutation struct {
 	config
 	op               Op
 	typ              string
-	id               *uuid.UUID
+	id               *string
 	create_time      *time.Time
 	update_time      *time.Time
+	hashed_value     *string
 	encrypted_value  *string
 	clearedFields    map[string]struct{}
-	scope            *uuid.UUID
+	scope            *string
 	clearedscope     bool
-	fact_type        *uuid.UUID
+	fact_type        *string
 	clearedfact_type bool
 	done             bool
 	oldValue         func(context.Context) (*Fact, error)
@@ -70,7 +71,7 @@ func newFactMutation(c config, op Op, opts ...factOption) *FactMutation {
 }
 
 // withFactID sets the ID field of the mutation.
-func withFactID(id uuid.UUID) factOption {
+func withFactID(id string) factOption {
 	return func(m *FactMutation) {
 		var (
 			err   error
@@ -122,13 +123,13 @@ func (m FactMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Fact entities.
-func (m *FactMutation) SetID(id uuid.UUID) {
+func (m *FactMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *FactMutation) ID() (id uuid.UUID, exists bool) {
+func (m *FactMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -207,6 +208,42 @@ func (m *FactMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
+// SetHashedValue sets the "hashed_value" field.
+func (m *FactMutation) SetHashedValue(s string) {
+	m.hashed_value = &s
+}
+
+// HashedValue returns the value of the "hashed_value" field in the mutation.
+func (m *FactMutation) HashedValue() (r string, exists bool) {
+	v := m.hashed_value
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHashedValue returns the old "hashed_value" field's value of the Fact entity.
+// If the Fact object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactMutation) OldHashedValue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHashedValue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHashedValue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHashedValue: %w", err)
+	}
+	return oldValue.HashedValue, nil
+}
+
+// ResetHashedValue resets all changes to the "hashed_value" field.
+func (m *FactMutation) ResetHashedValue() {
+	m.hashed_value = nil
+}
+
 // SetEncryptedValue sets the "encrypted_value" field.
 func (m *FactMutation) SetEncryptedValue(s string) {
 	m.encrypted_value = &s
@@ -244,7 +281,7 @@ func (m *FactMutation) ResetEncryptedValue() {
 }
 
 // SetScopeID sets the "scope" edge to the Scope entity by id.
-func (m *FactMutation) SetScopeID(id uuid.UUID) {
+func (m *FactMutation) SetScopeID(id string) {
 	m.scope = &id
 }
 
@@ -259,7 +296,7 @@ func (m *FactMutation) ScopeCleared() bool {
 }
 
 // ScopeID returns the "scope" edge ID in the mutation.
-func (m *FactMutation) ScopeID() (id uuid.UUID, exists bool) {
+func (m *FactMutation) ScopeID() (id string, exists bool) {
 	if m.scope != nil {
 		return *m.scope, true
 	}
@@ -269,7 +306,7 @@ func (m *FactMutation) ScopeID() (id uuid.UUID, exists bool) {
 // ScopeIDs returns the "scope" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ScopeID instead. It exists only for internal usage by the builders.
-func (m *FactMutation) ScopeIDs() (ids []uuid.UUID) {
+func (m *FactMutation) ScopeIDs() (ids []string) {
 	if id := m.scope; id != nil {
 		ids = append(ids, *id)
 	}
@@ -283,7 +320,7 @@ func (m *FactMutation) ResetScope() {
 }
 
 // SetFactTypeID sets the "fact_type" edge to the FactType entity by id.
-func (m *FactMutation) SetFactTypeID(id uuid.UUID) {
+func (m *FactMutation) SetFactTypeID(id string) {
 	m.fact_type = &id
 }
 
@@ -298,7 +335,7 @@ func (m *FactMutation) FactTypeCleared() bool {
 }
 
 // FactTypeID returns the "fact_type" edge ID in the mutation.
-func (m *FactMutation) FactTypeID() (id uuid.UUID, exists bool) {
+func (m *FactMutation) FactTypeID() (id string, exists bool) {
 	if m.fact_type != nil {
 		return *m.fact_type, true
 	}
@@ -308,7 +345,7 @@ func (m *FactMutation) FactTypeID() (id uuid.UUID, exists bool) {
 // FactTypeIDs returns the "fact_type" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // FactTypeID instead. It exists only for internal usage by the builders.
-func (m *FactMutation) FactTypeIDs() (ids []uuid.UUID) {
+func (m *FactMutation) FactTypeIDs() (ids []string) {
 	if id := m.fact_type; id != nil {
 		ids = append(ids, *id)
 	}
@@ -335,12 +372,15 @@ func (m *FactMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FactMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.create_time != nil {
 		fields = append(fields, fact.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, fact.FieldUpdateTime)
+	}
+	if m.hashed_value != nil {
+		fields = append(fields, fact.FieldHashedValue)
 	}
 	if m.encrypted_value != nil {
 		fields = append(fields, fact.FieldEncryptedValue)
@@ -357,6 +397,8 @@ func (m *FactMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case fact.FieldUpdateTime:
 		return m.UpdateTime()
+	case fact.FieldHashedValue:
+		return m.HashedValue()
 	case fact.FieldEncryptedValue:
 		return m.EncryptedValue()
 	}
@@ -372,6 +414,8 @@ func (m *FactMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreateTime(ctx)
 	case fact.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
+	case fact.FieldHashedValue:
+		return m.OldHashedValue(ctx)
 	case fact.FieldEncryptedValue:
 		return m.OldEncryptedValue(ctx)
 	}
@@ -396,6 +440,13 @@ func (m *FactMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdateTime(v)
+		return nil
+	case fact.FieldHashedValue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHashedValue(v)
 		return nil
 	case fact.FieldEncryptedValue:
 		v, ok := value.(string)
@@ -458,6 +509,9 @@ func (m *FactMutation) ResetField(name string) error {
 		return nil
 	case fact.FieldUpdateTime:
 		m.ResetUpdateTime()
+		return nil
+	case fact.FieldHashedValue:
+		m.ResetHashedValue()
 		return nil
 	case fact.FieldEncryptedValue:
 		m.ResetEncryptedValue()
@@ -565,14 +619,14 @@ type FactTypeMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *string
 	create_time   *time.Time
 	update_time   *time.Time
 	slug          *string
 	builtin       *bool
 	clearedFields map[string]struct{}
-	facts         map[uuid.UUID]struct{}
-	removedfacts  map[uuid.UUID]struct{}
+	facts         map[string]struct{}
+	removedfacts  map[string]struct{}
 	clearedfacts  bool
 	done          bool
 	oldValue      func(context.Context) (*FactType, error)
@@ -599,7 +653,7 @@ func newFactTypeMutation(c config, op Op, opts ...facttypeOption) *FactTypeMutat
 }
 
 // withFactTypeID sets the ID field of the mutation.
-func withFactTypeID(id uuid.UUID) facttypeOption {
+func withFactTypeID(id string) facttypeOption {
 	return func(m *FactTypeMutation) {
 		var (
 			err   error
@@ -651,13 +705,13 @@ func (m FactTypeMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of FactType entities.
-func (m *FactTypeMutation) SetID(id uuid.UUID) {
+func (m *FactTypeMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *FactTypeMutation) ID() (id uuid.UUID, exists bool) {
+func (m *FactTypeMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -809,9 +863,9 @@ func (m *FactTypeMutation) ResetBuiltin() {
 }
 
 // AddFactIDs adds the "facts" edge to the Fact entity by ids.
-func (m *FactTypeMutation) AddFactIDs(ids ...uuid.UUID) {
+func (m *FactTypeMutation) AddFactIDs(ids ...string) {
 	if m.facts == nil {
-		m.facts = make(map[uuid.UUID]struct{})
+		m.facts = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.facts[ids[i]] = struct{}{}
@@ -829,9 +883,9 @@ func (m *FactTypeMutation) FactsCleared() bool {
 }
 
 // RemoveFactIDs removes the "facts" edge to the Fact entity by IDs.
-func (m *FactTypeMutation) RemoveFactIDs(ids ...uuid.UUID) {
+func (m *FactTypeMutation) RemoveFactIDs(ids ...string) {
 	if m.removedfacts == nil {
-		m.removedfacts = make(map[uuid.UUID]struct{})
+		m.removedfacts = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.removedfacts[ids[i]] = struct{}{}
@@ -839,7 +893,7 @@ func (m *FactTypeMutation) RemoveFactIDs(ids ...uuid.UUID) {
 }
 
 // RemovedFacts returns the removed IDs of the "facts" edge to the Fact entity.
-func (m *FactTypeMutation) RemovedFactsIDs() (ids []uuid.UUID) {
+func (m *FactTypeMutation) RemovedFactsIDs() (ids []string) {
 	for id := range m.removedfacts {
 		ids = append(ids, id)
 	}
@@ -847,7 +901,7 @@ func (m *FactTypeMutation) RemovedFactsIDs() (ids []uuid.UUID) {
 }
 
 // FactsIDs returns the "facts" edge IDs in the mutation.
-func (m *FactTypeMutation) FactsIDs() (ids []uuid.UUID) {
+func (m *FactTypeMutation) FactsIDs() (ids []string) {
 	for id := range m.facts {
 		ids = append(ids, id)
 	}
@@ -1112,15 +1166,14 @@ type ScopeMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *string
 	create_time   *time.Time
 	update_time   *time.Time
+	custom_id     *string
 	nonce         *uuid.UUID
-	_type         *string
-	expires_at    *time.Time
 	clearedFields map[string]struct{}
-	facts         map[uuid.UUID]struct{}
-	removedfacts  map[uuid.UUID]struct{}
+	facts         map[string]struct{}
+	removedfacts  map[string]struct{}
 	clearedfacts  bool
 	done          bool
 	oldValue      func(context.Context) (*Scope, error)
@@ -1147,7 +1200,7 @@ func newScopeMutation(c config, op Op, opts ...scopeOption) *ScopeMutation {
 }
 
 // withScopeID sets the ID field of the mutation.
-func withScopeID(id uuid.UUID) scopeOption {
+func withScopeID(id string) scopeOption {
 	return func(m *ScopeMutation) {
 		var (
 			err   error
@@ -1199,13 +1252,13 @@ func (m ScopeMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Scope entities.
-func (m *ScopeMutation) SetID(id uuid.UUID) {
+func (m *ScopeMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *ScopeMutation) ID() (id uuid.UUID, exists bool) {
+func (m *ScopeMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1284,6 +1337,42 @@ func (m *ScopeMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
+// SetCustomID sets the "custom_id" field.
+func (m *ScopeMutation) SetCustomID(s string) {
+	m.custom_id = &s
+}
+
+// CustomID returns the value of the "custom_id" field in the mutation.
+func (m *ScopeMutation) CustomID() (r string, exists bool) {
+	v := m.custom_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCustomID returns the old "custom_id" field's value of the Scope entity.
+// If the Scope object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ScopeMutation) OldCustomID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCustomID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCustomID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCustomID: %w", err)
+	}
+	return oldValue.CustomID, nil
+}
+
+// ResetCustomID resets all changes to the "custom_id" field.
+func (m *ScopeMutation) ResetCustomID() {
+	m.custom_id = nil
+}
+
 // SetNonce sets the "nonce" field.
 func (m *ScopeMutation) SetNonce(u uuid.UUID) {
 	m.nonce = &u
@@ -1320,108 +1409,10 @@ func (m *ScopeMutation) ResetNonce() {
 	m.nonce = nil
 }
 
-// SetType sets the "type" field.
-func (m *ScopeMutation) SetType(s string) {
-	m._type = &s
-}
-
-// GetType returns the value of the "type" field in the mutation.
-func (m *ScopeMutation) GetType() (r string, exists bool) {
-	v := m._type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldType returns the old "type" field's value of the Scope entity.
-// If the Scope object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScopeMutation) OldType(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
-	}
-	return oldValue.Type, nil
-}
-
-// ClearType clears the value of the "type" field.
-func (m *ScopeMutation) ClearType() {
-	m._type = nil
-	m.clearedFields[scope.FieldType] = struct{}{}
-}
-
-// TypeCleared returns if the "type" field was cleared in this mutation.
-func (m *ScopeMutation) TypeCleared() bool {
-	_, ok := m.clearedFields[scope.FieldType]
-	return ok
-}
-
-// ResetType resets all changes to the "type" field.
-func (m *ScopeMutation) ResetType() {
-	m._type = nil
-	delete(m.clearedFields, scope.FieldType)
-}
-
-// SetExpiresAt sets the "expires_at" field.
-func (m *ScopeMutation) SetExpiresAt(t time.Time) {
-	m.expires_at = &t
-}
-
-// ExpiresAt returns the value of the "expires_at" field in the mutation.
-func (m *ScopeMutation) ExpiresAt() (r time.Time, exists bool) {
-	v := m.expires_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldExpiresAt returns the old "expires_at" field's value of the Scope entity.
-// If the Scope object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScopeMutation) OldExpiresAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldExpiresAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldExpiresAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
-	}
-	return oldValue.ExpiresAt, nil
-}
-
-// ClearExpiresAt clears the value of the "expires_at" field.
-func (m *ScopeMutation) ClearExpiresAt() {
-	m.expires_at = nil
-	m.clearedFields[scope.FieldExpiresAt] = struct{}{}
-}
-
-// ExpiresAtCleared returns if the "expires_at" field was cleared in this mutation.
-func (m *ScopeMutation) ExpiresAtCleared() bool {
-	_, ok := m.clearedFields[scope.FieldExpiresAt]
-	return ok
-}
-
-// ResetExpiresAt resets all changes to the "expires_at" field.
-func (m *ScopeMutation) ResetExpiresAt() {
-	m.expires_at = nil
-	delete(m.clearedFields, scope.FieldExpiresAt)
-}
-
 // AddFactIDs adds the "facts" edge to the Fact entity by ids.
-func (m *ScopeMutation) AddFactIDs(ids ...uuid.UUID) {
+func (m *ScopeMutation) AddFactIDs(ids ...string) {
 	if m.facts == nil {
-		m.facts = make(map[uuid.UUID]struct{})
+		m.facts = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.facts[ids[i]] = struct{}{}
@@ -1439,9 +1430,9 @@ func (m *ScopeMutation) FactsCleared() bool {
 }
 
 // RemoveFactIDs removes the "facts" edge to the Fact entity by IDs.
-func (m *ScopeMutation) RemoveFactIDs(ids ...uuid.UUID) {
+func (m *ScopeMutation) RemoveFactIDs(ids ...string) {
 	if m.removedfacts == nil {
-		m.removedfacts = make(map[uuid.UUID]struct{})
+		m.removedfacts = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.removedfacts[ids[i]] = struct{}{}
@@ -1449,7 +1440,7 @@ func (m *ScopeMutation) RemoveFactIDs(ids ...uuid.UUID) {
 }
 
 // RemovedFacts returns the removed IDs of the "facts" edge to the Fact entity.
-func (m *ScopeMutation) RemovedFactsIDs() (ids []uuid.UUID) {
+func (m *ScopeMutation) RemovedFactsIDs() (ids []string) {
 	for id := range m.removedfacts {
 		ids = append(ids, id)
 	}
@@ -1457,7 +1448,7 @@ func (m *ScopeMutation) RemovedFactsIDs() (ids []uuid.UUID) {
 }
 
 // FactsIDs returns the "facts" edge IDs in the mutation.
-func (m *ScopeMutation) FactsIDs() (ids []uuid.UUID) {
+func (m *ScopeMutation) FactsIDs() (ids []string) {
 	for id := range m.facts {
 		ids = append(ids, id)
 	}
@@ -1485,21 +1476,18 @@ func (m *ScopeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ScopeMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 4)
 	if m.create_time != nil {
 		fields = append(fields, scope.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, scope.FieldUpdateTime)
 	}
+	if m.custom_id != nil {
+		fields = append(fields, scope.FieldCustomID)
+	}
 	if m.nonce != nil {
 		fields = append(fields, scope.FieldNonce)
-	}
-	if m._type != nil {
-		fields = append(fields, scope.FieldType)
-	}
-	if m.expires_at != nil {
-		fields = append(fields, scope.FieldExpiresAt)
 	}
 	return fields
 }
@@ -1513,12 +1501,10 @@ func (m *ScopeMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case scope.FieldUpdateTime:
 		return m.UpdateTime()
+	case scope.FieldCustomID:
+		return m.CustomID()
 	case scope.FieldNonce:
 		return m.Nonce()
-	case scope.FieldType:
-		return m.GetType()
-	case scope.FieldExpiresAt:
-		return m.ExpiresAt()
 	}
 	return nil, false
 }
@@ -1532,12 +1518,10 @@ func (m *ScopeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreateTime(ctx)
 	case scope.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
+	case scope.FieldCustomID:
+		return m.OldCustomID(ctx)
 	case scope.FieldNonce:
 		return m.OldNonce(ctx)
-	case scope.FieldType:
-		return m.OldType(ctx)
-	case scope.FieldExpiresAt:
-		return m.OldExpiresAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Scope field %s", name)
 }
@@ -1561,26 +1545,19 @@ func (m *ScopeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdateTime(v)
 		return nil
+	case scope.FieldCustomID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCustomID(v)
+		return nil
 	case scope.FieldNonce:
 		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNonce(v)
-		return nil
-	case scope.FieldType:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetType(v)
-		return nil
-	case scope.FieldExpiresAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetExpiresAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Scope field %s", name)
@@ -1611,14 +1588,7 @@ func (m *ScopeMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ScopeMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(scope.FieldType) {
-		fields = append(fields, scope.FieldType)
-	}
-	if m.FieldCleared(scope.FieldExpiresAt) {
-		fields = append(fields, scope.FieldExpiresAt)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1631,14 +1601,6 @@ func (m *ScopeMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ScopeMutation) ClearField(name string) error {
-	switch name {
-	case scope.FieldType:
-		m.ClearType()
-		return nil
-	case scope.FieldExpiresAt:
-		m.ClearExpiresAt()
-		return nil
-	}
 	return fmt.Errorf("unknown Scope nullable field %s", name)
 }
 
@@ -1652,14 +1614,11 @@ func (m *ScopeMutation) ResetField(name string) error {
 	case scope.FieldUpdateTime:
 		m.ResetUpdateTime()
 		return nil
+	case scope.FieldCustomID:
+		m.ResetCustomID()
+		return nil
 	case scope.FieldNonce:
 		m.ResetNonce()
-		return nil
-	case scope.FieldType:
-		m.ResetType()
-		return nil
-	case scope.FieldExpiresAt:
-		m.ResetExpiresAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Scope field %s", name)

@@ -9,7 +9,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
@@ -29,6 +28,12 @@ func (fu *FactUpdate) Where(ps ...predicate.Fact) *FactUpdate {
 	return fu
 }
 
+// SetHashedValue sets the "hashed_value" field.
+func (fu *FactUpdate) SetHashedValue(s string) *FactUpdate {
+	fu.mutation.SetHashedValue(s)
+	return fu
+}
+
 // SetEncryptedValue sets the "encrypted_value" field.
 func (fu *FactUpdate) SetEncryptedValue(s string) *FactUpdate {
 	fu.mutation.SetEncryptedValue(s)
@@ -36,13 +41,13 @@ func (fu *FactUpdate) SetEncryptedValue(s string) *FactUpdate {
 }
 
 // SetScopeID sets the "scope" edge to the Scope entity by ID.
-func (fu *FactUpdate) SetScopeID(id uuid.UUID) *FactUpdate {
+func (fu *FactUpdate) SetScopeID(id string) *FactUpdate {
 	fu.mutation.SetScopeID(id)
 	return fu
 }
 
 // SetNillableScopeID sets the "scope" edge to the Scope entity by ID if the given value is not nil.
-func (fu *FactUpdate) SetNillableScopeID(id *uuid.UUID) *FactUpdate {
+func (fu *FactUpdate) SetNillableScopeID(id *string) *FactUpdate {
 	if id != nil {
 		fu = fu.SetScopeID(*id)
 	}
@@ -55,13 +60,13 @@ func (fu *FactUpdate) SetScope(s *Scope) *FactUpdate {
 }
 
 // SetFactTypeID sets the "fact_type" edge to the FactType entity by ID.
-func (fu *FactUpdate) SetFactTypeID(id uuid.UUID) *FactUpdate {
+func (fu *FactUpdate) SetFactTypeID(id string) *FactUpdate {
 	fu.mutation.SetFactTypeID(id)
 	return fu
 }
 
 // SetNillableFactTypeID sets the "fact_type" edge to the FactType entity by ID if the given value is not nil.
-func (fu *FactUpdate) SetNillableFactTypeID(id *uuid.UUID) *FactUpdate {
+func (fu *FactUpdate) SetNillableFactTypeID(id *string) *FactUpdate {
 	if id != nil {
 		fu = fu.SetFactTypeID(*id)
 	}
@@ -156,7 +161,7 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   fact.Table,
 			Columns: fact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: fact.FieldID,
 			},
 		},
@@ -175,6 +180,13 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: fact.FieldUpdateTime,
 		})
 	}
+	if value, ok := fu.mutation.HashedValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fact.FieldHashedValue,
+		})
+	}
 	if value, ok := fu.mutation.EncryptedValue(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -191,7 +203,7 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: scope.FieldID,
 				},
 			},
@@ -207,7 +219,7 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: scope.FieldID,
 				},
 			},
@@ -226,7 +238,7 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: facttype.FieldID,
 				},
 			},
@@ -242,7 +254,7 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: facttype.FieldID,
 				},
 			},
@@ -270,6 +282,12 @@ type FactUpdateOne struct {
 	mutation *FactMutation
 }
 
+// SetHashedValue sets the "hashed_value" field.
+func (fuo *FactUpdateOne) SetHashedValue(s string) *FactUpdateOne {
+	fuo.mutation.SetHashedValue(s)
+	return fuo
+}
+
 // SetEncryptedValue sets the "encrypted_value" field.
 func (fuo *FactUpdateOne) SetEncryptedValue(s string) *FactUpdateOne {
 	fuo.mutation.SetEncryptedValue(s)
@@ -277,13 +295,13 @@ func (fuo *FactUpdateOne) SetEncryptedValue(s string) *FactUpdateOne {
 }
 
 // SetScopeID sets the "scope" edge to the Scope entity by ID.
-func (fuo *FactUpdateOne) SetScopeID(id uuid.UUID) *FactUpdateOne {
+func (fuo *FactUpdateOne) SetScopeID(id string) *FactUpdateOne {
 	fuo.mutation.SetScopeID(id)
 	return fuo
 }
 
 // SetNillableScopeID sets the "scope" edge to the Scope entity by ID if the given value is not nil.
-func (fuo *FactUpdateOne) SetNillableScopeID(id *uuid.UUID) *FactUpdateOne {
+func (fuo *FactUpdateOne) SetNillableScopeID(id *string) *FactUpdateOne {
 	if id != nil {
 		fuo = fuo.SetScopeID(*id)
 	}
@@ -296,13 +314,13 @@ func (fuo *FactUpdateOne) SetScope(s *Scope) *FactUpdateOne {
 }
 
 // SetFactTypeID sets the "fact_type" edge to the FactType entity by ID.
-func (fuo *FactUpdateOne) SetFactTypeID(id uuid.UUID) *FactUpdateOne {
+func (fuo *FactUpdateOne) SetFactTypeID(id string) *FactUpdateOne {
 	fuo.mutation.SetFactTypeID(id)
 	return fuo
 }
 
 // SetNillableFactTypeID sets the "fact_type" edge to the FactType entity by ID if the given value is not nil.
-func (fuo *FactUpdateOne) SetNillableFactTypeID(id *uuid.UUID) *FactUpdateOne {
+func (fuo *FactUpdateOne) SetNillableFactTypeID(id *string) *FactUpdateOne {
 	if id != nil {
 		fuo = fuo.SetFactTypeID(*id)
 	}
@@ -397,7 +415,7 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Table:   fact.Table,
 			Columns: fact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: fact.FieldID,
 			},
 		},
@@ -421,6 +439,13 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Column: fact.FieldUpdateTime,
 		})
 	}
+	if value, ok := fuo.mutation.HashedValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fact.FieldHashedValue,
+		})
+	}
 	if value, ok := fuo.mutation.EncryptedValue(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -437,7 +462,7 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: scope.FieldID,
 				},
 			},
@@ -453,7 +478,7 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: scope.FieldID,
 				},
 			},
@@ -472,7 +497,7 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: facttype.FieldID,
 				},
 			},
@@ -488,7 +513,7 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: facttype.FieldID,
 				},
 			},

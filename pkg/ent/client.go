@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/migrate"
 
 	"github.com/open-privacy/opv/pkg/ent/fact"
@@ -177,7 +176,7 @@ func (c *FactClient) UpdateOne(f *Fact) *FactUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *FactClient) UpdateOneID(id uuid.UUID) *FactUpdateOne {
+func (c *FactClient) UpdateOneID(id string) *FactUpdateOne {
 	mutation := newFactMutation(c.config, OpUpdateOne, withFactID(id))
 	return &FactUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -194,7 +193,7 @@ func (c *FactClient) DeleteOne(f *Fact) *FactDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *FactClient) DeleteOneID(id uuid.UUID) *FactDeleteOne {
+func (c *FactClient) DeleteOneID(id string) *FactDeleteOne {
 	builder := c.Delete().Where(fact.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -207,12 +206,12 @@ func (c *FactClient) Query() *FactQuery {
 }
 
 // Get returns a Fact entity by its id.
-func (c *FactClient) Get(ctx context.Context, id uuid.UUID) (*Fact, error) {
+func (c *FactClient) Get(ctx context.Context, id string) (*Fact, error) {
 	return c.Query().Where(fact.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *FactClient) GetX(ctx context.Context, id uuid.UUID) *Fact {
+func (c *FactClient) GetX(ctx context.Context, id string) *Fact {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -297,7 +296,7 @@ func (c *FactTypeClient) UpdateOne(ft *FactType) *FactTypeUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *FactTypeClient) UpdateOneID(id uuid.UUID) *FactTypeUpdateOne {
+func (c *FactTypeClient) UpdateOneID(id string) *FactTypeUpdateOne {
 	mutation := newFactTypeMutation(c.config, OpUpdateOne, withFactTypeID(id))
 	return &FactTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -314,7 +313,7 @@ func (c *FactTypeClient) DeleteOne(ft *FactType) *FactTypeDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *FactTypeClient) DeleteOneID(id uuid.UUID) *FactTypeDeleteOne {
+func (c *FactTypeClient) DeleteOneID(id string) *FactTypeDeleteOne {
 	builder := c.Delete().Where(facttype.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -327,12 +326,12 @@ func (c *FactTypeClient) Query() *FactTypeQuery {
 }
 
 // Get returns a FactType entity by its id.
-func (c *FactTypeClient) Get(ctx context.Context, id uuid.UUID) (*FactType, error) {
+func (c *FactTypeClient) Get(ctx context.Context, id string) (*FactType, error) {
 	return c.Query().Where(facttype.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *FactTypeClient) GetX(ctx context.Context, id uuid.UUID) *FactType {
+func (c *FactTypeClient) GetX(ctx context.Context, id string) *FactType {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -401,7 +400,7 @@ func (c *ScopeClient) UpdateOne(s *Scope) *ScopeUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ScopeClient) UpdateOneID(id uuid.UUID) *ScopeUpdateOne {
+func (c *ScopeClient) UpdateOneID(id string) *ScopeUpdateOne {
 	mutation := newScopeMutation(c.config, OpUpdateOne, withScopeID(id))
 	return &ScopeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -418,7 +417,7 @@ func (c *ScopeClient) DeleteOne(s *Scope) *ScopeDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *ScopeClient) DeleteOneID(id uuid.UUID) *ScopeDeleteOne {
+func (c *ScopeClient) DeleteOneID(id string) *ScopeDeleteOne {
 	builder := c.Delete().Where(scope.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -431,12 +430,12 @@ func (c *ScopeClient) Query() *ScopeQuery {
 }
 
 // Get returns a Scope entity by its id.
-func (c *ScopeClient) Get(ctx context.Context, id uuid.UUID) (*Scope, error) {
+func (c *ScopeClient) Get(ctx context.Context, id string) (*Scope, error) {
 	return c.Query().Where(scope.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ScopeClient) GetX(ctx context.Context, id uuid.UUID) *Scope {
+func (c *ScopeClient) GetX(ctx context.Context, id string) *Scope {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

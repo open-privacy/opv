@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 	"github.com/google/uuid"
 )
@@ -16,9 +17,8 @@ type Scope struct {
 // Fields of the Scope.
 func (Scope) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("custom_id"),
 		field.UUID("nonce", uuid.UUID{}).Default(uuid.New),
-		field.String("type").Optional(),
-		field.Time("expires_at").Optional().Nillable(),
 	}
 }
 
@@ -34,5 +34,12 @@ func (Scope) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		BaseMixin{},
 		mixin.Time{},
+	}
+}
+
+// Indexes of the Scope
+func (Scope) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("custom_id").Unique(),
 	}
 }

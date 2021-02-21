@@ -69,7 +69,7 @@ func (ftd *FactTypeDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: facttype.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: facttype.FieldID,
 			},
 		},

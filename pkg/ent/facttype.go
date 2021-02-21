@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 )
 
@@ -16,7 +15,7 @@ import (
 type FactType struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// CreateTime holds the value of the "create_time" field.
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
@@ -55,12 +54,10 @@ func (*FactType) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case facttype.FieldBuiltin:
 			values[i] = &sql.NullBool{}
-		case facttype.FieldSlug:
+		case facttype.FieldID, facttype.FieldSlug:
 			values[i] = &sql.NullString{}
 		case facttype.FieldCreateTime, facttype.FieldUpdateTime:
 			values[i] = &sql.NullTime{}
-		case facttype.FieldID:
-			values[i] = &uuid.UUID{}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type FactType", columns[i])
 		}
@@ -77,10 +74,10 @@ func (ft *FactType) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case facttype.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				ft.ID = *value
+			} else if value.Valid {
+				ft.ID = value.String
 			}
 		case facttype.FieldCreateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {

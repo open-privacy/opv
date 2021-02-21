@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
 	"github.com/open-privacy/opv/pkg/ent/scope"
@@ -103,8 +102,8 @@ func (sq *ScopeQuery) FirstX(ctx context.Context) *Scope {
 
 // FirstID returns the first Scope ID from the query.
 // Returns a *NotFoundError when no Scope ID was found.
-func (sq *ScopeQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (sq *ScopeQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = sq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -116,7 +115,7 @@ func (sq *ScopeQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (sq *ScopeQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (sq *ScopeQuery) FirstIDX(ctx context.Context) string {
 	id, err := sq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -154,8 +153,8 @@ func (sq *ScopeQuery) OnlyX(ctx context.Context) *Scope {
 // OnlyID is like Only, but returns the only Scope ID in the query.
 // Returns a *NotSingularError when exactly one Scope ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (sq *ScopeQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (sq *ScopeQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = sq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -171,7 +170,7 @@ func (sq *ScopeQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (sq *ScopeQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (sq *ScopeQuery) OnlyIDX(ctx context.Context) string {
 	id, err := sq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -197,8 +196,8 @@ func (sq *ScopeQuery) AllX(ctx context.Context) []*Scope {
 }
 
 // IDs executes the query and returns a list of Scope IDs.
-func (sq *ScopeQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (sq *ScopeQuery) IDs(ctx context.Context) ([]string, error) {
+	var ids []string
 	if err := sq.Select(scope.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -206,7 +205,7 @@ func (sq *ScopeQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (sq *ScopeQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (sq *ScopeQuery) IDsX(ctx context.Context) []string {
 	ids, err := sq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -369,7 +368,7 @@ func (sq *ScopeQuery) sqlAll(ctx context.Context) ([]*Scope, error) {
 
 	if query := sq.withFacts; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*Scope)
+		nodeids := make(map[string]*Scope)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -418,7 +417,7 @@ func (sq *ScopeQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   scope.Table,
 			Columns: scope.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: scope.FieldID,
 			},
 		},

@@ -10,12 +10,13 @@ import (
 var (
 	// FactsColumns holds the columns for the "facts" table.
 	FactsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "hashed_value", Type: field.TypeString},
 		{Name: "encrypted_value", Type: field.TypeString},
-		{Name: "fact_type_facts", Type: field.TypeUUID, Nullable: true},
-		{Name: "scope_facts", Type: field.TypeUUID, Nullable: true},
+		{Name: "fact_type_facts", Type: field.TypeString, Nullable: true},
+		{Name: "scope_facts", Type: field.TypeString, Nullable: true},
 	}
 	// FactsTable holds the schema information for the "facts" table.
 	FactsTable = &schema.Table{
@@ -25,23 +26,35 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:  "facts_fact_types_facts",
-				Columns: []*schema.Column{FactsColumns[4]},
+				Columns: []*schema.Column{FactsColumns[5]},
 
 				RefColumns: []*schema.Column{FactTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:  "facts_scopes_facts",
-				Columns: []*schema.Column{FactsColumns[5]},
+				Columns: []*schema.Column{FactsColumns[6]},
 
 				RefColumns: []*schema.Column{ScopesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "fact_id",
+				Unique:  true,
+				Columns: []*schema.Column{FactsColumns[0]},
+			},
+			{
+				Name:    "fact_hashed_value_scope_facts_fact_type_facts",
+				Unique:  true,
+				Columns: []*schema.Column{FactsColumns[3], FactsColumns[6], FactsColumns[5]},
+			},
+		},
 	}
 	// FactTypesColumns holds the columns for the "fact_types" table.
 	FactTypesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "slug", Type: field.TypeString},
@@ -53,15 +66,21 @@ var (
 		Columns:     FactTypesColumns,
 		PrimaryKey:  []*schema.Column{FactTypesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
+		Indexes: []*schema.Index{
+			{
+				Name:    "facttype_id",
+				Unique:  true,
+				Columns: []*schema.Column{FactTypesColumns[0]},
+			},
+		},
 	}
 	// ScopesColumns holds the columns for the "scopes" table.
 	ScopesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "custom_id", Type: field.TypeString},
 		{Name: "nonce", Type: field.TypeUUID},
-		{Name: "type", Type: field.TypeString, Nullable: true},
-		{Name: "expires_at", Type: field.TypeTime, Nullable: true},
 	}
 	// ScopesTable holds the schema information for the "scopes" table.
 	ScopesTable = &schema.Table{
@@ -69,6 +88,18 @@ var (
 		Columns:     ScopesColumns,
 		PrimaryKey:  []*schema.Column{ScopesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
+		Indexes: []*schema.Index{
+			{
+				Name:    "scope_id",
+				Unique:  true,
+				Columns: []*schema.Column{ScopesColumns[0]},
+			},
+			{
+				Name:    "scope_custom_id",
+				Unique:  true,
+				Columns: []*schema.Column{ScopesColumns[3]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 )
@@ -62,21 +61,37 @@ func (ftc *FactTypeCreate) SetBuiltin(b bool) *FactTypeCreate {
 	return ftc
 }
 
+// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableBuiltin(b *bool) *FactTypeCreate {
+	if b != nil {
+		ftc.SetBuiltin(*b)
+	}
+	return ftc
+}
+
 // SetID sets the "id" field.
-func (ftc *FactTypeCreate) SetID(u uuid.UUID) *FactTypeCreate {
-	ftc.mutation.SetID(u)
+func (ftc *FactTypeCreate) SetID(s string) *FactTypeCreate {
+	ftc.mutation.SetID(s)
+	return ftc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableID(s *string) *FactTypeCreate {
+	if s != nil {
+		ftc.SetID(*s)
+	}
 	return ftc
 }
 
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
-func (ftc *FactTypeCreate) AddFactIDs(ids ...uuid.UUID) *FactTypeCreate {
+func (ftc *FactTypeCreate) AddFactIDs(ids ...string) *FactTypeCreate {
 	ftc.mutation.AddFactIDs(ids...)
 	return ftc
 }
 
 // AddFacts adds the "facts" edges to the Fact entity.
 func (ftc *FactTypeCreate) AddFacts(f ...*Fact) *FactTypeCreate {
-	ids := make([]uuid.UUID, len(f))
+	ids := make([]string, len(f))
 	for i := range f {
 		ids[i] = f[i].ID
 	}
@@ -143,6 +158,10 @@ func (ftc *FactTypeCreate) defaults() {
 		v := facttype.DefaultUpdateTime()
 		ftc.mutation.SetUpdateTime(v)
 	}
+	if _, ok := ftc.mutation.Builtin(); !ok {
+		v := facttype.DefaultBuiltin
+		ftc.mutation.SetBuiltin(v)
+	}
 	if _, ok := ftc.mutation.ID(); !ok {
 		v := facttype.DefaultID()
 		ftc.mutation.SetID(v)
@@ -183,7 +202,7 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: facttype.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: facttype.FieldID,
 			},
 		}
@@ -233,7 +252,7 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
+					Type:   field.TypeString,
 					Column: fact.FieldID,
 				},
 			},

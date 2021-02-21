@@ -12,28 +12,28 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uuid.UUID) predicate.Scope {
+func ID(id string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uuid.UUID) predicate.Scope {
+func IDEQ(id string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uuid.UUID) predicate.Scope {
+func IDNEQ(id string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uuid.UUID) predicate.Scope {
+func IDIn(ids ...string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -50,7 +50,7 @@ func IDIn(ids ...uuid.UUID) predicate.Scope {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uuid.UUID) predicate.Scope {
+func IDNotIn(ids ...string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -67,28 +67,28 @@ func IDNotIn(ids ...uuid.UUID) predicate.Scope {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uuid.UUID) predicate.Scope {
+func IDGT(id string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uuid.UUID) predicate.Scope {
+func IDGTE(id string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uuid.UUID) predicate.Scope {
+func IDLT(id string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uuid.UUID) predicate.Scope {
+func IDLTE(id string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
 	})
@@ -108,24 +108,17 @@ func UpdateTime(v time.Time) predicate.Scope {
 	})
 }
 
+// CustomID applies equality check predicate on the "custom_id" field. It's identical to CustomIDEQ.
+func CustomID(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCustomID), v))
+	})
+}
+
 // Nonce applies equality check predicate on the "nonce" field. It's identical to NonceEQ.
 func Nonce(v uuid.UUID) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldNonce), v))
-	})
-}
-
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
-}
-
-// ExpiresAt applies equality check predicate on the "expires_at" field. It's identical to ExpiresAtEQ.
-func ExpiresAt(v time.Time) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiresAt), v))
 	})
 }
 
@@ -281,6 +274,117 @@ func UpdateTimeLTE(v time.Time) predicate.Scope {
 	})
 }
 
+// CustomIDEQ applies the EQ predicate on the "custom_id" field.
+func CustomIDEQ(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDNEQ applies the NEQ predicate on the "custom_id" field.
+func CustomIDNEQ(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDIn applies the In predicate on the "custom_id" field.
+func CustomIDIn(vs ...string) predicate.Scope {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Scope(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCustomID), v...))
+	})
+}
+
+// CustomIDNotIn applies the NotIn predicate on the "custom_id" field.
+func CustomIDNotIn(vs ...string) predicate.Scope {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Scope(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCustomID), v...))
+	})
+}
+
+// CustomIDGT applies the GT predicate on the "custom_id" field.
+func CustomIDGT(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDGTE applies the GTE predicate on the "custom_id" field.
+func CustomIDGTE(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDLT applies the LT predicate on the "custom_id" field.
+func CustomIDLT(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDLTE applies the LTE predicate on the "custom_id" field.
+func CustomIDLTE(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDContains applies the Contains predicate on the "custom_id" field.
+func CustomIDContains(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDHasPrefix applies the HasPrefix predicate on the "custom_id" field.
+func CustomIDHasPrefix(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDHasSuffix applies the HasSuffix predicate on the "custom_id" field.
+func CustomIDHasSuffix(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDEqualFold applies the EqualFold predicate on the "custom_id" field.
+func CustomIDEqualFold(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldCustomID), v))
+	})
+}
+
+// CustomIDContainsFold applies the ContainsFold predicate on the "custom_id" field.
+func CustomIDContainsFold(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldCustomID), v))
+	})
+}
+
 // NonceEQ applies the EQ predicate on the "nonce" field.
 func NonceEQ(v uuid.UUID) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
@@ -354,221 +458,6 @@ func NonceLT(v uuid.UUID) predicate.Scope {
 func NonceLTE(v uuid.UUID) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldNonce), v))
-	})
-}
-
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...string) predicate.Scope {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Scope(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...string) predicate.Scope {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Scope(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldType), v))
-	})
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldType), v))
-	})
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldType), v))
-	})
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldType), v))
-	})
-}
-
-// TypeContains applies the Contains predicate on the "type" field.
-func TypeContains(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldType), v))
-	})
-}
-
-// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
-func TypeHasPrefix(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldType), v))
-	})
-}
-
-// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
-func TypeHasSuffix(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldType), v))
-	})
-}
-
-// TypeIsNil applies the IsNil predicate on the "type" field.
-func TypeIsNil() predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldType)))
-	})
-}
-
-// TypeNotNil applies the NotNil predicate on the "type" field.
-func TypeNotNil() predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldType)))
-	})
-}
-
-// TypeEqualFold applies the EqualFold predicate on the "type" field.
-func TypeEqualFold(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldType), v))
-	})
-}
-
-// TypeContainsFold applies the ContainsFold predicate on the "type" field.
-func TypeContainsFold(v string) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldType), v))
-	})
-}
-
-// ExpiresAtEQ applies the EQ predicate on the "expires_at" field.
-func ExpiresAtEQ(v time.Time) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiresAt), v))
-	})
-}
-
-// ExpiresAtNEQ applies the NEQ predicate on the "expires_at" field.
-func ExpiresAtNEQ(v time.Time) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldExpiresAt), v))
-	})
-}
-
-// ExpiresAtIn applies the In predicate on the "expires_at" field.
-func ExpiresAtIn(vs ...time.Time) predicate.Scope {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Scope(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldExpiresAt), v...))
-	})
-}
-
-// ExpiresAtNotIn applies the NotIn predicate on the "expires_at" field.
-func ExpiresAtNotIn(vs ...time.Time) predicate.Scope {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Scope(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldExpiresAt), v...))
-	})
-}
-
-// ExpiresAtGT applies the GT predicate on the "expires_at" field.
-func ExpiresAtGT(v time.Time) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldExpiresAt), v))
-	})
-}
-
-// ExpiresAtGTE applies the GTE predicate on the "expires_at" field.
-func ExpiresAtGTE(v time.Time) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldExpiresAt), v))
-	})
-}
-
-// ExpiresAtLT applies the LT predicate on the "expires_at" field.
-func ExpiresAtLT(v time.Time) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldExpiresAt), v))
-	})
-}
-
-// ExpiresAtLTE applies the LTE predicate on the "expires_at" field.
-func ExpiresAtLTE(v time.Time) predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldExpiresAt), v))
-	})
-}
-
-// ExpiresAtIsNil applies the IsNil predicate on the "expires_at" field.
-func ExpiresAtIsNil() predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldExpiresAt)))
-	})
-}
-
-// ExpiresAtNotNil applies the NotNil predicate on the "expires_at" field.
-func ExpiresAtNotNil() predicate.Scope {
-	return predicate.Scope(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldExpiresAt)))
 	})
 }
 
