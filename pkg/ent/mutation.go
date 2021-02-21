@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
@@ -1170,7 +1169,7 @@ type ScopeMutation struct {
 	create_time   *time.Time
 	update_time   *time.Time
 	custom_id     *string
-	nonce         *uuid.UUID
+	nonce         *string
 	clearedFields map[string]struct{}
 	facts         map[string]struct{}
 	removedfacts  map[string]struct{}
@@ -1374,12 +1373,12 @@ func (m *ScopeMutation) ResetCustomID() {
 }
 
 // SetNonce sets the "nonce" field.
-func (m *ScopeMutation) SetNonce(u uuid.UUID) {
-	m.nonce = &u
+func (m *ScopeMutation) SetNonce(s string) {
+	m.nonce = &s
 }
 
 // Nonce returns the value of the "nonce" field in the mutation.
-func (m *ScopeMutation) Nonce() (r uuid.UUID, exists bool) {
+func (m *ScopeMutation) Nonce() (r string, exists bool) {
 	v := m.nonce
 	if v == nil {
 		return
@@ -1390,7 +1389,7 @@ func (m *ScopeMutation) Nonce() (r uuid.UUID, exists bool) {
 // OldNonce returns the old "nonce" field's value of the Scope entity.
 // If the Scope object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScopeMutation) OldNonce(ctx context.Context) (v uuid.UUID, err error) {
+func (m *ScopeMutation) OldNonce(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldNonce is only allowed on UpdateOne operations")
 	}
@@ -1553,7 +1552,7 @@ func (m *ScopeMutation) SetField(name string, value ent.Value) error {
 		m.SetCustomID(v)
 		return nil
 	case scope.FieldNonce:
-		v, ok := value.(uuid.UUID)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

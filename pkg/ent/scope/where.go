@@ -7,7 +7,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
 )
 
@@ -116,7 +115,7 @@ func CustomID(v string) predicate.Scope {
 }
 
 // Nonce applies equality check predicate on the "nonce" field. It's identical to NonceEQ.
-func Nonce(v uuid.UUID) predicate.Scope {
+func Nonce(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldNonce), v))
 	})
@@ -386,21 +385,21 @@ func CustomIDContainsFold(v string) predicate.Scope {
 }
 
 // NonceEQ applies the EQ predicate on the "nonce" field.
-func NonceEQ(v uuid.UUID) predicate.Scope {
+func NonceEQ(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldNonce), v))
 	})
 }
 
 // NonceNEQ applies the NEQ predicate on the "nonce" field.
-func NonceNEQ(v uuid.UUID) predicate.Scope {
+func NonceNEQ(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldNonce), v))
 	})
 }
 
 // NonceIn applies the In predicate on the "nonce" field.
-func NonceIn(vs ...uuid.UUID) predicate.Scope {
+func NonceIn(vs ...string) predicate.Scope {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -417,7 +416,7 @@ func NonceIn(vs ...uuid.UUID) predicate.Scope {
 }
 
 // NonceNotIn applies the NotIn predicate on the "nonce" field.
-func NonceNotIn(vs ...uuid.UUID) predicate.Scope {
+func NonceNotIn(vs ...string) predicate.Scope {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -434,30 +433,65 @@ func NonceNotIn(vs ...uuid.UUID) predicate.Scope {
 }
 
 // NonceGT applies the GT predicate on the "nonce" field.
-func NonceGT(v uuid.UUID) predicate.Scope {
+func NonceGT(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldNonce), v))
 	})
 }
 
 // NonceGTE applies the GTE predicate on the "nonce" field.
-func NonceGTE(v uuid.UUID) predicate.Scope {
+func NonceGTE(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldNonce), v))
 	})
 }
 
 // NonceLT applies the LT predicate on the "nonce" field.
-func NonceLT(v uuid.UUID) predicate.Scope {
+func NonceLT(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldNonce), v))
 	})
 }
 
 // NonceLTE applies the LTE predicate on the "nonce" field.
-func NonceLTE(v uuid.UUID) predicate.Scope {
+func NonceLTE(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldNonce), v))
+	})
+}
+
+// NonceContains applies the Contains predicate on the "nonce" field.
+func NonceContains(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldNonce), v))
+	})
+}
+
+// NonceHasPrefix applies the HasPrefix predicate on the "nonce" field.
+func NonceHasPrefix(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldNonce), v))
+	})
+}
+
+// NonceHasSuffix applies the HasSuffix predicate on the "nonce" field.
+func NonceHasSuffix(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldNonce), v))
+	})
+}
+
+// NonceEqualFold applies the EqualFold predicate on the "nonce" field.
+func NonceEqualFold(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldNonce), v))
+	})
+}
+
+// NonceContainsFold applies the ContainsFold predicate on the "nonce" field.
+func NonceContainsFold(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldNonce), v))
 	})
 }
 

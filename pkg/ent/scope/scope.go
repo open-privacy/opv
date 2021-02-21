@@ -4,8 +4,6 @@ package scope
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -63,7 +61,7 @@ var (
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
 	// DefaultNonce holds the default value on creation for the "nonce" field.
-	DefaultNonce func() uuid.UUID
+	DefaultNonce func() string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() string
 )

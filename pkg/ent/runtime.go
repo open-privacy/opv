@@ -5,7 +5,6 @@ package ent
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/schema"
@@ -82,7 +81,7 @@ func init() {
 	// scopeDescNonce is the schema descriptor for nonce field.
 	scopeDescNonce := scopeFields[1].Descriptor()
 	// scope.DefaultNonce holds the default value on creation for the nonce field.
-	scope.DefaultNonce = scopeDescNonce.Default.(func() uuid.UUID)
+	scope.DefaultNonce = scopeDescNonce.Default.(func() string)
 	// scopeDescID is the schema descriptor for id field.
 	scopeDescID := scopeMixinFields0[0].Descriptor()
 	// scope.DefaultID holds the default value on creation for the id field.

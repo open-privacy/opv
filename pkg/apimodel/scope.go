@@ -5,15 +5,13 @@ import (
 )
 
 type CreateScope struct {
-	Type      string     `json:"type"`
-	ExpiresAt *time.Time `json:"expires_at,omitempty"`
+	CustomID string `json:"type"`
 }
 
 type Scope struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
+	ID       string `json:"id"`
+	CustomID string `json:"custom_id"`
 
-	CreateTime time.Time  `json:"create_time"`
-	UpdateTime time.Time  `json:"update_time"`
-	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
+	CreateTime time.Time `json:"create_time"`
+	UpdateTime time.Time `json:"update_time"`
 }

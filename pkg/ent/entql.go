@@ -65,7 +65,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			scope.FieldCreateTime: {Type: field.TypeTime, Column: scope.FieldCreateTime},
 			scope.FieldUpdateTime: {Type: field.TypeTime, Column: scope.FieldUpdateTime},
 			scope.FieldCustomID:   {Type: field.TypeString, Column: scope.FieldCustomID},
-			scope.FieldNonce:      {Type: field.TypeUUID, Column: scope.FieldNonce},
+			scope.FieldNonce:      {Type: field.TypeString, Column: scope.FieldNonce},
 		},
 	}
 	graph.MustAddE(
@@ -339,8 +339,8 @@ func (f *ScopeFilter) WhereCustomID(p entql.StringP) {
 	f.Where(p.Field(scope.FieldCustomID))
 }
 
-// WhereNonce applies the entql [16]byte predicate on the nonce field.
-func (f *ScopeFilter) WhereNonce(p entql.ValueP) {
+// WhereNonce applies the entql string predicate on the nonce field.
+func (f *ScopeFilter) WhereNonce(p entql.StringP) {
 	f.Where(p.Field(scope.FieldNonce))
 }
 

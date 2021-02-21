@@ -9,7 +9,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
 	"github.com/open-privacy/opv/pkg/ent/scope"
@@ -35,8 +34,16 @@ func (su *ScopeUpdate) SetCustomID(s string) *ScopeUpdate {
 }
 
 // SetNonce sets the "nonce" field.
-func (su *ScopeUpdate) SetNonce(u uuid.UUID) *ScopeUpdate {
-	su.mutation.SetNonce(u)
+func (su *ScopeUpdate) SetNonce(s string) *ScopeUpdate {
+	su.mutation.SetNonce(s)
+	return su
+}
+
+// SetNillableNonce sets the "nonce" field if the given value is not nil.
+func (su *ScopeUpdate) SetNillableNonce(s *string) *ScopeUpdate {
+	if s != nil {
+		su.SetNonce(*s)
+	}
 	return su
 }
 
@@ -175,7 +182,7 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Nonce(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: scope.FieldNonce,
 		})
@@ -259,8 +266,16 @@ func (suo *ScopeUpdateOne) SetCustomID(s string) *ScopeUpdateOne {
 }
 
 // SetNonce sets the "nonce" field.
-func (suo *ScopeUpdateOne) SetNonce(u uuid.UUID) *ScopeUpdateOne {
-	suo.mutation.SetNonce(u)
+func (suo *ScopeUpdateOne) SetNonce(s string) *ScopeUpdateOne {
+	suo.mutation.SetNonce(s)
+	return suo
+}
+
+// SetNillableNonce sets the "nonce" field if the given value is not nil.
+func (suo *ScopeUpdateOne) SetNillableNonce(s *string) *ScopeUpdateOne {
+	if s != nil {
+		suo.SetNonce(*s)
+	}
 	return suo
 }
 
@@ -404,7 +419,7 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 	}
 	if value, ok := suo.mutation.Nonce(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: scope.FieldNonce,
 		})

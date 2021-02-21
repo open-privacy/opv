@@ -80,7 +80,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "custom_id", Type: field.TypeString},
-		{Name: "nonce", Type: field.TypeUUID},
+		{Name: "nonce", Type: field.TypeString},
 	}
 	// ScopesTable holds the schema information for the "scopes" table.
 	ScopesTable = &schema.Table{

@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/scope"
 )
@@ -57,8 +56,16 @@ func (sc *ScopeCreate) SetCustomID(s string) *ScopeCreate {
 }
 
 // SetNonce sets the "nonce" field.
-func (sc *ScopeCreate) SetNonce(u uuid.UUID) *ScopeCreate {
-	sc.mutation.SetNonce(u)
+func (sc *ScopeCreate) SetNonce(s string) *ScopeCreate {
+	sc.mutation.SetNonce(s)
+	return sc
+}
+
+// SetNillableNonce sets the "nonce" field if the given value is not nil.
+func (sc *ScopeCreate) SetNillableNonce(s *string) *ScopeCreate {
+	if s != nil {
+		sc.SetNonce(*s)
+	}
 	return sc
 }
 
@@ -230,7 +237,7 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := sc.mutation.Nonce(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeString,
 			Value:  value,
 			Column: scope.FieldNonce,
 		})

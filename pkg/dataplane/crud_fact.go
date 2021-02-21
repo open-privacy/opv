@@ -40,7 +40,7 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 		return apimodel.NewEntError(c, err)
 	}
 
-	value, err := dp.Encryptor.Decrypt(s.Nonce.String(), f.EncryptedValue)
+	value, err := dp.Encryptor.Decrypt(s.Nonce, f.EncryptedValue)
 	if err != nil {
 		return apimodel.NewEntError(c, err)
 	}
@@ -84,7 +84,7 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		return apimodel.NewEntError(c, err)
 	}
 
-	encryptedValue, err := dp.Encryptor.Encrypt(s.Nonce.String(), cf.Value)
+	encryptedValue, err := dp.Encryptor.Encrypt(s.Nonce, cf.Value)
 	if err != nil {
 		return apimodel.NewEntError(c, err)
 	}

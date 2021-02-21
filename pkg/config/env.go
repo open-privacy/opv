@@ -19,8 +19,9 @@ var ENV = struct {
 	ControlPlanePort int `env:"OPV_CONTROL_PLANE_PORT" envDefault:"28001"`
 	ProxyPlanePort   int `env:"OPV_PROXY_PLANE_PORT" envDefault:"28002"`
 
-	EncryptorName          string   `env:"OPV_ENCRYPTOR_NAME" envDefault:"secretbox"`
-	EncryptorSecretboxKeys []string `env:"OPV_ENCRYPTOR_SECRETBOX_KEYS" envDefault:"pleasechangeme,pleasechangemeagain" envSeparator:","`
+	EncryptorName                   string   `env:"OPV_ENCRYPTOR_NAME" envDefault:"secretbox"`
+	EncryptorSecretboxKeys          []string `env:"OPV_ENCRYPTOR_SECRETBOX_KEYS" envDefault:"pleasechangeme,pleasechangemeagain" envSeparator:","`
+	EncryptorSecretboxBase64Enabled bool     `env:"OPV_ENCRYPTOR_SECRETBOX_BASE64_ENABLED" envDefault:"true"`
 
 	HasherName       string `env:"OPV_HASHER_NAME" envDefault:"scrypt"`
 	HasherScryptSalt []byte `env:"OPV_HASHER_SCRYPT_SALT" envDefault:""`

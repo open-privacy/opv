@@ -333,9 +333,6 @@ var doc = `{
         "apimodel.CreateScope": {
             "type": "object",
             "properties": {
-                "expires_at": {
-                    "type": "string"
-                },
                 "type": {
                     "type": "string"
                 }
@@ -398,13 +395,10 @@ var doc = `{
                 "create_time": {
                     "type": "string"
                 },
-                "expires_at": {
+                "custom_id": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
-                },
-                "type": {
                     "type": "string"
                 },
                 "update_time": {

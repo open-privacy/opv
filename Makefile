@@ -1,4 +1,4 @@
-.PHONY: deps ent vendor test build swag run
+.PHONY: deps ent vendor swag test build gen run
 
 deps:
 	curl -sf https://gobinaries.com/myitcv/gobin | sh
@@ -12,17 +12,19 @@ vendor:
 	go mod tidy
 	go mod vendor
 
-test:
-	go test -race -covermode=atomic -coverprofile=coverage.txt ./pkg/...
-
 swag:
 	swag init --parseDependency -d ./cmd/dataplane    -o ./cmd/dataplane/docs
 	swag init --parseDependency -d ./cmd/controlplane -o ./cmd/controlplane/docs
+
+test:
+	go test -race -covermode=atomic -coverprofile=coverage.txt ./pkg/...
 
 build:
 	go build -o build/dataplane    ./cmd/dataplane
 	go build -o build/controlplane ./cmd/controlplane
 	go build -o build/proxyplane   ./cmd/proxyplane
+
+gen: ent swag
 
 run: build
 	$(MAKE) -j _run_dataplane

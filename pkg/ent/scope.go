@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/open-privacy/opv/pkg/ent/scope"
 )
 
@@ -24,7 +23,7 @@ type Scope struct {
 	// CustomID holds the value of the "custom_id" field.
 	CustomID string `json:"custom_id,omitempty"`
 	// Nonce holds the value of the "nonce" field.
-	Nonce uuid.UUID `json:"nonce,omitempty"`
+	Nonce string `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ScopeQuery when eager-loading is set.
 	Edges ScopeEdges `json:"edges"`
@@ -53,12 +52,10 @@ func (*Scope) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case scope.FieldID, scope.FieldCustomID:
+		case scope.FieldID, scope.FieldCustomID, scope.FieldNonce:
 			values[i] = &sql.NullString{}
 		case scope.FieldCreateTime, scope.FieldUpdateTime:
 			values[i] = &sql.NullTime{}
-		case scope.FieldNonce:
-			values[i] = &uuid.UUID{}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Scope", columns[i])
 		}
@@ -99,10 +96,10 @@ func (s *Scope) assignValues(columns []string, values []interface{}) error {
 				s.CustomID = value.String
 			}
 		case scope.FieldNonce:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nonce", values[i])
-			} else if value != nil {
-				s.Nonce = *value
+			} else if value.Valid {
+				s.Nonce = value.String
 			}
 		}
 	}
@@ -143,8 +140,7 @@ func (s *Scope) String() string {
 	builder.WriteString(s.UpdateTime.Format(time.ANSIC))
 	builder.WriteString(", custom_id=")
 	builder.WriteString(s.CustomID)
-	builder.WriteString(", nonce=")
-	builder.WriteString(fmt.Sprintf("%v", s.Nonce))
+	builder.WriteString(", nonce=<sensitive>")
 	builder.WriteByte(')')
 	return builder.String()
 }

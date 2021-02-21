@@ -16,8 +16,6 @@ definitions:
     type: object
   apimodel.CreateScope:
     properties:
-      expires_at:
-        type: string
       type:
         type: string
     type: object
@@ -58,11 +56,9 @@ definitions:
     properties:
       create_time:
         type: string
-      expires_at:
+      custom_id:
         type: string
       id:
-        type: string
-      type:
         type: string
       update_time:
         type: string

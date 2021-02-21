@@ -14,11 +14,16 @@ type Scope struct {
 	ent.Schema
 }
 
+// DefaultNonce generates a secure random nonce
+func DefaultNonce() string {
+	return uuid.New().String()
+}
+
 // Fields of the Scope.
 func (Scope) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("custom_id"),
-		field.UUID("nonce", uuid.UUID{}).Default(uuid.New),
+		field.String("nonce").Sensitive().DefaultFunc(DefaultNonce),
 	}
 }
 
