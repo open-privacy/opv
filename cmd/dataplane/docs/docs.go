@@ -341,9 +341,6 @@ var doc = `{
         "apimodel.Fact": {
             "type": "object",
             "properties": {
-                "create_time": {
-                    "type": "string"
-                },
                 "fact_type_slug": {
                     "type": "string"
                 },
@@ -351,9 +348,6 @@ var doc = `{
                     "type": "string"
                 },
                 "scope_custom_id": {
-                    "type": "string"
-                },
-                "update_time": {
                     "type": "string"
                 },
                 "value": {
@@ -364,16 +358,10 @@ var doc = `{
         "apimodel.FactType": {
             "type": "object",
             "properties": {
-                "create_time": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
                 "slug": {
-                    "type": "string"
-                },
-                "update_time": {
                     "type": "string"
                 }
             }
@@ -392,19 +380,20 @@ var doc = `{
         "apimodel.Scope": {
             "type": "object",
             "properties": {
-                "create_time": {
-                    "type": "string"
-                },
                 "custom_id": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
-                },
-                "update_time": {
-                    "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "X-OPV-GRANT-KEY",
+            "in": "header"
         }
     },
     "tags": [

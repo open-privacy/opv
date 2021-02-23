@@ -16,6 +16,8 @@ func NewHTTPError(c echo.Context, err error, status int) error {
 	return c.JSON(status, er)
 }
 
+// NewEntError creates an error directly from entgo framework
+// The status code is based on the ent error type
 func NewEntError(c echo.Context, err error) error {
 	if err == nil {
 		return nil

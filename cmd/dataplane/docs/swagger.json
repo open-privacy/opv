@@ -326,9 +326,6 @@
         "apimodel.Fact": {
             "type": "object",
             "properties": {
-                "create_time": {
-                    "type": "string"
-                },
                 "fact_type_slug": {
                     "type": "string"
                 },
@@ -336,9 +333,6 @@
                     "type": "string"
                 },
                 "scope_custom_id": {
-                    "type": "string"
-                },
-                "update_time": {
                     "type": "string"
                 },
                 "value": {
@@ -349,16 +343,10 @@
         "apimodel.FactType": {
             "type": "object",
             "properties": {
-                "create_time": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
                 "slug": {
-                    "type": "string"
-                },
-                "update_time": {
                     "type": "string"
                 }
             }
@@ -377,19 +365,20 @@
         "apimodel.Scope": {
             "type": "object",
             "properties": {
-                "create_time": {
-                    "type": "string"
-                },
                 "custom_id": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
-                },
-                "update_time": {
-                    "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "X-OPV-GRANT-KEY",
+            "in": "header"
         }
     },
     "tags": [

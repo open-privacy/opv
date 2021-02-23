@@ -27,7 +27,10 @@ build:
 gen: ent swag
 
 run: build
-	$(MAKE) -j _run_dataplane
+	$(MAKE) -j _run_controlplane _run_dataplane
 
 _run_dataplane:
 	./build/dataplane
+
+_run_controlplane:
+	./build/controlplane

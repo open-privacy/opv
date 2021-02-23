@@ -12,17 +12,18 @@ import (
 	"github.com/open-privacy/opv/pkg/ent/scope"
 )
 
-// @Tags Fact
-// @Summary Show a fact
-// @Description Show a fact by ID
-// @ID show-fact-by-id
-// @Accept  json
-// @Produce  json
-// @Param id path string true "Fact ID"
-// @Success 200 {object} apimodel.Fact
-// @Failure 400 {object} apimodel.HTTPError
-// @Failure 500 {object} apimodel.HTTPError
-// @Router /facts/{id} [get]
+// ShowFact godoc
+// @tags Fact
+// @summary Show a fact
+// @description Show a fact by ID
+// @id show-fact-by-id
+// @accept  json
+// @produce  json
+// @param id path string true "Fact ID"
+// @success 200 {object} apimodel.Fact
+// @failure 400 {object} apimodel.HTTPError
+// @failure 500 {object} apimodel.HTTPError
+// @router /facts/{id} [get]
 func (dp *DataPlane) ShowFact(c echo.Context) error {
 	ctx := c.Request().Context()
 	f, err := dp.EntClient.Fact.Query().WithScope().WithFactType().Where(fact.ID(c.Param("id"))).Only(ctx)
@@ -49,23 +50,22 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 		ID:            f.ID,
 		ScopeCustomID: s.CustomID,
 		FactTypeSlug:  ft.Slug,
-		CreateTime:    f.CreateTime,
-		UpdateTime:    f.UpdateTime,
 		Value:         value,
 	})
 }
 
-// @Tags Fact
-// @Summary Create a fact
-// @Description create a fact
-// @ID create-fact
-// @Accept  json
-// @Produce  json
-// @Param createFact body apimodel.CreateFact true "Create Fact Parameters"
-// @Success 200 {object} apimodel.Fact
-// @Failure 400 {object} apimodel.HTTPError
-// @Failure 500 {object} apimodel.HTTPError
-// @Router /facts [post]
+// CreateFact godoc
+// @tags Fact
+// @summary Create a fact
+// @description create a fact
+// @id create-fact
+// @accept  json
+// @produce  json
+// @param createFact body apimodel.CreateFact true "Create Fact Parameters"
+// @success 200 {object} apimodel.Fact
+// @failure 400 {object} apimodel.HTTPError
+// @failure 500 {object} apimodel.HTTPError
+// @router /facts [post]
 func (dp *DataPlane) CreateFact(c echo.Context) error {
 	ctx := c.Request().Context()
 	cf := &apimodel.CreateFact{}
@@ -106,8 +106,6 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		ID:            f.ID,
 		ScopeCustomID: s.CustomID,
 		FactTypeSlug:  ft.Slug,
-		CreateTime:    f.CreateTime,
-		UpdateTime:    f.UpdateTime,
 		Value:         cf.Value,
 	})
 }

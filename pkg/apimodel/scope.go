@@ -1,17 +1,12 @@
 package apimodel
 
-import (
-	"time"
-)
-
+// CreateScope represents the request of creating a scope
 type CreateScope struct {
 	CustomID string `json:"type"`
 }
 
+// Scope represents the struct of a scope
 type Scope struct {
 	ID       string `json:"id"`
 	CustomID string `json:"custom_id"`
-
-	CreateTime time.Time `json:"create_time"`
-	UpdateTime time.Time `json:"update_time"`
 }

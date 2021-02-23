@@ -10,7 +10,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"github.com/tj/go-gracefully"
 
 	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
 	"github.com/open-privacy/opv/pkg/config"
@@ -19,6 +18,7 @@ import (
 	"github.com/open-privacy/opv/pkg/ent/migrate"
 )
 
+// DataPlane represents the data plane struct
 type DataPlane struct {
 	EntClient *ent.Client
 	Echo      *echo.Echo
@@ -27,6 +27,7 @@ type DataPlane struct {
 	Hasher    crypto.Hasher
 }
 
+// MustNewDataPlane creates a new DataPlane, otherwise panic
 func MustNewDataPlane() *DataPlane {
 	dp := &DataPlane{}
 	dp.prepareDB()
@@ -37,7 +38,9 @@ func MustNewDataPlane() *DataPlane {
 	return dp
 }
 
+// Start starts the data plane server
 func (dp *DataPlane) Start() {
+	dp.Logger.Infof("DataPlane started on %s:%d", config.ENV.Host, config.ENV.DataPlanePort)
 	go dp.Echo.Start(
 		fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.DataPlanePort),
 	)
@@ -46,6 +49,7 @@ func (dp *DataPlane) Start() {
 func (dp *DataPlane) prepareEcho() {
 	e := echo.New()
 	e.HideBanner = true
+	e.HidePort = true
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
@@ -55,6 +59,7 @@ func (dp *DataPlane) prepareEcho() {
 	}
 
 	apiv1 := e.Group("/api/v1")
+	apiv1.Use(grantValidationMiddleware)
 	apiv1.POST("/scopes", dp.CreateScope)
 	apiv1.GET("/scopes/:id", dp.ShowScope)
 	apiv1.POST("/facts", dp.CreateFact)
@@ -82,10 +87,8 @@ func (dp *DataPlane) prepareDB() {
 	dp.EntClient = entClient
 }
 
-func (dp *DataPlane) WaitForStop() {
-	gracefully.Timeout = config.ENV.DataPlaneGracefullyTimeout
-	gracefully.Shutdown()
-
+// Stop will do some cleanup when shutdown
+func (dp *DataPlane) Stop() {
 	dp.EntClient.Close()
 	dp.Echo.Close()
 }
