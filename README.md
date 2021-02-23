@@ -10,7 +10,6 @@ make deps
 make vendor
 make run
 
-# Open Swagger UI to see the data plane API.
 # Default DataPlane Swagger URL:
 # http://127.0.0.1:28000/swagger/index.html
 
