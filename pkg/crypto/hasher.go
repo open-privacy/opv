@@ -21,7 +21,7 @@ func MustNewHasher() Hasher {
 	switch config.ENV.HasherName {
 	case hasherScrypt:
 		hasher = &ScryptHasher{
-			salt:   config.ENV.HasherScryptSalt,
+			salt:   []byte(config.ENV.HasherScryptSalt),
 			n:      config.ENV.HasherScryptN,
 			r:      8,
 			p:      1,

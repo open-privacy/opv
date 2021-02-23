@@ -21,28 +21,20 @@ definitions:
     type: object
   apimodel.Fact:
     properties:
-      create_time:
-        type: string
       fact_type_slug:
         type: string
       id:
         type: string
       scope_custom_id:
         type: string
-      update_time:
-        type: string
       value:
         type: string
     type: object
   apimodel.FactType:
     properties:
-      create_time:
-        type: string
       id:
         type: string
       slug:
-        type: string
-      update_time:
         type: string
     type: object
   apimodel.HTTPError:
@@ -54,13 +46,9 @@ definitions:
     type: object
   apimodel.Scope:
     properties:
-      create_time:
-        type: string
       custom_id:
         type: string
       id:
-        type: string
-      update_time:
         type: string
     type: object
 host: localhost
@@ -257,6 +245,11 @@ paths:
       summary: Show a scope
       tags:
       - Scope
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-OPV-GRANT-KEY
+    type: apiKey
 swagger: "2.0"
 tags:
 - description: A scope is the unit of encryption isolation unit, usually it represents a person as a scope

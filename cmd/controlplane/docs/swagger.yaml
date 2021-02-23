@@ -1,4 +1,65 @@
+basePath: /api/v1
+definitions:
+  apimodel.CreateGrant:
+    properties:
+      plane:
+        type: string
+    type: object
+  apimodel.Grant:
+    properties:
+      id:
+        type: string
+      plane:
+        type: string
+      token:
+        type: string
+    type: object
+  apimodel.HTTPError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+host: localhost
 info:
   contact: {}
-paths: {}
+  description: Open Privacy Vault Control Plane API.
+  title: Open Privacy Vault Control Plane API
+  version: "1.0"
+paths:
+  /grants:
+    post:
+      consumes:
+      - application/json
+      description: Create a grant
+      operationId: create-grant
+      parameters:
+      - description: Create Grant parameters
+        in: body
+        name: createGrant
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.CreateGrant'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.Grant'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Create a grant
+      tags:
+      - Grant
 swagger: "2.0"
+tags:
+- description: A grant is the unit of grant to access certain resource in OPV
+  name: Grant
