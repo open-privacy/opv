@@ -1,7 +1,7 @@
-# Introduction
-Open Privacy Vault
+# Open Privacy Vault
 
-# Development
+## Development
+
 Make sure you have `go` and `make` installed.
 
 ```sh
@@ -11,7 +11,9 @@ make vendor
 make run
 
 # Open Swagger UI to see the data plane API.
-# Default local url:
-#
-# http://127.0.0.1:28000/swagger/index.html 
+# Default DataPlane Swagger URL:
+# http://127.0.0.1:28000/swagger/index.html
+
+# Default ControlPlane Swagger URL:
+# http://127.0.0.1:27999/swagger/index.html
 ```
