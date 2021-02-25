@@ -62,6 +62,12 @@ func (fc *FactCreate) SetEncryptedValue(s string) *FactCreate {
 	return fc
 }
 
+// SetDomain sets the "domain" field.
+func (fc *FactCreate) SetDomain(s string) *FactCreate {
+	fc.mutation.SetDomain(s)
+	return fc
+}
+
 // SetID sets the "id" field.
 func (fc *FactCreate) SetID(s string) *FactCreate {
 	fc.mutation.SetID(s)
@@ -194,6 +200,9 @@ func (fc *FactCreate) check() error {
 	if _, ok := fc.mutation.EncryptedValue(); !ok {
 		return &ValidationError{Name: "encrypted_value", err: errors.New("ent: missing required field \"encrypted_value\"")}
 	}
+	if _, ok := fc.mutation.Domain(); !ok {
+		return &ValidationError{Name: "domain", err: errors.New("ent: missing required field \"domain\"")}
+	}
 	return nil
 }
 
@@ -254,6 +263,14 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 			Column: fact.FieldEncryptedValue,
 		})
 		_node.EncryptedValue = value
+	}
+	if value, ok := fc.mutation.Domain(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fact.FieldDomain,
+		})
+		_node.Domain = value
 	}
 	if nodes := fc.mutation.ScopeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

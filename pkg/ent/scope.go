@@ -24,6 +24,8 @@ type Scope struct {
 	CustomID string `json:"custom_id,omitempty"`
 	// Nonce holds the value of the "nonce" field.
 	Nonce string `json:"-"`
+	// Domain holds the value of the "domain" field.
+	Domain string `json:"domain,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ScopeQuery when eager-loading is set.
 	Edges ScopeEdges `json:"edges"`
@@ -52,7 +54,7 @@ func (*Scope) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case scope.FieldID, scope.FieldCustomID, scope.FieldNonce:
+		case scope.FieldID, scope.FieldCustomID, scope.FieldNonce, scope.FieldDomain:
 			values[i] = &sql.NullString{}
 		case scope.FieldCreateTime, scope.FieldUpdateTime:
 			values[i] = &sql.NullTime{}
@@ -101,6 +103,12 @@ func (s *Scope) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Nonce = value.String
 			}
+		case scope.FieldDomain:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field domain", values[i])
+			} else if value.Valid {
+				s.Domain = value.String
+			}
 		}
 	}
 	return nil
@@ -141,6 +149,8 @@ func (s *Scope) String() string {
 	builder.WriteString(", custom_id=")
 	builder.WriteString(s.CustomID)
 	builder.WriteString(", nonce=<sensitive>")
+	builder.WriteString(", domain=")
+	builder.WriteString(s.Domain)
 	builder.WriteByte(')')
 	return builder.String()
 }

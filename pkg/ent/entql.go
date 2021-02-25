@@ -32,6 +32,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			fact.FieldUpdateTime:     {Type: field.TypeTime, Column: fact.FieldUpdateTime},
 			fact.FieldHashedValue:    {Type: field.TypeString, Column: fact.FieldHashedValue},
 			fact.FieldEncryptedValue: {Type: field.TypeString, Column: fact.FieldEncryptedValue},
+			fact.FieldDomain:         {Type: field.TypeString, Column: fact.FieldDomain},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -66,6 +67,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			scope.FieldUpdateTime: {Type: field.TypeTime, Column: scope.FieldUpdateTime},
 			scope.FieldCustomID:   {Type: field.TypeString, Column: scope.FieldCustomID},
 			scope.FieldNonce:      {Type: field.TypeString, Column: scope.FieldNonce},
+			scope.FieldDomain:     {Type: field.TypeString, Column: scope.FieldDomain},
 		},
 	}
 	graph.MustAddE(
@@ -182,6 +184,11 @@ func (f *FactFilter) WhereHashedValue(p entql.StringP) {
 // WhereEncryptedValue applies the entql string predicate on the encrypted_value field.
 func (f *FactFilter) WhereEncryptedValue(p entql.StringP) {
 	f.Where(p.Field(fact.FieldEncryptedValue))
+}
+
+// WhereDomain applies the entql string predicate on the domain field.
+func (f *FactFilter) WhereDomain(p entql.StringP) {
+	f.Where(p.Field(fact.FieldDomain))
 }
 
 // WhereHasScope applies a predicate to check if query has an edge scope.
@@ -342,6 +349,11 @@ func (f *ScopeFilter) WhereCustomID(p entql.StringP) {
 // WhereNonce applies the entql string predicate on the nonce field.
 func (f *ScopeFilter) WhereNonce(p entql.StringP) {
 	f.Where(p.Field(scope.FieldNonce))
+}
+
+// WhereDomain applies the entql string predicate on the domain field.
+func (f *ScopeFilter) WhereDomain(p entql.StringP) {
+	f.Where(p.Field(scope.FieldDomain))
 }
 
 // WhereHasFacts applies a predicate to check if query has an edge facts.

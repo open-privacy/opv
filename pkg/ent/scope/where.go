@@ -121,6 +121,13 @@ func Nonce(v string) predicate.Scope {
 	})
 }
 
+// Domain applies equality check predicate on the "domain" field. It's identical to DomainEQ.
+func Domain(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDomain), v))
+	})
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
@@ -492,6 +499,117 @@ func NonceEqualFold(v string) predicate.Scope {
 func NonceContainsFold(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldNonce), v))
+	})
+}
+
+// DomainEQ applies the EQ predicate on the "domain" field.
+func DomainEQ(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDomain), v))
+	})
+}
+
+// DomainNEQ applies the NEQ predicate on the "domain" field.
+func DomainNEQ(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDomain), v))
+	})
+}
+
+// DomainIn applies the In predicate on the "domain" field.
+func DomainIn(vs ...string) predicate.Scope {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Scope(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDomain), v...))
+	})
+}
+
+// DomainNotIn applies the NotIn predicate on the "domain" field.
+func DomainNotIn(vs ...string) predicate.Scope {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Scope(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDomain), v...))
+	})
+}
+
+// DomainGT applies the GT predicate on the "domain" field.
+func DomainGT(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDomain), v))
+	})
+}
+
+// DomainGTE applies the GTE predicate on the "domain" field.
+func DomainGTE(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDomain), v))
+	})
+}
+
+// DomainLT applies the LT predicate on the "domain" field.
+func DomainLT(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDomain), v))
+	})
+}
+
+// DomainLTE applies the LTE predicate on the "domain" field.
+func DomainLTE(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDomain), v))
+	})
+}
+
+// DomainContains applies the Contains predicate on the "domain" field.
+func DomainContains(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDomain), v))
+	})
+}
+
+// DomainHasPrefix applies the HasPrefix predicate on the "domain" field.
+func DomainHasPrefix(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDomain), v))
+	})
+}
+
+// DomainHasSuffix applies the HasSuffix predicate on the "domain" field.
+func DomainHasSuffix(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDomain), v))
+	})
+}
+
+// DomainEqualFold applies the EqualFold predicate on the "domain" field.
+func DomainEqualFold(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDomain), v))
+	})
+}
+
+// DomainContainsFold applies the ContainsFold predicate on the "domain" field.
+func DomainContainsFold(v string) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDomain), v))
 	})
 }
 
