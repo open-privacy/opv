@@ -14,6 +14,7 @@ const (
 
 type Hasher interface {
 	Hash(string) string
+	HashFaster(string) string
 }
 
 func MustNewHasher() Hasher {
@@ -46,6 +47,18 @@ func (sh *ScryptHasher) Hash(s string) string {
 		[]byte(s),
 		sh.salt,
 		sh.n,
+		sh.r,
+		sh.p,
+		sh.keyLen,
+	)
+	return base64.StdEncoding.EncodeToString(dk)
+}
+
+func (sh *ScryptHasher) HashFaster(s string) string {
+	dk, _ := scrypt.Key(
+		[]byte(s),
+		sh.salt,
+		sh.n>>4,
 		sh.r,
 		sh.p,
 		sh.keyLen,

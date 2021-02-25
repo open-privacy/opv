@@ -69,6 +69,12 @@ func (sc *ScopeCreate) SetNillableNonce(s *string) *ScopeCreate {
 	return sc
 }
 
+// SetDomain sets the "domain" field.
+func (sc *ScopeCreate) SetDomain(s string) *ScopeCreate {
+	sc.mutation.SetDomain(s)
+	return sc
+}
+
 // SetID sets the "id" field.
 func (sc *ScopeCreate) SetID(s string) *ScopeCreate {
 	sc.mutation.SetID(s)
@@ -182,6 +188,9 @@ func (sc *ScopeCreate) check() error {
 	if _, ok := sc.mutation.Nonce(); !ok {
 		return &ValidationError{Name: "nonce", err: errors.New("ent: missing required field \"nonce\"")}
 	}
+	if _, ok := sc.mutation.Domain(); !ok {
+		return &ValidationError{Name: "domain", err: errors.New("ent: missing required field \"domain\"")}
+	}
 	return nil
 }
 
@@ -242,6 +251,14 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 			Column: scope.FieldNonce,
 		})
 		_node.Nonce = value
+	}
+	if value, ok := sc.mutation.Domain(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldDomain,
+		})
+		_node.Domain = value
 	}
 	if nodes := sc.mutation.FactsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -15,7 +15,7 @@ import (
 
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
-// @name X-OPV-GRANT-KEY
+// @name X-OPV-GRANT-TOKEN
 
 // @tag.name Scope
 // @tag.description A scope is the unit of encryption isolation unit, usually it represents a person as a scope

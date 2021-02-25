@@ -2,15 +2,19 @@ basePath: /api/v1
 definitions:
   apimodel.CreateGrant:
     properties:
-      plane:
+      allowed_actions:
+        items:
+          type: string
+        type: array
+      domain:
         type: string
     type: object
   apimodel.Grant:
     properties:
-      id:
-        type: string
-      plane:
-        type: string
+      allowed_actions:
+        items:
+          type: string
+        type: array
       token:
         type: string
     type: object

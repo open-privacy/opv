@@ -76,7 +76,13 @@ var doc = `{
         "apimodel.CreateGrant": {
             "type": "object",
             "properties": {
-                "plane": {
+                "allowed_actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "domain": {
                     "type": "string"
                 }
             }
@@ -84,11 +90,11 @@ var doc = `{
         "apimodel.Grant": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "plane": {
-                    "type": "string"
+                "allowed_actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "token": {
                     "type": "string"

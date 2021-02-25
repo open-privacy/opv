@@ -18,6 +18,7 @@ func (Fact) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("hashed_value").Sensitive(),
 		field.String("encrypted_value").Sensitive(),
+		field.String("domain"),
 	}
 }
 

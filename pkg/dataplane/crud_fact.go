@@ -17,8 +17,8 @@ import (
 // @summary Show a fact
 // @description Show a fact by ID
 // @id show-fact-by-id
-// @accept  json
-// @produce  json
+// @accept json
+// @produce json
 // @param id path string true "Fact ID"
 // @success 200 {object} apimodel.Fact
 // @failure 400 {object} apimodel.HTTPError
@@ -26,7 +26,10 @@ import (
 // @router /facts/{id} [get]
 func (dp *DataPlane) ShowFact(c echo.Context) error {
 	ctx := c.Request().Context()
-	f, err := dp.EntClient.Fact.Query().WithScope().WithFactType().Where(fact.ID(c.Param("id"))).Only(ctx)
+	f, err := dp.EntClient.Fact.Query().WithScope().WithFactType().Where(
+		fact.ID(c.Param("id")),
+		fact.Domain(currentDomain(c)),
+	).Only(ctx)
 	if err != nil {
 		return apimodel.NewEntError(c, err)
 	}
@@ -51,6 +54,7 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 		ScopeCustomID: s.CustomID,
 		FactTypeSlug:  ft.Slug,
 		Value:         value,
+		Domain:        f.Domain,
 	})
 }
 
@@ -59,8 +63,8 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 // @summary Create a fact
 // @description create a fact
 // @id create-fact
-// @accept  json
-// @produce  json
+// @accept json
+// @produce json
 // @param createFact body apimodel.CreateFact true "Create Fact Parameters"
 // @success 200 {object} apimodel.Fact
 // @failure 400 {object} apimodel.HTTPError
@@ -74,7 +78,9 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		return apimodel.NewEntError(c, err)
 	}
 
-	s, err := dp.createScopeIfNotExists(ctx, cf.ScopeCustomID)
+	domain := currentDomain(c)
+
+	s, err := dp.createScopeIfNotExists(ctx, domain, cf.ScopeCustomID)
 	if err != nil {
 		return apimodel.NewEntError(c, err)
 	}
@@ -96,6 +102,7 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		SetFactType(ft).
 		SetEncryptedValue(encryptedValue).
 		SetHashedValue(hashedValue).
+		SetDomain(domain).
 		Save(ctx)
 
 	if err != nil {
@@ -107,13 +114,17 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		ScopeCustomID: s.CustomID,
 		FactTypeSlug:  ft.Slug,
 		Value:         cf.Value,
+		Domain:        f.Domain,
 	})
 }
 
-func (dp *DataPlane) createScopeIfNotExists(ctx context.Context, scopeCustomID string) (*ent.Scope, error) {
+func (dp *DataPlane) createScopeIfNotExists(ctx context.Context, domain string, scopeCustomID string) (*ent.Scope, error) {
 	s, err := dp.EntClient.Scope.Query().Where(scope.CustomID(scopeCustomID)).Only(ctx)
 	if ent.IsNotFound(err) {
-		s, err = dp.EntClient.Scope.Create().SetCustomID(scopeCustomID).Save(ctx)
+		s, err = dp.EntClient.Scope.Create().
+			SetCustomID(scopeCustomID).
+			SetDomain(domain).
+			Save(ctx)
 		if err != nil {
 			return nil, err
 		}

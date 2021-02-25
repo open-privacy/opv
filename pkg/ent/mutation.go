@@ -40,6 +40,7 @@ type FactMutation struct {
 	update_time      *time.Time
 	hashed_value     *string
 	encrypted_value  *string
+	domain           *string
 	clearedFields    map[string]struct{}
 	scope            *string
 	clearedscope     bool
@@ -279,6 +280,42 @@ func (m *FactMutation) ResetEncryptedValue() {
 	m.encrypted_value = nil
 }
 
+// SetDomain sets the "domain" field.
+func (m *FactMutation) SetDomain(s string) {
+	m.domain = &s
+}
+
+// Domain returns the value of the "domain" field in the mutation.
+func (m *FactMutation) Domain() (r string, exists bool) {
+	v := m.domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomain returns the old "domain" field's value of the Fact entity.
+// If the Fact object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactMutation) OldDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+	}
+	return oldValue.Domain, nil
+}
+
+// ResetDomain resets all changes to the "domain" field.
+func (m *FactMutation) ResetDomain() {
+	m.domain = nil
+}
+
 // SetScopeID sets the "scope" edge to the Scope entity by id.
 func (m *FactMutation) SetScopeID(id string) {
 	m.scope = &id
@@ -371,7 +408,7 @@ func (m *FactMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FactMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.create_time != nil {
 		fields = append(fields, fact.FieldCreateTime)
 	}
@@ -383,6 +420,9 @@ func (m *FactMutation) Fields() []string {
 	}
 	if m.encrypted_value != nil {
 		fields = append(fields, fact.FieldEncryptedValue)
+	}
+	if m.domain != nil {
+		fields = append(fields, fact.FieldDomain)
 	}
 	return fields
 }
@@ -400,6 +440,8 @@ func (m *FactMutation) Field(name string) (ent.Value, bool) {
 		return m.HashedValue()
 	case fact.FieldEncryptedValue:
 		return m.EncryptedValue()
+	case fact.FieldDomain:
+		return m.Domain()
 	}
 	return nil, false
 }
@@ -417,6 +459,8 @@ func (m *FactMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldHashedValue(ctx)
 	case fact.FieldEncryptedValue:
 		return m.OldEncryptedValue(ctx)
+	case fact.FieldDomain:
+		return m.OldDomain(ctx)
 	}
 	return nil, fmt.Errorf("unknown Fact field %s", name)
 }
@@ -453,6 +497,13 @@ func (m *FactMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEncryptedValue(v)
+		return nil
+	case fact.FieldDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomain(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Fact field %s", name)
@@ -514,6 +565,9 @@ func (m *FactMutation) ResetField(name string) error {
 		return nil
 	case fact.FieldEncryptedValue:
 		m.ResetEncryptedValue()
+		return nil
+	case fact.FieldDomain:
+		m.ResetDomain()
 		return nil
 	}
 	return fmt.Errorf("unknown Fact field %s", name)
@@ -1170,6 +1224,7 @@ type ScopeMutation struct {
 	update_time   *time.Time
 	custom_id     *string
 	nonce         *string
+	domain        *string
 	clearedFields map[string]struct{}
 	facts         map[string]struct{}
 	removedfacts  map[string]struct{}
@@ -1408,6 +1463,42 @@ func (m *ScopeMutation) ResetNonce() {
 	m.nonce = nil
 }
 
+// SetDomain sets the "domain" field.
+func (m *ScopeMutation) SetDomain(s string) {
+	m.domain = &s
+}
+
+// Domain returns the value of the "domain" field in the mutation.
+func (m *ScopeMutation) Domain() (r string, exists bool) {
+	v := m.domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomain returns the old "domain" field's value of the Scope entity.
+// If the Scope object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ScopeMutation) OldDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+	}
+	return oldValue.Domain, nil
+}
+
+// ResetDomain resets all changes to the "domain" field.
+func (m *ScopeMutation) ResetDomain() {
+	m.domain = nil
+}
+
 // AddFactIDs adds the "facts" edge to the Fact entity by ids.
 func (m *ScopeMutation) AddFactIDs(ids ...string) {
 	if m.facts == nil {
@@ -1475,7 +1566,7 @@ func (m *ScopeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ScopeMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.create_time != nil {
 		fields = append(fields, scope.FieldCreateTime)
 	}
@@ -1487,6 +1578,9 @@ func (m *ScopeMutation) Fields() []string {
 	}
 	if m.nonce != nil {
 		fields = append(fields, scope.FieldNonce)
+	}
+	if m.domain != nil {
+		fields = append(fields, scope.FieldDomain)
 	}
 	return fields
 }
@@ -1504,6 +1598,8 @@ func (m *ScopeMutation) Field(name string) (ent.Value, bool) {
 		return m.CustomID()
 	case scope.FieldNonce:
 		return m.Nonce()
+	case scope.FieldDomain:
+		return m.Domain()
 	}
 	return nil, false
 }
@@ -1521,6 +1617,8 @@ func (m *ScopeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCustomID(ctx)
 	case scope.FieldNonce:
 		return m.OldNonce(ctx)
+	case scope.FieldDomain:
+		return m.OldDomain(ctx)
 	}
 	return nil, fmt.Errorf("unknown Scope field %s", name)
 }
@@ -1557,6 +1655,13 @@ func (m *ScopeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNonce(v)
+		return nil
+	case scope.FieldDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomain(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Scope field %s", name)
@@ -1618,6 +1723,9 @@ func (m *ScopeMutation) ResetField(name string) error {
 		return nil
 	case scope.FieldNonce:
 		m.ResetNonce()
+		return nil
+	case scope.FieldDomain:
+		m.ResetDomain()
 		return nil
 	}
 	return fmt.Errorf("unknown Scope field %s", name)

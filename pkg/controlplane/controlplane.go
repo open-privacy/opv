@@ -1,9 +1,9 @@
 package controlplane
 
 import (
-	"context"
 	"fmt"
 
+	"github.com/casbin/casbin/v2"
 	_ "github.com/mattn/go-sqlite3" // sqlite3 driver
 
 	"github.com/labstack/echo/v4"
@@ -12,23 +12,33 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	controlplanedocs "github.com/open-privacy/opv/cmd/controlplane/docs"
+	"github.com/open-privacy/opv/pkg/authz"
 	"github.com/open-privacy/opv/pkg/config"
+	"github.com/open-privacy/opv/pkg/crypto"
+	"github.com/open-privacy/opv/pkg/database"
 	"github.com/open-privacy/opv/pkg/ent"
-	"github.com/open-privacy/opv/pkg/ent/migrate"
 )
 
 // ControlPlane is the control plane for OPV
 type ControlPlane struct {
-	EntClient *ent.Client
-	Echo      *echo.Echo
-	Logger    echo.Logger
+	EntClient      *ent.Client
+	Echo           *echo.Echo
+	Logger         echo.Logger
+	Encryptor      crypto.Encryptor
+	Hasher         crypto.Hasher
+	CasbinEnforcer *casbin.SyncedEnforcer
 }
 
 // MustNewControlPlane creates a new control plane
 func MustNewControlPlane() *ControlPlane {
 	cp := &ControlPlane{}
-	cp.prepareDB()
 	cp.prepareEcho()
+	cp.Encryptor = crypto.MustNewEncryptor()
+	cp.Hasher = crypto.MustNewHasher()
+
+	entClient, db := database.MustNewEntClient()
+	cp.EntClient = entClient
+	cp.CasbinEnforcer = authz.MustNewCasbin(db)
 
 	return cp
 }
@@ -39,6 +49,12 @@ func (cp *ControlPlane) Start() {
 	go cp.Echo.Start(
 		fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.ControlPlanePort),
 	)
+}
+
+// Stop will wait for the signal and gracefully shuts down the control plane.
+func (cp *ControlPlane) Stop() {
+	cp.EntClient.Close()
+	cp.Echo.Close()
 }
 
 func (cp *ControlPlane) prepareEcho() {
@@ -54,30 +70,11 @@ func (cp *ControlPlane) prepareEcho() {
 	}
 
 	apiv1 := e.Group("/api/v1")
-	apiv1.POST("/grants", cp.CreateGrants)
+	apiv1.POST("/grants", cp.CreateGrant)
 
 	controlplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.ControlPlanePort)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	cp.Echo = e
 	cp.Logger = e.Logger
-}
-
-func (cp *ControlPlane) prepareDB() {
-	entClient, err := ent.Open(config.ENV.DBDriver, config.ENV.DBConnectionStr)
-	if err != nil {
-		panic(fmt.Errorf("failed openning database connection: %v", err))
-	}
-
-	if err := entClient.Schema.Create(context.Background(), migrate.WithDropIndex(true)); err != nil {
-		panic(fmt.Errorf("failed migrating schema resources: %v", err))
-	}
-
-	cp.EntClient = entClient
-}
-
-// Stop will wait for the signal and gracefully shuts down the control plane.
-func (cp *ControlPlane) Stop() {
-	cp.EntClient.Close()
-	cp.Echo.Close()
 }

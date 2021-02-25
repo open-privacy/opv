@@ -40,6 +40,12 @@ func (fu *FactUpdate) SetEncryptedValue(s string) *FactUpdate {
 	return fu
 }
 
+// SetDomain sets the "domain" field.
+func (fu *FactUpdate) SetDomain(s string) *FactUpdate {
+	fu.mutation.SetDomain(s)
+	return fu
+}
+
 // SetScopeID sets the "scope" edge to the Scope entity by ID.
 func (fu *FactUpdate) SetScopeID(id string) *FactUpdate {
 	fu.mutation.SetScopeID(id)
@@ -194,6 +200,13 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: fact.FieldEncryptedValue,
 		})
 	}
+	if value, ok := fu.mutation.Domain(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fact.FieldDomain,
+		})
+	}
 	if fu.mutation.ScopeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -291,6 +304,12 @@ func (fuo *FactUpdateOne) SetHashedValue(s string) *FactUpdateOne {
 // SetEncryptedValue sets the "encrypted_value" field.
 func (fuo *FactUpdateOne) SetEncryptedValue(s string) *FactUpdateOne {
 	fuo.mutation.SetEncryptedValue(s)
+	return fuo
+}
+
+// SetDomain sets the "domain" field.
+func (fuo *FactUpdateOne) SetDomain(s string) *FactUpdateOne {
+	fuo.mutation.SetDomain(s)
 	return fuo
 }
 
@@ -451,6 +470,13 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: fact.FieldEncryptedValue,
+		})
+	}
+	if value, ok := fuo.mutation.Domain(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: fact.FieldDomain,
 		})
 	}
 	if fuo.mutation.ScopeCleared() {

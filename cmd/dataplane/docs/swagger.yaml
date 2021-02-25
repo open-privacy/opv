@@ -21,6 +21,8 @@ definitions:
     type: object
   apimodel.Fact:
     properties:
+      domain:
+        type: string
       fact_type_slug:
         type: string
       id:
@@ -248,7 +250,7 @@ paths:
 securityDefinitions:
   ApiKeyAuth:
     in: header
-    name: X-OPV-GRANT-KEY
+    name: X-OPV-GRANT-TOKEN
     type: apiKey
 swagger: "2.0"
 tags:

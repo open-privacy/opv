@@ -47,6 +47,12 @@ func (su *ScopeUpdate) SetNillableNonce(s *string) *ScopeUpdate {
 	return su
 }
 
+// SetDomain sets the "domain" field.
+func (su *ScopeUpdate) SetDomain(s string) *ScopeUpdate {
+	su.mutation.SetDomain(s)
+	return su
+}
+
 // AddFactIDs adds the "facts" edge to the Fact entity by IDs.
 func (su *ScopeUpdate) AddFactIDs(ids ...string) *ScopeUpdate {
 	su.mutation.AddFactIDs(ids...)
@@ -187,6 +193,13 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: scope.FieldNonce,
 		})
 	}
+	if value, ok := su.mutation.Domain(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldDomain,
+		})
+	}
 	if su.mutation.FactsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -276,6 +289,12 @@ func (suo *ScopeUpdateOne) SetNillableNonce(s *string) *ScopeUpdateOne {
 	if s != nil {
 		suo.SetNonce(*s)
 	}
+	return suo
+}
+
+// SetDomain sets the "domain" field.
+func (suo *ScopeUpdateOne) SetDomain(s string) *ScopeUpdateOne {
+	suo.mutation.SetDomain(s)
 	return suo
 }
 
@@ -422,6 +441,13 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: scope.FieldNonce,
+		})
+	}
+	if value, ok := suo.mutation.Domain(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: scope.FieldDomain,
 		})
 	}
 	if suo.mutation.FactsCleared() {

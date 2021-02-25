@@ -19,6 +19,8 @@ const (
 	FieldHashedValue = "hashed_value"
 	// FieldEncryptedValue holds the string denoting the encrypted_value field in the database.
 	FieldEncryptedValue = "encrypted_value"
+	// FieldDomain holds the string denoting the domain field in the database.
+	FieldDomain = "domain"
 
 	// EdgeScope holds the string denoting the scope edge name in mutations.
 	EdgeScope = "scope"
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldHashedValue,
 	FieldEncryptedValue,
+	FieldDomain,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the Fact type.

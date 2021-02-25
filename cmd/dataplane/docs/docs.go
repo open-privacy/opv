@@ -341,6 +341,9 @@ var doc = `{
         "apimodel.Fact": {
             "type": "object",
             "properties": {
+                "domain": {
+                    "type": "string"
+                },
                 "fact_type_slug": {
                     "type": "string"
                 },
@@ -392,7 +395,7 @@ var doc = `{
     "securityDefinitions": {
         "ApiKeyAuth": {
             "type": "apiKey",
-            "name": "X-OPV-GRANT-KEY",
+            "name": "X-OPV-GRANT-TOKEN",
             "in": "header"
         }
     },

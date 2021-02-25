@@ -15,6 +15,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "hashed_value", Type: field.TypeString},
 		{Name: "encrypted_value", Type: field.TypeString},
+		{Name: "domain", Type: field.TypeString},
 		{Name: "fact_type_facts", Type: field.TypeString, Nullable: true},
 		{Name: "scope_facts", Type: field.TypeString, Nullable: true},
 	}
@@ -26,14 +27,14 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:  "facts_fact_types_facts",
-				Columns: []*schema.Column{FactsColumns[5]},
+				Columns: []*schema.Column{FactsColumns[6]},
 
 				RefColumns: []*schema.Column{FactTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:  "facts_scopes_facts",
-				Columns: []*schema.Column{FactsColumns[6]},
+				Columns: []*schema.Column{FactsColumns[7]},
 
 				RefColumns: []*schema.Column{ScopesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -48,7 +49,7 @@ var (
 			{
 				Name:    "fact_hashed_value_scope_facts_fact_type_facts",
 				Unique:  true,
-				Columns: []*schema.Column{FactsColumns[3], FactsColumns[6], FactsColumns[5]},
+				Columns: []*schema.Column{FactsColumns[3], FactsColumns[7], FactsColumns[6]},
 			},
 		},
 	}
@@ -81,6 +82,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "custom_id", Type: field.TypeString},
 		{Name: "nonce", Type: field.TypeString},
+		{Name: "domain", Type: field.TypeString},
 	}
 	// ScopesTable holds the schema information for the "scopes" table.
 	ScopesTable = &schema.Table{

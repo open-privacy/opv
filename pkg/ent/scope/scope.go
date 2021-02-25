@@ -19,6 +19,8 @@ const (
 	FieldCustomID = "custom_id"
 	// FieldNonce holds the string denoting the nonce field in the database.
 	FieldNonce = "nonce"
+	// FieldDomain holds the string denoting the domain field in the database.
+	FieldDomain = "domain"
 
 	// EdgeFacts holds the string denoting the facts edge name in mutations.
 	EdgeFacts = "facts"
@@ -41,6 +43,7 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldCustomID,
 	FieldNonce,
+	FieldDomain,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

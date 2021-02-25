@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
-	"github.com/google/uuid"
+	"github.com/dchest/uniuri"
 )
 
 // Scope holds the schema definition for the Scope entity.
@@ -16,7 +16,7 @@ type Scope struct {
 
 // DefaultNonce generates a secure random nonce
 func DefaultNonce() string {
-	return uuid.New().String()
+	return uniuri.NewLen(uniuri.UUIDLen)
 }
 
 // Fields of the Scope.
@@ -24,6 +24,7 @@ func (Scope) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("custom_id"),
 		field.String("nonce").Sensitive().DefaultFunc(DefaultNonce),
+		field.String("domain"),
 	}
 }
 
