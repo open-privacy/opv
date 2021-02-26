@@ -26,6 +26,11 @@ var doc = `{
     "paths": {
         "/fact_types": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "create a fact type",
                 "consumes": [
                     "application/json"
@@ -73,6 +78,11 @@ var doc = `{
         },
         "/fact_types/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Show a fact type by ID",
                 "consumes": [
                     "application/json"
@@ -118,6 +128,11 @@ var doc = `{
         },
         "/facts": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "create a fact",
                 "consumes": [
                     "application/json"
@@ -165,6 +180,11 @@ var doc = `{
         },
         "/facts/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Show a fact by ID",
                 "consumes": [
                     "application/json"
@@ -210,6 +230,11 @@ var doc = `{
         },
         "/scopes": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a scope",
                 "consumes": [
                     "application/json"
@@ -257,6 +282,11 @@ var doc = `{
         },
         "/scopes/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Show scope by ID",
                 "consumes": [
                     "application/json"

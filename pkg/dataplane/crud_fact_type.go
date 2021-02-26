@@ -14,6 +14,7 @@ import (
 // @id show-fact-type-by-id
 // @accept  json
 // @produce  json
+// @security ApiKeyAuth
 // @param id path string true "Fact Type ID"
 // @success 200 {object} apimodel.FactType
 // @failure 400 {object} apimodel.HTTPError
@@ -30,6 +31,7 @@ func (dp *DataPlane) ShowFactType(c echo.Context) error {
 // @id create-fact-type
 // @accept  json
 // @produce  json
+// @security ApiKeyAuth
 // @param createFact body apimodel.CreateFactType true "Create Fact Type Parameters"
 // @success 200 {object} apimodel.FactType
 // @failure 400 {object} apimodel.HTTPError
