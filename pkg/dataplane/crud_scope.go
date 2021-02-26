@@ -14,6 +14,7 @@ import (
 // @id show-scope-by-id
 // @accept  json
 // @produce  json
+// @security ApiKeyAuth
 // @param id path string true "Scope ID"
 // @success 200 {object} apimodel.Scope
 // @failure 400 {object} apimodel.HTTPError
@@ -31,6 +32,7 @@ func (dp *DataPlane) ShowScope(c echo.Context) error {
 // @id create-scope
 // @accept  json
 // @produce  json
+// @security ApiKeyAuth
 // @param createScope body apimodel.CreateScope	true "Create Scope parameters"
 // @success 200 {object} apimodel.Scope
 // @failure 400 {object} apimodel.HTTPError

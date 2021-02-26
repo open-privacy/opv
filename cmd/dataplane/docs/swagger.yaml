@@ -88,6 +88,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Create a fact type
       tags:
       - Fact
@@ -118,6 +120,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Show a fact Type
       tags:
       - Fact
@@ -149,6 +153,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Create a fact
       tags:
       - Fact
@@ -179,6 +185,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Show a fact
       tags:
       - Fact
@@ -210,6 +218,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Create a scope
       tags:
       - Scope
@@ -244,6 +254,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Show a scope
       tags:
       - Scope
