@@ -115,7 +115,6 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		ID:            f.ID,
 		ScopeCustomID: s.CustomID,
 		FactTypeSlug:  ft.Slug,
-		Value:         cf.Value,
 		Domain:        f.Domain,
 	})
 }

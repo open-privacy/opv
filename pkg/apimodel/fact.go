@@ -12,8 +12,8 @@ type Fact struct {
 	ID            string `json:"id"`
 	ScopeCustomID string `json:"scope_custom_id"`
 	FactTypeSlug  string `json:"fact_type_slug"`
-	Value         string `json:"value"`
 	Domain        string `json:"domain"`
+	Value         string `json:"value,omitempty"`
 }
 
 // CreateFactType represents the request to create a fact_type
