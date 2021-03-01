@@ -47,5 +47,6 @@ func (Scope) Mixin() []ent.Mixin {
 func (Scope) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("custom_id").Unique(),
+		index.Fields("domain"),
 	}
 }

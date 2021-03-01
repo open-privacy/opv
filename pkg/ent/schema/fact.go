@@ -43,5 +43,6 @@ func (Fact) Indexes() []ent.Index {
 	return []ent.Index{
 		// unique hashed_value constraint on same scope and fact_type
 		index.Fields("hashed_value").Edges("scope", "fact_type").Unique(),
+		index.Fields("domain"),
 	}
 }

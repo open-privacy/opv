@@ -51,6 +51,11 @@ var (
 				Unique:  true,
 				Columns: []*schema.Column{FactsColumns[3], FactsColumns[7], FactsColumns[6]},
 			},
+			{
+				Name:    "fact_domain",
+				Unique:  false,
+				Columns: []*schema.Column{FactsColumns[5]},
+			},
 		},
 	}
 	// FactTypesColumns holds the columns for the "fact_types" table.
@@ -100,6 +105,11 @@ var (
 				Name:    "scope_custom_id",
 				Unique:  true,
 				Columns: []*schema.Column{ScopesColumns[3]},
+			},
+			{
+				Name:    "scope_domain",
+				Unique:  false,
+				Columns: []*schema.Column{ScopesColumns[5]},
 			},
 		},
 	}
