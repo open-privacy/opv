@@ -22,6 +22,29 @@ Start from docker image (TODO):
 docker run -it -p 27999-28001:27999-28001 open-privacy/opv
 ```
 
+Create a new grant token by calling the control plane:
+```sh
+curl -X POST 'http://localhost:27999/api/v1/grants' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+        "allowed_actions": ["*"],
+        "domain": "test.com"
+}'
+
+{"token":"v1:test.com:6yBQzIcZUaypri8iysut","domain":"test.com","allowed_actions":["*"]}
+```
+
+Store a new fact by calling the data plane:
+```sh
+curl -X POST 'http://localhost:28000/api/v1/facts' \
+-H 'Content-Type: application/json' \
+-H 'x-opv-grant-token: v1:test.com:6yBQzIcZUaypri8iysut' \
+--data-raw '{
+        "fact_type_slug": "string",
+        "value": "mysecret"
+}'
+```
+
 ### 1.2 Configuration
 
 All the configuration is currently done via the environment variables.
