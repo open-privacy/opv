@@ -96,7 +96,7 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 	if err != nil {
 		return apimodel.NewEntError(c, err)
 	}
-	hashedValue := dp.Hasher.Hash(cf.Value)
+	hashedValue := dp.Hasher.Hash(cf.Value, domain)
 
 	f, err := dp.EntClient.Fact.
 		Create().

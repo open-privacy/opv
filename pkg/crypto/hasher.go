@@ -16,8 +16,8 @@ const (
 
 // Hasher is an interface
 type Hasher interface {
-	Hash(string) string
-	HashFaster(string) string
+	Hash(data, salt string) string
+	HashFaster(data, salt string) string
 }
 
 // MustNewHasher creates a new Hasher
@@ -26,7 +26,6 @@ func MustNewHasher() Hasher {
 	switch config.ENV.HasherName {
 	case hasherScrypt:
 		hasher = &ScryptHasher{
-			salt:   []byte(config.ENV.HasherScryptSalt),
 			n:      config.ENV.HasherScryptN,
 			r:      8,
 			p:      1,
@@ -44,20 +43,19 @@ func MustNewHasher() Hasher {
 type Keccak256Hasher struct{}
 
 // Hash ...
-func (k *Keccak256Hasher) Hash(s string) string {
+func (k *Keccak256Hasher) Hash(data, salt string) string {
 	h := make([]byte, 64)
-	sha3.ShakeSum256(h, []byte(s))
+	sha3.ShakeSum256(h, []byte(salt+data))
 	return string(h)
 }
 
 // HashFaster ...
-func (k *Keccak256Hasher) HashFaster(s string) string {
-	return k.Hash(s)
+func (k *Keccak256Hasher) HashFaster(data, salt string) string {
+	return k.Hash(data, salt)
 }
 
 // ScryptHasher is a Hasher that implements the Scrypt hashing algorithm
 type ScryptHasher struct {
-	salt   []byte
 	n      int
 	r      int
 	p      int
@@ -65,10 +63,10 @@ type ScryptHasher struct {
 }
 
 // Hash ...
-func (sh *ScryptHasher) Hash(s string) string {
+func (sh *ScryptHasher) Hash(data, salt string) string {
 	dk, _ := scrypt.Key(
-		[]byte(s),
-		sh.salt,
+		[]byte(data),
+		[]byte(salt),
 		sh.n,
 		sh.r,
 		sh.p,
@@ -78,10 +76,10 @@ func (sh *ScryptHasher) Hash(s string) string {
 }
 
 // HashFaster ...
-func (sh *ScryptHasher) HashFaster(s string) string {
+func (sh *ScryptHasher) HashFaster(data, salt string) string {
 	dk, _ := scrypt.Key(
-		[]byte(s),
-		sh.salt,
+		[]byte(data),
+		[]byte(salt),
 		sh.n>>4,
 		sh.r,
 		sh.p,

@@ -96,6 +96,9 @@ var doc = `{
                         "type": "string"
                     }
                 },
+                "domain": {
+                    "type": "string"
+                },
                 "token": {
                     "type": "string"
                 }

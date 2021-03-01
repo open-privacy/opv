@@ -28,15 +28,23 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
 	}
 
-	grant := &apimodel.Grant{AllowedActions: cg.AllowedActions}
-	grant.GenToken("v1", cg.Domain)
+	token, err := apimodel.NewToken("v1", cg.Domain)
+	if err != nil {
+		return apimodel.NewHTTPError(c, err, http.StatusInternalServerError)
+	}
+
+	grant := &apimodel.Grant{
+		AllowedActions: cg.AllowedActions,
+		Domain:         cg.Domain,
+		Token:          token.String(),
+	}
 
 	// grouping policy for RBAC with domain pattern
 	// example: https://github.com/casbin/casbin/blob/master/examples/rbac_with_domain_pattern_policy.csv
 	//
 	// default domain admin token =>  p, hash(token1234), domain, *, *, allow
 	_, err = cp.CasbinEnforcer.AddPolicy(
-		grant.Hash(cp.Hasher),
+		token.Hash(cp.Hasher),
 		cg.Domain,
 		"*",
 		mergeAllowedActions(grant.AllowedActions),
