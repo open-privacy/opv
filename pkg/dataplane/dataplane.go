@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/casbin/casbin/v2"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -25,6 +26,7 @@ type DataPlane struct {
 	Encryptor      crypto.Encryptor
 	Hasher         crypto.Hasher
 	CasbinEnforcer *casbin.SyncedEnforcer
+	Validator      *validator.Validate
 }
 
 // MustNewDataPlane creates a new DataPlane, otherwise panic
@@ -37,6 +39,7 @@ func MustNewDataPlane() *DataPlane {
 	entClient, db := database.MustNewEntClient()
 	dp.EntClient = entClient
 	dp.CasbinEnforcer = authz.MustNewCasbin(db)
+	dp.Validator = validator.New()
 
 	return dp
 }

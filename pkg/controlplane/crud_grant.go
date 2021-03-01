@@ -28,15 +28,19 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
 	}
 
+	if err := cp.Validator.Struct(cg); err != nil {
+		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+	}
+
 	token, err := apimodel.NewToken("v1", cg.Domain)
 	if err != nil {
 		return apimodel.NewHTTPError(c, err, http.StatusInternalServerError)
 	}
 
 	grant := &apimodel.Grant{
-		AllowedActions: cg.AllowedActions,
-		Domain:         cg.Domain,
-		Token:          token.String(),
+		AllowedHTTPMethods: cg.AllowedHTTPMethods,
+		Domain:             cg.Domain,
+		Token:              token.String(),
 	}
 
 	// grouping policy for RBAC with domain pattern
@@ -47,7 +51,7 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 		token.Hash(cp.Hasher),
 		cg.Domain,
 		"*",
-		mergeAllowedActions(grant.AllowedActions),
+		mergeAllowedActions(grant.AllowedHTTPMethods),
 		"allow",
 	)
 	if err != nil {

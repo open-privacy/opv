@@ -2,6 +2,8 @@
 
 ## 1. Introduction
 
+Open Privacy Vault is an open source solution for managing Personal Identifiable Information (PII).
+
 ### 1.1 Get Started
 
 Start from source code:
@@ -26,12 +28,12 @@ All the configuration is currently done via the environment variables.
 
 ## 2. Architecture
 
+<!-- markdownlint-disable MD033 -->
 <details>
 <summary>Click to see the OPV Architecture</summary>
-
 ![OPV Architecture](docs/arch.png)
-
 </details>
+<!-- markdownlint-enable MD033 -->
 
 ### 2.1 Planes
 
@@ -104,5 +106,5 @@ make run
 
 One can open the local swagger UI to test the APIs:
 
-- Default DataPlane Swagger URL: http://127.0.0.1:28000/swagger/index.html
-- Default ControlPlane Swagger URL: http://127.0.0.1:27999/swagger/index.html
+- Default DataPlane Swagger URL: [http://127.0.0.1:28000/swagger/index.html](http://127.0.0.1:28000/swagger/index.html)
+- Default ControlPlane Swagger URL: [http://127.0.0.1:27999/swagger/index.html](http://127.0.0.1:27999/swagger/index.html)
