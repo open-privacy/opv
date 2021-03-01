@@ -23,7 +23,7 @@ var ENV = struct {
 	EncryptorSecretboxKeys          []string `env:"OPV_ENCRYPTOR_SECRETBOX_KEYS" envDefault:"please_change_to_random_32bytes,old_key_rotation_32bytes" envSeparator:","`
 	EncryptorSecretboxBase64Enabled bool     `env:"OPV_ENCRYPTOR_SECRETBOX_BASE64_ENABLED" envDefault:"true"`
 
-	HasherName       string `env:"OPV_HASHER_NAME" envDefault:"scrypt"`
+	HasherName       string `env:"OPV_HASHER_NAME" envDefault:"keccak256"`
 	HasherScryptSalt string `env:"OPV_HASHER_SCRYPT_SALT" envDefault:"please_change_to_random_32bytes"`
 	HasherScryptN    int    `env:"OPV_HASHER_SCRYPT_N" envDefault:"32768"`
 
