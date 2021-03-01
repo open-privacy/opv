@@ -26,7 +26,12 @@ All the configuration is currently done via the environment variables.
 
 ## 2. Architecture
 
+<details>
+<summary>Click to see the OPV Architecture</summary>
+
 ![OPV Architecture](docs/arch.png)
+
+</details>
 
 ### 2.1 Planes
 
