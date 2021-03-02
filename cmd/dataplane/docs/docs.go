@@ -228,6 +228,33 @@ var doc = `{
                 }
             }
         },
+        "/healthz": {
+            "get": {
+                "description": "Show the health of the dataplane",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Healthz"
+                ],
+                "summary": "Show the health of the dataplane",
+                "operationId": "healthz",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.Healthz"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/scopes": {
             "post": {
                 "security": [
@@ -340,6 +367,11 @@ var doc = `{
     "definitions": {
         "apimodel.CreateFact": {
             "type": "object",
+            "required": [
+                "fact_type_slug",
+                "scope_custom_id",
+                "value"
+            ],
             "properties": {
                 "fact_type_slug": {
                     "type": "string"
@@ -406,6 +438,14 @@ var doc = `{
                     "type": "integer"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "apimodel.Healthz": {
+            "type": "object",
+            "properties": {
+                "status": {
                     "type": "string"
                 }
             }

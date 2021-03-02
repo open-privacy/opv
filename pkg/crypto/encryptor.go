@@ -14,16 +14,19 @@ const (
 	encryptorHashicorpVault = "hashicorp_vault"
 )
 
+// Encryptor is the encryption interface
 type Encryptor interface {
 	Encrypt(nonce, plaintext string) (ciphertext string, err error)
 	Decrypt(nonce, ciphertext string) (plaintext string, err error)
 }
 
+// SecretboxEncryptor is the secretbox encryptor
 type SecretboxEncryptor struct {
 	keys          [][32]byte
 	base64Enabled bool
 }
 
+// Encrypt ...
 func (se *SecretboxEncryptor) Encrypt(nonce, plaintext string) (ciphertext string, err error) {
 	nonceBytes := [24]byte{}
 	copy(nonceBytes[:], []byte(nonce))
@@ -37,6 +40,7 @@ func (se *SecretboxEncryptor) Encrypt(nonce, plaintext string) (ciphertext strin
 	return string(out), nil
 }
 
+// Decrypt ...
 func (se *SecretboxEncryptor) Decrypt(nonce, ciphertext string) (plaintext string, err error) {
 	ciphertextBytes := []byte(ciphertext)
 
@@ -61,6 +65,7 @@ func (se *SecretboxEncryptor) Decrypt(nonce, ciphertext string) (plaintext strin
 	return "", fmt.Errorf("ciphertext could not be decrypted")
 }
 
+// MustNewEncryptor creates a new encryptor or panic
 func MustNewEncryptor() Encryptor {
 	var encryptor Encryptor
 	switch config.ENV.EncryptorName {

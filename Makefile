@@ -26,6 +26,10 @@ build:
 
 gen: ent swag
 
+local_functional_test:
+	go clean -testcache
+	go test ./functional_test/...
+
 run: build
 	$(MAKE) -j _run_controlplane _run_dataplane
 

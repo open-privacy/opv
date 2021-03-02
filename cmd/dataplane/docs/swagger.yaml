@@ -8,6 +8,10 @@ definitions:
         type: string
       value:
         type: string
+    required:
+    - fact_type_slug
+    - scope_custom_id
+    - value
     type: object
   apimodel.CreateFactType:
     properties:
@@ -44,6 +48,11 @@ definitions:
       code:
         type: integer
       message:
+        type: string
+    type: object
+  apimodel.Healthz:
+    properties:
+      status:
         type: string
     type: object
   apimodel.Scope:
@@ -190,6 +199,24 @@ paths:
       summary: Show a fact
       tags:
       - Fact
+  /healthz:
+    get:
+      description: Show the health of the dataplane
+      operationId: healthz
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.Healthz'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Show the health of the dataplane
+      tags:
+      - Healthz
   /scopes:
     post:
       consumes:

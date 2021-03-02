@@ -2,7 +2,7 @@ basePath: /api/v1
 definitions:
   apimodel.CreateGrant:
     properties:
-      allowed_actions:
+      allowed_http_methods:
         items:
           type: string
         type: array
@@ -11,7 +11,7 @@ definitions:
     type: object
   apimodel.Grant:
     properties:
-      allowed_actions:
+      allowed_http_methods:
         items:
           type: string
         type: array
@@ -25,6 +25,11 @@ definitions:
       code:
         type: integer
       message:
+        type: string
+    type: object
+  apimodel.Healthz:
+    properties:
+      status:
         type: string
     type: object
 host: localhost
@@ -65,6 +70,24 @@ paths:
       summary: Create a grant
       tags:
       - Grant
+  /healthz:
+    get:
+      description: Show the health of the controlplane
+      operationId: healthz
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apimodel.Healthz'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      summary: Show the health of the controlplane
+      tags:
+      - Healthz
 swagger: "2.0"
 tags:
 - description: A grant is the unit of grant to access certain resource in OPV

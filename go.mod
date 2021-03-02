@@ -5,7 +5,9 @@ go 1.15
 require (
 	entgo.io/ent v0.6.0
 	github.com/Blank-Xu/sql-adapter v0.0.0-20201228072413-5276c89fa383
+	github.com/Eun/go-hit v0.5.20
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/caarlos0/env/v6 v6.5.0
 	github.com/casbin/casbin/v2 v2.19.7
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5

@@ -71,6 +71,9 @@ func (dp *DataPlane) prepareEcho() {
 	}
 
 	apiv1 := e.Group("/api/v1")
+	apiv1.GET("/healthz", dp.Healthz)
+
+	// Protected by grantValidationMiddleware
 	apiv1.Use(dp.grantValidationMiddleware())
 	apiv1.POST("/scopes", dp.CreateScope)
 	apiv1.GET("/scopes/:id", dp.ShowScope)
