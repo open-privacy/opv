@@ -70,13 +70,40 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/healthz": {
+            "get": {
+                "description": "Show the health of the controlplane",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Healthz"
+                ],
+                "summary": "Show the health of the controlplane",
+                "operationId": "healthz",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.Healthz"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "apimodel.CreateGrant": {
             "type": "object",
             "properties": {
-                "allowed_actions": {
+                "allowed_http_methods": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -90,7 +117,7 @@ var doc = `{
         "apimodel.Grant": {
             "type": "object",
             "properties": {
-                "allowed_actions": {
+                "allowed_http_methods": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -111,6 +138,14 @@ var doc = `{
                     "type": "integer"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "apimodel.Healthz": {
+            "type": "object",
+            "properties": {
+                "status": {
                     "type": "string"
                 }
             }

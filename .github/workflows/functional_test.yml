@@ -20,5 +20,7 @@ jobs:
       - name: Functional Test
         run: |
           make run &
-          sleep 2
+          sleep 15
           make local_functional_test
+          kill -9 `lsof -i:28000 -t`
+          kill -9 `lsof -i:27999 -t`
