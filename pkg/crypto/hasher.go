@@ -46,7 +46,7 @@ type Keccak256Hasher struct{}
 func (k *Keccak256Hasher) Hash(data, salt string) string {
 	h := make([]byte, 64)
 	sha3.ShakeSum256(h, []byte(salt+data))
-	return string(h)
+	return base64.StdEncoding.EncodeToString(h)
 }
 
 // HashFaster ...
