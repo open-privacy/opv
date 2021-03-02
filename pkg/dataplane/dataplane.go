@@ -2,6 +2,9 @@ package dataplane
 
 import (
 	"fmt"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -13,6 +16,9 @@ import (
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
+	"github.com/open-privacy/opv/pkg/database"
+	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/apimodel"
 )
 
 // DataPlane represents the data plane struct
@@ -75,6 +81,21 @@ func (dp *DataPlane) prepareEcho() {
 
 	// Protected by grantValidationMiddleware
 	apiv1.Use(dp.grantValidationMiddleware())
+	apiv1.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			// Read the content
+			jsonBody := make(map[string]interface{})
+			err := json.NewDecoder(c.Request().Body).Decode(&jsonBody)
+			// Restore the io.ReadCloser to its original state
+			ioutil.NopCloser(c.Request().Body)
+			if err != nil {
+				return apimodel.NewHTTPError(c, apimodel.MessageJSONMalformated, http.StatusBadRequest)
+			}
+
+			return next(c)
+		}
+	})
+
 	apiv1.POST("/scopes", dp.CreateScope)
 	apiv1.GET("/scopes", dp.QueryScopes)
 	apiv1.POST("/facts", dp.CreateFact)

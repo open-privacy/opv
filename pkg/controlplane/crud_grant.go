@@ -25,16 +25,16 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 	cg := &apimodel.CreateGrant{}
 	err := c.Bind(cg)
 	if err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+		return apimodel.NewHTTPError(c, err.Error(), http.StatusBadRequest)
 	}
 
 	if err := cp.Validator.Struct(cg); err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+		return apimodel.NewHTTPError(c, err.Error(), http.StatusBadRequest)
 	}
 
 	token, err := apimodel.NewToken("v1", cg.Domain)
 	if err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusInternalServerError)
+		return apimodel.NewHTTPError(c, err.Error(), http.StatusInternalServerError)
 	}
 
 	g, err := cp.Repo.CreateGrant(ctx, &repo.CreateGrantOption{
@@ -44,7 +44,7 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 		AllowedHTTPMethods: cg.AllowedHTTPMethods,
 	})
 	if err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusInternalServerError)
+		return apimodel.NewHTTPError(c, err.Error(), http.StatusInternalServerError)
 	}
 
 	return c.JSON(http.StatusOK, &apimodel.Grant{

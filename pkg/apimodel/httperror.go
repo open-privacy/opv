@@ -7,11 +7,17 @@ import (
 	"github.com/open-privacy/opv/pkg/ent"
 )
 
+const (
+	MessageNotFound = "Resource not found"
+	MessageJSONMalformated = "JSON Malformated"
+	MessageInternalServerError = "Internal server error."
+)
+
 // NewHTTPError creates a new HTTPError
-func NewHTTPError(c echo.Context, err error, status int) error {
+func NewHTTPError(c echo.Context, message string, status int) error {
 	er := HTTPError{
 		Code:    status,
-		Message: err.Error(),
+		Message: message,
 	}
 	return c.JSON(status, er)
 }
@@ -23,16 +29,16 @@ func NewEntError(c echo.Context, err error) error {
 		return nil
 	}
 	if ent.IsNotFound(err) {
-		return NewHTTPError(c, err, http.StatusNotFound)
+		return NewHTTPError(c, MessageNotFound, http.StatusNotFound)
 	}
 	if ent.IsValidationError(err) {
-		return NewHTTPError(c, err, http.StatusBadRequest)
+		return NewHTTPError(c, err.Error(), http.StatusBadRequest)
 	}
 	if ent.IsConstraintError(err) {
-		return NewHTTPError(c, err, http.StatusBadRequest)
+		return NewHTTPError(c, err.Error(), http.StatusBadRequest)
 	}
 
-	return NewHTTPError(c, err, http.StatusInternalServerError)
+	return NewHTTPError(c, MessageInternalServerError, http.StatusInternalServerError)
 }
 
 // HTTPError struct
