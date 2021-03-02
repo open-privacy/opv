@@ -27,11 +27,11 @@ Create a new grant token by calling the control plane:
 curl -X POST 'http://localhost:27999/api/v1/grants' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-        "allowed_actions": ["*"],
+        "allowed_http_methods": ["*"],
         "domain": "test.com"
 }'
 
-{"token":"v1:test.com:6yBQzIcZUaypri8iysut","domain":"test.com","allowed_actions":["*"]}
+{"token":"v1:test.com:6yBQzIcZUaypri8iysut","domain":"test.com","allowed_http_methods":["*"]}
 ```
 
 Store a new fact by calling the data plane:
