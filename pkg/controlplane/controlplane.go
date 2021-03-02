@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/casbin/casbin/v2"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/mattn/go-sqlite3" // sqlite3 driver
 
 	"github.com/labstack/echo/v4"
@@ -27,6 +28,7 @@ type ControlPlane struct {
 	Encryptor      crypto.Encryptor
 	Hasher         crypto.Hasher
 	CasbinEnforcer *casbin.SyncedEnforcer
+	Validator      *validator.Validate
 }
 
 // MustNewControlPlane creates a new control plane
@@ -39,6 +41,7 @@ func MustNewControlPlane() *ControlPlane {
 	entClient, db := database.MustNewEntClient()
 	cp.EntClient = entClient
 	cp.CasbinEnforcer = authz.MustNewCasbin(db)
+	cp.Validator = validator.New()
 
 	return cp
 }

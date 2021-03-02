@@ -45,7 +45,7 @@ var ENV = struct {
 	GrantJWTSigningKey    string `env:"OPV_GRANT_JWT_SIGNING_KEY" envDefault:"please_change_to_random_32bytes"`
 	GrantJWTValidationKey string `env:"OPV_GRANT_JWT_VALIDATION_KEY" envDefault:"please_change_to_random_32bytes"`
 
-	AuthzCasbinAutoloadInterval time.Duration `env:"OPV_AUTHZ_CASBIN_AUTOLOAD_INTERVAL" envDefault:"30s"`
+	AuthzCasbinAutoloadInterval time.Duration `env:"OPV_AUTHZ_CASBIN_AUTOLOAD_INTERVAL" envDefault:"3s"`
 
 	ProxyPlanePort int `env:"OPV_PROXY_PLANE_PORT" envDefault:"28001"`
 }{}

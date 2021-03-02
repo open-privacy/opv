@@ -9,6 +9,7 @@ require (
 	github.com/caarlos0/env/v6 v6.5.0
 	github.com/casbin/casbin/v2 v2.19.7
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
+	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.1-0.20200311113236-681ffa848bae
 	github.com/labstack/echo/v4 v4.2.0
 	github.com/labstack/gommon v0.3.0
