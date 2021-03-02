@@ -15,6 +15,7 @@ require (
 	github.com/labstack/gommon v0.3.0
 	github.com/lib/pq v1.9.0
 	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/echo-swagger v1.1.0
 	github.com/swaggo/swag v1.7.0
 	github.com/tj/go-gracefully v0.0.0-20141227061038-005c1d102f1b
