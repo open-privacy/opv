@@ -10,7 +10,7 @@ import (
 const (
 	MessageNotFound = "Resource not found"
 	MessageJSONMalformated = "JSON Malformated"
-	MessageInternalServerError = "Internal server error."
+	MessageInternalServerError = "Internal server error"
 )
 
 // NewHTTPError creates a new HTTPError
