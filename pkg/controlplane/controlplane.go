@@ -3,7 +3,6 @@ package controlplane
 import (
 	"fmt"
 
-	"github.com/casbin/casbin/v2"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/mattn/go-sqlite3" // sqlite3 driver
 
@@ -13,22 +12,20 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	controlplanedocs "github.com/open-privacy/opv/cmd/controlplane/docs"
-	"github.com/open-privacy/opv/pkg/authz"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
-	"github.com/open-privacy/opv/pkg/database"
-	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/repo"
 )
 
 // ControlPlane is the control plane for OPV
 type ControlPlane struct {
-	EntClient      *ent.Client
-	Echo           *echo.Echo
-	Logger         echo.Logger
-	Encryptor      crypto.Encryptor
-	Hasher         crypto.Hasher
-	CasbinEnforcer *casbin.SyncedEnforcer
-	Validator      *validator.Validate
+	Echo      *echo.Echo
+	Logger    echo.Logger
+	Encryptor crypto.Encryptor
+	Hasher    crypto.Hasher
+	Repo      repo.Repo
+	Enforcer  repo.Enforcer
+	Validator *validator.Validate
 }
 
 // MustNewControlPlane creates a new control plane
@@ -37,11 +34,14 @@ func MustNewControlPlane() *ControlPlane {
 	cp.prepareEcho()
 	cp.Encryptor = crypto.MustNewEncryptor()
 	cp.Hasher = crypto.MustNewHasher()
-
-	entClient, db := database.MustNewEntClient()
-	cp.EntClient = entClient
-	cp.CasbinEnforcer = authz.MustNewCasbin(db)
 	cp.Validator = validator.New()
+
+	repo, enforcer, err := repo.NewRepoEnforcer()
+	if err != nil {
+		panic(err)
+	}
+	cp.Repo = repo
+	cp.Enforcer = enforcer
 
 	return cp
 }
@@ -56,7 +56,7 @@ func (cp *ControlPlane) Start() {
 
 // Stop will wait for the signal and gracefully shuts down the control plane.
 func (cp *ControlPlane) Stop() {
-	cp.EntClient.Close()
+	cp.Repo.Close()
 	cp.Echo.Close()
 }
 

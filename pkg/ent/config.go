@@ -26,6 +26,7 @@ type config struct {
 type hooks struct {
 	Fact     []ent.Hook
 	FactType []ent.Hook
+	Grant    []ent.Hook
 	Scope    []ent.Hook
 }
 

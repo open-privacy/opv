@@ -16,6 +16,8 @@ type Tx struct {
 	Fact *FactClient
 	// FactType is the client for interacting with the FactType builders.
 	FactType *FactTypeClient
+	// Grant is the client for interacting with the Grant builders.
+	Grant *GrantClient
 	// Scope is the client for interacting with the Scope builders.
 	Scope *ScopeClient
 
@@ -155,6 +157,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Fact = NewFactClient(tx.config)
 	tx.FactType = NewFactTypeClient(tx.config)
+	tx.Grant = NewGrantClient(tx.config)
 	tx.Scope = NewScopeClient(tx.config)
 }
 

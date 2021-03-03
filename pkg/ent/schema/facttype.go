@@ -4,7 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/mixin"
+	"entgo.io/ent/schema/index"
 )
 
 // FactType holds the schema definition for the FactType entity.
@@ -16,7 +16,8 @@ type FactType struct {
 func (FactType) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("slug"),
-		field.Bool("builtin").Default(false),
+		field.Bool("built_in").Default(false),
+		field.String("validation").Optional(),
 	}
 }
 
@@ -31,6 +32,12 @@ func (FactType) Edges() []ent.Edge {
 func (FactType) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		BaseMixin{},
-		mixin.Time{},
+	}
+}
+
+// Indexes of the FactType
+func (FactType) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("slug").Unique(),
 	}
 }

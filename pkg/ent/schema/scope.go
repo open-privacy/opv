@@ -5,7 +5,6 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"entgo.io/ent/schema/mixin"
 	"github.com/dchest/uniuri"
 )
 
@@ -39,7 +38,6 @@ func (Scope) Edges() []ent.Edge {
 func (Scope) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		BaseMixin{},
-		mixin.Time{},
 	}
 }
 

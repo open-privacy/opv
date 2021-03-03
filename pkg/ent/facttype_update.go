@@ -33,17 +33,37 @@ func (ftu *FactTypeUpdate) SetSlug(s string) *FactTypeUpdate {
 	return ftu
 }
 
-// SetBuiltin sets the "builtin" field.
-func (ftu *FactTypeUpdate) SetBuiltin(b bool) *FactTypeUpdate {
-	ftu.mutation.SetBuiltin(b)
+// SetBuiltIn sets the "built_in" field.
+func (ftu *FactTypeUpdate) SetBuiltIn(b bool) *FactTypeUpdate {
+	ftu.mutation.SetBuiltIn(b)
 	return ftu
 }
 
-// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
-func (ftu *FactTypeUpdate) SetNillableBuiltin(b *bool) *FactTypeUpdate {
+// SetNillableBuiltIn sets the "built_in" field if the given value is not nil.
+func (ftu *FactTypeUpdate) SetNillableBuiltIn(b *bool) *FactTypeUpdate {
 	if b != nil {
-		ftu.SetBuiltin(*b)
+		ftu.SetBuiltIn(*b)
 	}
+	return ftu
+}
+
+// SetValidation sets the "validation" field.
+func (ftu *FactTypeUpdate) SetValidation(s string) *FactTypeUpdate {
+	ftu.mutation.SetValidation(s)
+	return ftu
+}
+
+// SetNillableValidation sets the "validation" field if the given value is not nil.
+func (ftu *FactTypeUpdate) SetNillableValidation(s *string) *FactTypeUpdate {
+	if s != nil {
+		ftu.SetValidation(*s)
+	}
+	return ftu
+}
+
+// ClearValidation clears the value of the "validation" field.
+func (ftu *FactTypeUpdate) ClearValidation() *FactTypeUpdate {
+	ftu.mutation.ClearValidation()
 	return ftu
 }
 
@@ -142,9 +162,9 @@ func (ftu *FactTypeUpdate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ftu *FactTypeUpdate) defaults() {
-	if _, ok := ftu.mutation.UpdateTime(); !ok {
-		v := facttype.UpdateDefaultUpdateTime()
-		ftu.mutation.SetUpdateTime(v)
+	if _, ok := ftu.mutation.UpdatedAt(); !ok {
+		v := facttype.UpdateDefaultUpdatedAt()
+		ftu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -166,11 +186,11 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := ftu.mutation.UpdateTime(); ok {
+	if value, ok := ftu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: facttype.FieldUpdateTime,
+			Column: facttype.FieldUpdatedAt,
 		})
 	}
 	if value, ok := ftu.mutation.Slug(); ok {
@@ -180,11 +200,24 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: facttype.FieldSlug,
 		})
 	}
-	if value, ok := ftu.mutation.Builtin(); ok {
+	if value, ok := ftu.mutation.BuiltIn(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: facttype.FieldBuiltin,
+			Column: facttype.FieldBuiltIn,
+		})
+	}
+	if value, ok := ftu.mutation.Validation(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: facttype.FieldValidation,
+		})
+	}
+	if ftu.mutation.ValidationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: facttype.FieldValidation,
 		})
 	}
 	if ftu.mutation.FactsCleared() {
@@ -265,17 +298,37 @@ func (ftuo *FactTypeUpdateOne) SetSlug(s string) *FactTypeUpdateOne {
 	return ftuo
 }
 
-// SetBuiltin sets the "builtin" field.
-func (ftuo *FactTypeUpdateOne) SetBuiltin(b bool) *FactTypeUpdateOne {
-	ftuo.mutation.SetBuiltin(b)
+// SetBuiltIn sets the "built_in" field.
+func (ftuo *FactTypeUpdateOne) SetBuiltIn(b bool) *FactTypeUpdateOne {
+	ftuo.mutation.SetBuiltIn(b)
 	return ftuo
 }
 
-// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
-func (ftuo *FactTypeUpdateOne) SetNillableBuiltin(b *bool) *FactTypeUpdateOne {
+// SetNillableBuiltIn sets the "built_in" field if the given value is not nil.
+func (ftuo *FactTypeUpdateOne) SetNillableBuiltIn(b *bool) *FactTypeUpdateOne {
 	if b != nil {
-		ftuo.SetBuiltin(*b)
+		ftuo.SetBuiltIn(*b)
 	}
+	return ftuo
+}
+
+// SetValidation sets the "validation" field.
+func (ftuo *FactTypeUpdateOne) SetValidation(s string) *FactTypeUpdateOne {
+	ftuo.mutation.SetValidation(s)
+	return ftuo
+}
+
+// SetNillableValidation sets the "validation" field if the given value is not nil.
+func (ftuo *FactTypeUpdateOne) SetNillableValidation(s *string) *FactTypeUpdateOne {
+	if s != nil {
+		ftuo.SetValidation(*s)
+	}
+	return ftuo
+}
+
+// ClearValidation clears the value of the "validation" field.
+func (ftuo *FactTypeUpdateOne) ClearValidation() *FactTypeUpdateOne {
+	ftuo.mutation.ClearValidation()
 	return ftuo
 }
 
@@ -374,9 +427,9 @@ func (ftuo *FactTypeUpdateOne) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ftuo *FactTypeUpdateOne) defaults() {
-	if _, ok := ftuo.mutation.UpdateTime(); !ok {
-		v := facttype.UpdateDefaultUpdateTime()
-		ftuo.mutation.SetUpdateTime(v)
+	if _, ok := ftuo.mutation.UpdatedAt(); !ok {
+		v := facttype.UpdateDefaultUpdatedAt()
+		ftuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -403,11 +456,11 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			}
 		}
 	}
-	if value, ok := ftuo.mutation.UpdateTime(); ok {
+	if value, ok := ftuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: facttype.FieldUpdateTime,
+			Column: facttype.FieldUpdatedAt,
 		})
 	}
 	if value, ok := ftuo.mutation.Slug(); ok {
@@ -417,11 +470,24 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Column: facttype.FieldSlug,
 		})
 	}
-	if value, ok := ftuo.mutation.Builtin(); ok {
+	if value, ok := ftuo.mutation.BuiltIn(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: facttype.FieldBuiltin,
+			Column: facttype.FieldBuiltIn,
+		})
+	}
+	if value, ok := ftuo.mutation.Validation(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: facttype.FieldValidation,
+		})
+	}
+	if ftuo.mutation.ValidationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: facttype.FieldValidation,
 		})
 	}
 	if ftuo.mutation.FactsCleared() {

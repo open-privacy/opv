@@ -35,7 +35,7 @@ func (dp *DataPlane) grantValidationMiddleware() echo.MiddlewareFunc {
 			c.Set(contextAuthzAct, act)
 			c.Set(contextAuthzObj, obj)
 			c.Set(contextAuthzDom, dom)
-			return dp.CasbinEnforcer.Enforce(sub, dom, obj, act)
+			return dp.Enforcer.Enforce(sub, dom, obj, act)
 		},
 	})
 }

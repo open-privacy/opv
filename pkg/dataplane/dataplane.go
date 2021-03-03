@@ -3,7 +3,6 @@ package dataplane
 import (
 	"fmt"
 
-	"github.com/casbin/casbin/v2"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -11,22 +10,20 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
-	"github.com/open-privacy/opv/pkg/authz"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
-	"github.com/open-privacy/opv/pkg/database"
-	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/repo"
 )
 
 // DataPlane represents the data plane struct
 type DataPlane struct {
-	EntClient      *ent.Client
-	Echo           *echo.Echo
-	Logger         echo.Logger
-	Encryptor      crypto.Encryptor
-	Hasher         crypto.Hasher
-	CasbinEnforcer *casbin.SyncedEnforcer
-	Validator      *validator.Validate
+	Echo      *echo.Echo
+	Logger    echo.Logger
+	Encryptor crypto.Encryptor
+	Hasher    crypto.Hasher
+	Repo      repo.Repo
+	Enforcer  repo.Enforcer
+	Validator *validator.Validate
 }
 
 // MustNewDataPlane creates a new DataPlane, otherwise panic
@@ -35,11 +32,14 @@ func MustNewDataPlane() *DataPlane {
 	dp.prepareEcho()
 	dp.Encryptor = crypto.MustNewEncryptor()
 	dp.Hasher = crypto.MustNewHasher()
-
-	entClient, db := database.MustNewEntClient()
-	dp.EntClient = entClient
-	dp.CasbinEnforcer = authz.MustNewCasbin(db)
 	dp.Validator = validator.New()
+
+	repo, enforcer, err := repo.NewRepoEnforcer()
+	if err != nil {
+		panic(err)
+	}
+	dp.Repo = repo
+	dp.Enforcer = enforcer
 
 	return dp
 }
@@ -54,7 +54,7 @@ func (dp *DataPlane) Start() {
 
 // Stop will do some cleanup when shutdown
 func (dp *DataPlane) Stop() {
-	dp.EntClient.Close()
+	dp.Repo.Close()
 	dp.Echo.Close()
 }
 
@@ -76,11 +76,11 @@ func (dp *DataPlane) prepareEcho() {
 	// Protected by grantValidationMiddleware
 	apiv1.Use(dp.grantValidationMiddleware())
 	apiv1.POST("/scopes", dp.CreateScope)
-	apiv1.GET("/scopes/:id", dp.ShowScope)
+	apiv1.GET("/scopes", dp.QueryScopes)
 	apiv1.POST("/facts", dp.CreateFact)
 	apiv1.GET("/facts/:id", dp.ShowFact)
 	apiv1.POST("/fact_types", dp.CreateFactType)
-	apiv1.GET("/fact_types/:id", dp.ShowFactType)
+	apiv1.GET("/fact_types", dp.QueryFactTypes)
 
 	dataplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.DataPlanePort)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)

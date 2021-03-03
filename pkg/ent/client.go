@@ -11,6 +11,7 @@ import (
 
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
+	"github.com/open-privacy/opv/pkg/ent/grant"
 	"github.com/open-privacy/opv/pkg/ent/scope"
 
 	"entgo.io/ent/dialect"
@@ -27,6 +28,8 @@ type Client struct {
 	Fact *FactClient
 	// FactType is the client for interacting with the FactType builders.
 	FactType *FactTypeClient
+	// Grant is the client for interacting with the Grant builders.
+	Grant *GrantClient
 	// Scope is the client for interacting with the Scope builders.
 	Scope *ScopeClient
 }
@@ -44,6 +47,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Fact = NewFactClient(c.config)
 	c.FactType = NewFactTypeClient(c.config)
+	c.Grant = NewGrantClient(c.config)
 	c.Scope = NewScopeClient(c.config)
 }
 
@@ -80,6 +84,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:   cfg,
 		Fact:     NewFactClient(cfg),
 		FactType: NewFactTypeClient(cfg),
+		Grant:    NewGrantClient(cfg),
 		Scope:    NewScopeClient(cfg),
 	}, nil
 }
@@ -101,6 +106,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:   cfg,
 		Fact:     NewFactClient(cfg),
 		FactType: NewFactTypeClient(cfg),
+		Grant:    NewGrantClient(cfg),
 		Scope:    NewScopeClient(cfg),
 	}, nil
 }
@@ -133,6 +139,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Fact.Use(hooks...)
 	c.FactType.Use(hooks...)
+	c.Grant.Use(hooks...)
 	c.Scope.Use(hooks...)
 }
 
@@ -358,6 +365,94 @@ func (c *FactTypeClient) QueryFacts(ft *FactType) *FactQuery {
 // Hooks returns the client hooks.
 func (c *FactTypeClient) Hooks() []Hook {
 	return c.hooks.FactType
+}
+
+// GrantClient is a client for the Grant schema.
+type GrantClient struct {
+	config
+}
+
+// NewGrantClient returns a client for the Grant from the given config.
+func NewGrantClient(c config) *GrantClient {
+	return &GrantClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `grant.Hooks(f(g(h())))`.
+func (c *GrantClient) Use(hooks ...Hook) {
+	c.hooks.Grant = append(c.hooks.Grant, hooks...)
+}
+
+// Create returns a create builder for Grant.
+func (c *GrantClient) Create() *GrantCreate {
+	mutation := newGrantMutation(c.config, OpCreate)
+	return &GrantCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Grant entities.
+func (c *GrantClient) CreateBulk(builders ...*GrantCreate) *GrantCreateBulk {
+	return &GrantCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Grant.
+func (c *GrantClient) Update() *GrantUpdate {
+	mutation := newGrantMutation(c.config, OpUpdate)
+	return &GrantUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *GrantClient) UpdateOne(gr *Grant) *GrantUpdateOne {
+	mutation := newGrantMutation(c.config, OpUpdateOne, withGrant(gr))
+	return &GrantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *GrantClient) UpdateOneID(id string) *GrantUpdateOne {
+	mutation := newGrantMutation(c.config, OpUpdateOne, withGrantID(id))
+	return &GrantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Grant.
+func (c *GrantClient) Delete() *GrantDelete {
+	mutation := newGrantMutation(c.config, OpDelete)
+	return &GrantDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *GrantClient) DeleteOne(gr *Grant) *GrantDeleteOne {
+	return c.DeleteOneID(gr.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *GrantClient) DeleteOneID(id string) *GrantDeleteOne {
+	builder := c.Delete().Where(grant.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &GrantDeleteOne{builder}
+}
+
+// Query returns a query builder for Grant.
+func (c *GrantClient) Query() *GrantQuery {
+	return &GrantQuery{config: c.config}
+}
+
+// Get returns a Grant entity by its id.
+func (c *GrantClient) Get(ctx context.Context, id string) (*Grant, error) {
+	return c.Query().Where(grant.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *GrantClient) GetX(ctx context.Context, id string) *Grant {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *GrantClient) Hooks() []Hook {
+	return c.hooks.Grant
 }
 
 // ScopeClient is a client for the Scope schema.

@@ -21,30 +21,30 @@ type FactTypeCreate struct {
 	hooks    []Hook
 }
 
-// SetCreateTime sets the "create_time" field.
-func (ftc *FactTypeCreate) SetCreateTime(t time.Time) *FactTypeCreate {
-	ftc.mutation.SetCreateTime(t)
+// SetCreatedAt sets the "created_at" field.
+func (ftc *FactTypeCreate) SetCreatedAt(t time.Time) *FactTypeCreate {
+	ftc.mutation.SetCreatedAt(t)
 	return ftc
 }
 
-// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
-func (ftc *FactTypeCreate) SetNillableCreateTime(t *time.Time) *FactTypeCreate {
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableCreatedAt(t *time.Time) *FactTypeCreate {
 	if t != nil {
-		ftc.SetCreateTime(*t)
+		ftc.SetCreatedAt(*t)
 	}
 	return ftc
 }
 
-// SetUpdateTime sets the "update_time" field.
-func (ftc *FactTypeCreate) SetUpdateTime(t time.Time) *FactTypeCreate {
-	ftc.mutation.SetUpdateTime(t)
+// SetUpdatedAt sets the "updated_at" field.
+func (ftc *FactTypeCreate) SetUpdatedAt(t time.Time) *FactTypeCreate {
+	ftc.mutation.SetUpdatedAt(t)
 	return ftc
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (ftc *FactTypeCreate) SetNillableUpdateTime(t *time.Time) *FactTypeCreate {
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableUpdatedAt(t *time.Time) *FactTypeCreate {
 	if t != nil {
-		ftc.SetUpdateTime(*t)
+		ftc.SetUpdatedAt(*t)
 	}
 	return ftc
 }
@@ -55,16 +55,30 @@ func (ftc *FactTypeCreate) SetSlug(s string) *FactTypeCreate {
 	return ftc
 }
 
-// SetBuiltin sets the "builtin" field.
-func (ftc *FactTypeCreate) SetBuiltin(b bool) *FactTypeCreate {
-	ftc.mutation.SetBuiltin(b)
+// SetBuiltIn sets the "built_in" field.
+func (ftc *FactTypeCreate) SetBuiltIn(b bool) *FactTypeCreate {
+	ftc.mutation.SetBuiltIn(b)
 	return ftc
 }
 
-// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
-func (ftc *FactTypeCreate) SetNillableBuiltin(b *bool) *FactTypeCreate {
+// SetNillableBuiltIn sets the "built_in" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableBuiltIn(b *bool) *FactTypeCreate {
 	if b != nil {
-		ftc.SetBuiltin(*b)
+		ftc.SetBuiltIn(*b)
+	}
+	return ftc
+}
+
+// SetValidation sets the "validation" field.
+func (ftc *FactTypeCreate) SetValidation(s string) *FactTypeCreate {
+	ftc.mutation.SetValidation(s)
+	return ftc
+}
+
+// SetNillableValidation sets the "validation" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableValidation(s *string) *FactTypeCreate {
+	if s != nil {
+		ftc.SetValidation(*s)
 	}
 	return ftc
 }
@@ -150,17 +164,17 @@ func (ftc *FactTypeCreate) SaveX(ctx context.Context) *FactType {
 
 // defaults sets the default values of the builder before save.
 func (ftc *FactTypeCreate) defaults() {
-	if _, ok := ftc.mutation.CreateTime(); !ok {
-		v := facttype.DefaultCreateTime()
-		ftc.mutation.SetCreateTime(v)
+	if _, ok := ftc.mutation.CreatedAt(); !ok {
+		v := facttype.DefaultCreatedAt()
+		ftc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ftc.mutation.UpdateTime(); !ok {
-		v := facttype.DefaultUpdateTime()
-		ftc.mutation.SetUpdateTime(v)
+	if _, ok := ftc.mutation.UpdatedAt(); !ok {
+		v := facttype.DefaultUpdatedAt()
+		ftc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := ftc.mutation.Builtin(); !ok {
-		v := facttype.DefaultBuiltin
-		ftc.mutation.SetBuiltin(v)
+	if _, ok := ftc.mutation.BuiltIn(); !ok {
+		v := facttype.DefaultBuiltIn
+		ftc.mutation.SetBuiltIn(v)
 	}
 	if _, ok := ftc.mutation.ID(); !ok {
 		v := facttype.DefaultID()
@@ -170,17 +184,17 @@ func (ftc *FactTypeCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ftc *FactTypeCreate) check() error {
-	if _, ok := ftc.mutation.CreateTime(); !ok {
-		return &ValidationError{Name: "create_time", err: errors.New("ent: missing required field \"create_time\"")}
+	if _, ok := ftc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
 	}
-	if _, ok := ftc.mutation.UpdateTime(); !ok {
-		return &ValidationError{Name: "update_time", err: errors.New("ent: missing required field \"update_time\"")}
+	if _, ok := ftc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
 	}
 	if _, ok := ftc.mutation.Slug(); !ok {
 		return &ValidationError{Name: "slug", err: errors.New("ent: missing required field \"slug\"")}
 	}
-	if _, ok := ftc.mutation.Builtin(); !ok {
-		return &ValidationError{Name: "builtin", err: errors.New("ent: missing required field \"builtin\"")}
+	if _, ok := ftc.mutation.BuiltIn(); !ok {
+		return &ValidationError{Name: "built_in", err: errors.New("ent: missing required field \"built_in\"")}
 	}
 	return nil
 }
@@ -211,21 +225,21 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := ftc.mutation.CreateTime(); ok {
+	if value, ok := ftc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: facttype.FieldCreateTime,
+			Column: facttype.FieldCreatedAt,
 		})
-		_node.CreateTime = value
+		_node.CreatedAt = value
 	}
-	if value, ok := ftc.mutation.UpdateTime(); ok {
+	if value, ok := ftc.mutation.UpdatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: facttype.FieldUpdateTime,
+			Column: facttype.FieldUpdatedAt,
 		})
-		_node.UpdateTime = value
+		_node.UpdatedAt = value
 	}
 	if value, ok := ftc.mutation.Slug(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -235,13 +249,21 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 		})
 		_node.Slug = value
 	}
-	if value, ok := ftc.mutation.Builtin(); ok {
+	if value, ok := ftc.mutation.BuiltIn(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: facttype.FieldBuiltin,
+			Column: facttype.FieldBuiltIn,
 		})
-		_node.Builtin = value
+		_node.BuiltIn = value
+	}
+	if value, ok := ftc.mutation.Validation(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: facttype.FieldValidation,
+		})
+		_node.Validation = value
 	}
 	if nodes := ftc.mutation.FactsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

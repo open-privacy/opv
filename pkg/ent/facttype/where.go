@@ -93,17 +93,17 @@ func IDLTE(id string) predicate.FactType {
 	})
 }
 
-// CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
-func CreateTime(v time.Time) predicate.FactType {
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
+		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// UpdateTime applies equality check predicate on the "update_time" field. It's identical to UpdateTimeEQ.
-func UpdateTime(v time.Time) predicate.FactType {
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
+		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
 	})
 }
 
@@ -114,29 +114,36 @@ func Slug(v string) predicate.FactType {
 	})
 }
 
-// Builtin applies equality check predicate on the "builtin" field. It's identical to BuiltinEQ.
-func Builtin(v bool) predicate.FactType {
+// BuiltIn applies equality check predicate on the "built_in" field. It's identical to BuiltInEQ.
+func BuiltIn(v bool) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBuiltin), v))
+		s.Where(sql.EQ(s.C(FieldBuiltIn), v))
 	})
 }
 
-// CreateTimeEQ applies the EQ predicate on the "create_time" field.
-func CreateTimeEQ(v time.Time) predicate.FactType {
+// Validation applies equality check predicate on the "validation" field. It's identical to ValidationEQ.
+func Validation(v string) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
+		s.Where(sql.EQ(s.C(FieldValidation), v))
 	})
 }
 
-// CreateTimeNEQ applies the NEQ predicate on the "create_time" field.
-func CreateTimeNEQ(v time.Time) predicate.FactType {
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreateTime), v))
+		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreateTimeIn applies the In predicate on the "create_time" field.
-func CreateTimeIn(vs ...time.Time) predicate.FactType {
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
+	})
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.FactType {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -148,12 +155,12 @@ func CreateTimeIn(vs ...time.Time) predicate.FactType {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldCreateTime), v...))
+		s.Where(sql.In(s.C(FieldCreatedAt), v...))
 	})
 }
 
-// CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
-func CreateTimeNotIn(vs ...time.Time) predicate.FactType {
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.FactType {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -165,54 +172,54 @@ func CreateTimeNotIn(vs ...time.Time) predicate.FactType {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldCreateTime), v...))
+		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
 	})
 }
 
-// CreateTimeGT applies the GT predicate on the "create_time" field.
-func CreateTimeGT(v time.Time) predicate.FactType {
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreateTime), v))
+		s.Where(sql.GT(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreateTimeGTE applies the GTE predicate on the "create_time" field.
-func CreateTimeGTE(v time.Time) predicate.FactType {
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreateTime), v))
+		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreateTimeLT applies the LT predicate on the "create_time" field.
-func CreateTimeLT(v time.Time) predicate.FactType {
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreateTime), v))
+		s.Where(sql.LT(s.C(FieldCreatedAt), v))
 	})
 }
 
-// CreateTimeLTE applies the LTE predicate on the "create_time" field.
-func CreateTimeLTE(v time.Time) predicate.FactType {
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreateTime), v))
+		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
 	})
 }
 
-// UpdateTimeEQ applies the EQ predicate on the "update_time" field.
-func UpdateTimeEQ(v time.Time) predicate.FactType {
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
+		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdateTimeNEQ applies the NEQ predicate on the "update_time" field.
-func UpdateTimeNEQ(v time.Time) predicate.FactType {
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdateTime), v))
+		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdateTimeIn applies the In predicate on the "update_time" field.
-func UpdateTimeIn(vs ...time.Time) predicate.FactType {
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.FactType {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -224,12 +231,12 @@ func UpdateTimeIn(vs ...time.Time) predicate.FactType {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldUpdateTime), v...))
+		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
 	})
 }
 
-// UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
-func UpdateTimeNotIn(vs ...time.Time) predicate.FactType {
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.FactType {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -241,35 +248,35 @@ func UpdateTimeNotIn(vs ...time.Time) predicate.FactType {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldUpdateTime), v...))
+		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
 	})
 }
 
-// UpdateTimeGT applies the GT predicate on the "update_time" field.
-func UpdateTimeGT(v time.Time) predicate.FactType {
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdateTime), v))
+		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdateTimeGTE applies the GTE predicate on the "update_time" field.
-func UpdateTimeGTE(v time.Time) predicate.FactType {
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdateTime), v))
+		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdateTimeLT applies the LT predicate on the "update_time" field.
-func UpdateTimeLT(v time.Time) predicate.FactType {
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdateTime), v))
+		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
 	})
 }
 
-// UpdateTimeLTE applies the LTE predicate on the "update_time" field.
-func UpdateTimeLTE(v time.Time) predicate.FactType {
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
+		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
 	})
 }
 
@@ -384,17 +391,142 @@ func SlugContainsFold(v string) predicate.FactType {
 	})
 }
 
-// BuiltinEQ applies the EQ predicate on the "builtin" field.
-func BuiltinEQ(v bool) predicate.FactType {
+// BuiltInEQ applies the EQ predicate on the "built_in" field.
+func BuiltInEQ(v bool) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBuiltin), v))
+		s.Where(sql.EQ(s.C(FieldBuiltIn), v))
 	})
 }
 
-// BuiltinNEQ applies the NEQ predicate on the "builtin" field.
-func BuiltinNEQ(v bool) predicate.FactType {
+// BuiltInNEQ applies the NEQ predicate on the "built_in" field.
+func BuiltInNEQ(v bool) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBuiltin), v))
+		s.Where(sql.NEQ(s.C(FieldBuiltIn), v))
+	})
+}
+
+// ValidationEQ applies the EQ predicate on the "validation" field.
+func ValidationEQ(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationNEQ applies the NEQ predicate on the "validation" field.
+func ValidationNEQ(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationIn applies the In predicate on the "validation" field.
+func ValidationIn(vs ...string) predicate.FactType {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.FactType(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldValidation), v...))
+	})
+}
+
+// ValidationNotIn applies the NotIn predicate on the "validation" field.
+func ValidationNotIn(vs ...string) predicate.FactType {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.FactType(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldValidation), v...))
+	})
+}
+
+// ValidationGT applies the GT predicate on the "validation" field.
+func ValidationGT(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationGTE applies the GTE predicate on the "validation" field.
+func ValidationGTE(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationLT applies the LT predicate on the "validation" field.
+func ValidationLT(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationLTE applies the LTE predicate on the "validation" field.
+func ValidationLTE(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationContains applies the Contains predicate on the "validation" field.
+func ValidationContains(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationHasPrefix applies the HasPrefix predicate on the "validation" field.
+func ValidationHasPrefix(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationHasSuffix applies the HasSuffix predicate on the "validation" field.
+func ValidationHasSuffix(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationIsNil applies the IsNil predicate on the "validation" field.
+func ValidationIsNil() predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldValidation)))
+	})
+}
+
+// ValidationNotNil applies the NotNil predicate on the "validation" field.
+func ValidationNotNil() predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldValidation)))
+	})
+}
+
+// ValidationEqualFold applies the EqualFold predicate on the "validation" field.
+func ValidationEqualFold(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldValidation), v))
+	})
+}
+
+// ValidationContainsFold applies the ContainsFold predicate on the "validation" field.
+func ValidationContainsFold(v string) predicate.FactType {
+	return predicate.FactType(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldValidation), v))
 	})
 }
 

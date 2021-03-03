@@ -319,12 +319,12 @@ func (fq *FactQuery) WithFactType(opts ...func(*FactTypeQuery)) *FactQuery {
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Fact.Query().
-//		GroupBy(fact.FieldCreateTime).
+//		GroupBy(fact.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -346,11 +346,11 @@ func (fq *FactQuery) GroupBy(field string, fields ...string) *FactGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Fact.Query().
-//		Select(fact.FieldCreateTime).
+//		Select(fact.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (fq *FactQuery) Select(field string, fields ...string) *FactSelect {

@@ -11,8 +11,8 @@ var (
 	// FactsColumns holds the columns for the "facts" table.
 	FactsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "hashed_value", Type: field.TypeString},
 		{Name: "encrypted_value", Type: field.TypeString},
 		{Name: "domain", Type: field.TypeString},
@@ -47,6 +47,16 @@ var (
 				Columns: []*schema.Column{FactsColumns[0]},
 			},
 			{
+				Name:    "fact_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{FactsColumns[1]},
+			},
+			{
+				Name:    "fact_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{FactsColumns[2]},
+			},
+			{
 				Name:    "fact_hashed_value_scope_facts_fact_type_facts",
 				Unique:  true,
 				Columns: []*schema.Column{FactsColumns[3], FactsColumns[7], FactsColumns[6]},
@@ -61,10 +71,11 @@ var (
 	// FactTypesColumns holds the columns for the "fact_types" table.
 	FactTypesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "slug", Type: field.TypeString},
-		{Name: "builtin", Type: field.TypeBool},
+		{Name: "built_in", Type: field.TypeBool},
+		{Name: "validation", Type: field.TypeString, Nullable: true},
 	}
 	// FactTypesTable holds the schema information for the "fact_types" table.
 	FactTypesTable = &schema.Table{
@@ -78,13 +89,72 @@ var (
 				Unique:  true,
 				Columns: []*schema.Column{FactTypesColumns[0]},
 			},
+			{
+				Name:    "facttype_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{FactTypesColumns[1]},
+			},
+			{
+				Name:    "facttype_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{FactTypesColumns[2]},
+			},
+			{
+				Name:    "facttype_slug",
+				Unique:  true,
+				Columns: []*schema.Column{FactTypesColumns[3]},
+			},
+		},
+	}
+	// GrantsColumns holds the columns for the "grants" table.
+	GrantsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "hashed_token", Type: field.TypeString},
+		{Name: "domain", Type: field.TypeString},
+		{Name: "version", Type: field.TypeString},
+		{Name: "allowed_http_methods", Type: field.TypeString},
+	}
+	// GrantsTable holds the schema information for the "grants" table.
+	GrantsTable = &schema.Table{
+		Name:        "grants",
+		Columns:     GrantsColumns,
+		PrimaryKey:  []*schema.Column{GrantsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+		Indexes: []*schema.Index{
+			{
+				Name:    "grant_id",
+				Unique:  true,
+				Columns: []*schema.Column{GrantsColumns[0]},
+			},
+			{
+				Name:    "grant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{GrantsColumns[1]},
+			},
+			{
+				Name:    "grant_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{GrantsColumns[2]},
+			},
+			{
+				Name:    "grant_hashed_token",
+				Unique:  false,
+				Columns: []*schema.Column{GrantsColumns[3]},
+			},
+			{
+				Name:    "grant_domain",
+				Unique:  false,
+				Columns: []*schema.Column{GrantsColumns[4]},
+			},
 		},
 	}
 	// ScopesColumns holds the columns for the "scopes" table.
 	ScopesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "custom_id", Type: field.TypeString},
 		{Name: "nonce", Type: field.TypeString},
 		{Name: "domain", Type: field.TypeString},
@@ -102,6 +172,16 @@ var (
 				Columns: []*schema.Column{ScopesColumns[0]},
 			},
 			{
+				Name:    "scope_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ScopesColumns[1]},
+			},
+			{
+				Name:    "scope_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{ScopesColumns[2]},
+			},
+			{
 				Name:    "scope_custom_id",
 				Unique:  true,
 				Columns: []*schema.Column{ScopesColumns[3]},
@@ -117,6 +197,7 @@ var (
 	Tables = []*schema.Table{
 		FactsTable,
 		FactTypesTable,
+		GrantsTable,
 		ScopesTable,
 	}
 )

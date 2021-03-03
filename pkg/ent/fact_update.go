@@ -155,9 +155,9 @@ func (fu *FactUpdate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (fu *FactUpdate) defaults() {
-	if _, ok := fu.mutation.UpdateTime(); !ok {
-		v := fact.UpdateDefaultUpdateTime()
-		fu.mutation.SetUpdateTime(v)
+	if _, ok := fu.mutation.UpdatedAt(); !ok {
+		v := fact.UpdateDefaultUpdatedAt()
+		fu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -179,11 +179,11 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := fu.mutation.UpdateTime(); ok {
+	if value, ok := fu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldUpdateTime,
+			Column: fact.FieldUpdatedAt,
 		})
 	}
 	if value, ok := fu.mutation.HashedValue(); ok {
@@ -422,9 +422,9 @@ func (fuo *FactUpdateOne) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (fuo *FactUpdateOne) defaults() {
-	if _, ok := fuo.mutation.UpdateTime(); !ok {
-		v := fact.UpdateDefaultUpdateTime()
-		fuo.mutation.SetUpdateTime(v)
+	if _, ok := fuo.mutation.UpdatedAt(); !ok {
+		v := fact.UpdateDefaultUpdatedAt()
+		fuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -451,11 +451,11 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			}
 		}
 	}
-	if value, ok := fuo.mutation.UpdateTime(); ok {
+	if value, ok := fuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldUpdateTime,
+			Column: fact.FieldUpdatedAt,
 		})
 	}
 	if value, ok := fuo.mutation.HashedValue(); ok {
