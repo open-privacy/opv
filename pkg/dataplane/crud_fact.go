@@ -1,15 +1,7 @@
 package dataplane
 
 import (
-	"context"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
-	"github.com/open-privacy/opv/pkg/apimodel"
-	"github.com/open-privacy/opv/pkg/ent"
-	"github.com/open-privacy/opv/pkg/ent/fact"
-	"github.com/open-privacy/opv/pkg/ent/facttype"
-	"github.com/open-privacy/opv/pkg/ent/scope"
 )
 
 // ShowFact godoc
@@ -25,6 +17,11 @@ import (
 // @failure 400 {object} apimodel.HTTPError
 // @failure 500 {object} apimodel.HTTPError
 // @router /facts/{id} [get]
+func (dp *DataPlane) ShowFact(c echo.Context) error {
+	return nil
+}
+
+/*
 func (dp *DataPlane) ShowFact(c echo.Context) error {
 	ctx := c.Request().Context()
 	f, err := dp.EntClient.Fact.Query().WithScope().WithFactType().Where(
@@ -58,6 +55,7 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 		Domain:        f.Domain,
 	})
 }
+*/
 
 // CreateFact godoc
 // @tags Fact
@@ -72,6 +70,11 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 // @failure 400 {object} apimodel.HTTPError
 // @failure 500 {object} apimodel.HTTPError
 // @router /facts [post]
+func (dp *DataPlane) CreateFact(c echo.Context) error {
+	return nil
+}
+
+/*
 func (dp *DataPlane) CreateFact(c echo.Context) error {
 	ctx := c.Request().Context()
 	cf := &apimodel.CreateFact{}
@@ -144,3 +147,4 @@ func (dp *DataPlane) createFactTypeIfNotExists(ctx context.Context, factTypeSlug
 	}
 	return ft, err
 }
+*/

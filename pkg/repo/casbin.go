@@ -1,12 +1,16 @@
-package authz
+package repo
 
 import (
 	"database/sql"
+	"fmt"
 
 	sqladapter "github.com/Blank-Xu/sql-adapter"
+	mongoadapter "github.com/casbin/mongodb-adapter"
+
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/open-privacy/opv/pkg/config"
+	"github.com/upper/db/v4"
 )
 
 const defaultCasbinModel = `
@@ -30,8 +34,8 @@ m = g(r.sub, p.sub, r.dom) && keyMatch(r.dom, p.dom) && keyMatch2(r.obj, p.obj) 
 `
 
 // MustNewCasbin creates the casbin enforcer with the connected sql.DB
-func MustNewCasbin(db *sql.DB) *casbin.SyncedEnforcer {
-	e, err := NewCasbin(db)
+func MustNewCasbin(session db.Session) *casbin.SyncedEnforcer {
+	e, err := NewCasbin(session)
 	if err != nil {
 		panic(err)
 	}
@@ -39,10 +43,22 @@ func MustNewCasbin(db *sql.DB) *casbin.SyncedEnforcer {
 }
 
 // NewCasbin creates the casbin enforcer with the connected sql.DB
-func NewCasbin(db *sql.DB) (*casbin.SyncedEnforcer, error) {
-	a, err := sqladapter.NewAdapter(db, config.ENV.DBDriver, "casbin_rule")
-	if err != nil {
-		return nil, err
+func NewCasbin(session db.Session) (e *casbin.SyncedEnforcer, err error) {
+	var a interface{}
+
+	switch config.ENV.DBDriver {
+	case "mysql", "sqlite", "postgresql":
+		a, err = sqladapter.NewAdapter(session.Driver().(*sql.DB), config.ENV.DBDriver, "casbin_rule")
+		if err != nil {
+			return nil, err
+		}
+	case "mongo":
+		a = mongoadapter.NewAdapter(config.ENV.DBConnectionStr)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("invalid DBDriver %s", config.ENV.DBDriver)
 	}
 
 	m, err := model.NewModelFromString(defaultCasbinModel)
@@ -50,7 +66,7 @@ func NewCasbin(db *sql.DB) (*casbin.SyncedEnforcer, error) {
 		return nil, err
 	}
 
-	e, err := casbin.NewSyncedEnforcer(m, a)
+	e, err = casbin.NewSyncedEnforcer(m, a)
 	if err != nil {
 		return nil, err
 	}

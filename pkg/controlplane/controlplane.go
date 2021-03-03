@@ -13,16 +13,12 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	controlplanedocs "github.com/open-privacy/opv/cmd/controlplane/docs"
-	"github.com/open-privacy/opv/pkg/authz"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
-	"github.com/open-privacy/opv/pkg/database"
-	"github.com/open-privacy/opv/pkg/ent"
 )
 
 // ControlPlane is the control plane for OPV
 type ControlPlane struct {
-	EntClient      *ent.Client
 	Echo           *echo.Echo
 	Logger         echo.Logger
 	Encryptor      crypto.Encryptor
@@ -37,10 +33,6 @@ func MustNewControlPlane() *ControlPlane {
 	cp.prepareEcho()
 	cp.Encryptor = crypto.MustNewEncryptor()
 	cp.Hasher = crypto.MustNewHasher()
-
-	entClient, db := database.MustNewEntClient()
-	cp.EntClient = entClient
-	cp.CasbinEnforcer = authz.MustNewCasbin(db)
 	cp.Validator = validator.New()
 
 	return cp
@@ -56,7 +48,6 @@ func (cp *ControlPlane) Start() {
 
 // Stop will wait for the signal and gracefully shuts down the control plane.
 func (cp *ControlPlane) Stop() {
-	cp.EntClient.Close()
 	cp.Echo.Close()
 }
 

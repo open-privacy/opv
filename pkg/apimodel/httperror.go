@@ -1,10 +1,7 @@
 package apimodel
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v4"
-	"github.com/open-privacy/opv/pkg/ent"
 )
 
 // NewHTTPError creates a new HTTPError
@@ -14,25 +11,6 @@ func NewHTTPError(c echo.Context, err error, status int) error {
 		Message: err.Error(),
 	}
 	return c.JSON(status, er)
-}
-
-// NewEntError creates an error directly from entgo framework
-// The status code is based on the ent error type
-func NewEntError(c echo.Context, err error) error {
-	if err == nil {
-		return nil
-	}
-	if ent.IsNotFound(err) {
-		return NewHTTPError(c, err, http.StatusNotFound)
-	}
-	if ent.IsValidationError(err) {
-		return NewHTTPError(c, err, http.StatusBadRequest)
-	}
-	if ent.IsConstraintError(err) {
-		return NewHTTPError(c, err, http.StatusBadRequest)
-	}
-
-	return NewHTTPError(c, err, http.StatusInternalServerError)
 }
 
 // HTTPError struct

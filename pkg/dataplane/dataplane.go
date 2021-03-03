@@ -11,16 +11,12 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
-	"github.com/open-privacy/opv/pkg/authz"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
-	"github.com/open-privacy/opv/pkg/database"
-	"github.com/open-privacy/opv/pkg/ent"
 )
 
 // DataPlane represents the data plane struct
 type DataPlane struct {
-	EntClient      *ent.Client
 	Echo           *echo.Echo
 	Logger         echo.Logger
 	Encryptor      crypto.Encryptor
@@ -35,10 +31,6 @@ func MustNewDataPlane() *DataPlane {
 	dp.prepareEcho()
 	dp.Encryptor = crypto.MustNewEncryptor()
 	dp.Hasher = crypto.MustNewHasher()
-
-	entClient, db := database.MustNewEntClient()
-	dp.EntClient = entClient
-	dp.CasbinEnforcer = authz.MustNewCasbin(db)
 	dp.Validator = validator.New()
 
 	return dp
@@ -54,7 +46,6 @@ func (dp *DataPlane) Start() {
 
 // Stop will do some cleanup when shutdown
 func (dp *DataPlane) Stop() {
-	dp.EntClient.Close()
 	dp.Echo.Close()
 }
 
