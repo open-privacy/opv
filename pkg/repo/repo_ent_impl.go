@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	sqladapter "github.com/Blank-Xu/sql-adapter"
+	"github.com/avast/retry-go"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	_ "github.com/go-sql-driver/mysql" // mysql driver
@@ -79,45 +80,53 @@ type entImpl struct {
 	enforcer  *casbin.SyncedEnforcer
 }
 
-func newEntImpl() (*entImpl, error) {
+func setupEntDB() (*ent.Client, *casbin.SyncedEnforcer, error) {
 	var entClient *ent.Client
-	var db *sql.DB
+	var enforcer *casbin.SyncedEnforcer
+	var err error
 
-	// Pick DB driver
-	switch config.ENV.DBDriver {
-	case dialect.MySQL, dialect.Postgres:
-		driver, err := entsql.Open(config.ENV.DBDriver, config.ENV.DBConnectionStr)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open database connection: %v", err)
-		}
-		entClient = ent.NewClient(ent.Driver(driver))
-		db = driver.DB()
-	case dialect.SQLite:
-		driver, err := entsql.Open(config.ENV.DBDriver, config.ENV.DBConnectionStr)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open database connection: %v", err)
-		}
-		entClient = ent.NewClient(ent.Driver(driver))
-		db = driver.DB()
-		db.SetMaxOpenConns(1)
-	default:
-		return nil, fmt.Errorf("unsupported database driver %s", config.ENV.DBDriver)
-	}
+	err = retry.Do(
+		func() error {
+			var db *sql.DB
+			switch config.ENV.DBDriver {
+			case dialect.MySQL, dialect.Postgres, dialect.SQLite:
+				driver, err := entsql.Open(config.ENV.DBDriver, config.ENV.DBConnectionStr)
+				if err != nil {
+					return err
+				}
+				entClient = ent.NewClient(ent.Driver(driver))
+				db = driver.DB()
+			default:
+				return fmt.Errorf("unsupported database driver %s", config.ENV.DBDriver)
+			}
 
-	// Run Ent Migration
-	if err := entClient.Schema.Create(
-		context.Background(),
-		migrate.WithDropIndex(true),
-	); err != nil {
-		return nil, fmt.Errorf("failed to migrate ent schema: %v", err)
-	}
+			// Run Ent Migration
+			if err := entClient.Schema.Create(
+				context.Background(),
+				migrate.WithDropIndex(true),
+			); err != nil {
+				return fmt.Errorf("failed to migrate ent schema: %v", err)
+			}
 
-	// Run Casbin Migration
-	enforcer, err := newCasbin(db)
+			// Run Casbin Migration
+			enforcer, err = newCasbin(db)
+			if err != nil {
+				return fmt.Errorf("failed to create casbin enforcer: %v", err)
+			}
+
+			return nil
+		},
+		retry.Attempts(config.ENV.DBSetupRetryAttempts),
+		retry.Delay(config.ENV.DBSetupRetryDelay),
+	)
+	return entClient, enforcer, err
+}
+
+func newEntImpl() (*entImpl, error) {
+	entClient, enforcer, err := setupEntDB()
 	if err != nil {
-		return nil, fmt.Errorf("failed to create casbin enforcer: %v", err)
+		return nil, err
 	}
-
 	return &entImpl{entClient: entClient, enforcer: enforcer}, nil
 }
 

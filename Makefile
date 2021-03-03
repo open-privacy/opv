@@ -20,9 +20,9 @@ test:
 	go test -race -covermode=atomic -coverprofile=coverage.txt ./pkg/...
 
 build:
-	@go build -o build/dataplane    ./cmd/dataplane
-	@go build -o build/controlplane ./cmd/controlplane
-	@go build -o build/proxyplane   ./cmd/proxyplane
+	go build -o build/dataplane    ./cmd/dataplane
+	go build -o build/controlplane ./cmd/controlplane
+	go build -o build/proxyplane   ./cmd/proxyplane
 
 gen: ent swag
 
