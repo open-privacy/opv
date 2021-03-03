@@ -16,7 +16,7 @@ type FactType struct {
 func (FactType) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("slug"),
-		field.Bool("builtin").Default(false),
+		field.Bool("built_in").Default(false),
 		field.String("validation").Optional(),
 	}
 }

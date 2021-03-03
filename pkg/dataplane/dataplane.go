@@ -76,11 +76,11 @@ func (dp *DataPlane) prepareEcho() {
 	// Protected by grantValidationMiddleware
 	apiv1.Use(dp.grantValidationMiddleware())
 	apiv1.POST("/scopes", dp.CreateScope)
-	apiv1.GET("/scopes/:id", dp.ShowScope)
+	apiv1.GET("/scopes", dp.QueryScopes)
 	apiv1.POST("/facts", dp.CreateFact)
 	apiv1.GET("/facts/:id", dp.ShowFact)
 	apiv1.POST("/fact_types", dp.CreateFactType)
-	apiv1.GET("/fact_types/:id", dp.ShowFactType)
+	apiv1.GET("/fact_types", dp.QueryFactTypes)
 
 	dataplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.DataPlanePort)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)

@@ -114,10 +114,10 @@ func Slug(v string) predicate.FactType {
 	})
 }
 
-// Builtin applies equality check predicate on the "builtin" field. It's identical to BuiltinEQ.
-func Builtin(v bool) predicate.FactType {
+// BuiltIn applies equality check predicate on the "built_in" field. It's identical to BuiltInEQ.
+func BuiltIn(v bool) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBuiltin), v))
+		s.Where(sql.EQ(s.C(FieldBuiltIn), v))
 	})
 }
 
@@ -391,17 +391,17 @@ func SlugContainsFold(v string) predicate.FactType {
 	})
 }
 
-// BuiltinEQ applies the EQ predicate on the "builtin" field.
-func BuiltinEQ(v bool) predicate.FactType {
+// BuiltInEQ applies the EQ predicate on the "built_in" field.
+func BuiltInEQ(v bool) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBuiltin), v))
+		s.Where(sql.EQ(s.C(FieldBuiltIn), v))
 	})
 }
 
-// BuiltinNEQ applies the NEQ predicate on the "builtin" field.
-func BuiltinNEQ(v bool) predicate.FactType {
+// BuiltInNEQ applies the NEQ predicate on the "built_in" field.
+func BuiltInNEQ(v bool) predicate.FactType {
 	return predicate.FactType(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBuiltin), v))
+		s.Where(sql.NEQ(s.C(FieldBuiltIn), v))
 	})
 }
 

@@ -22,8 +22,8 @@ type FactType struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Slug holds the value of the "slug" field.
 	Slug string `json:"slug,omitempty"`
-	// Builtin holds the value of the "builtin" field.
-	Builtin bool `json:"builtin,omitempty"`
+	// BuiltIn holds the value of the "built_in" field.
+	BuiltIn bool `json:"built_in,omitempty"`
 	// Validation holds the value of the "validation" field.
 	Validation string `json:"validation,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -54,7 +54,7 @@ func (*FactType) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case facttype.FieldBuiltin:
+		case facttype.FieldBuiltIn:
 			values[i] = &sql.NullBool{}
 		case facttype.FieldID, facttype.FieldSlug, facttype.FieldValidation:
 			values[i] = &sql.NullString{}
@@ -99,11 +99,11 @@ func (ft *FactType) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				ft.Slug = value.String
 			}
-		case facttype.FieldBuiltin:
+		case facttype.FieldBuiltIn:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field builtin", values[i])
+				return fmt.Errorf("unexpected type %T for field built_in", values[i])
 			} else if value.Valid {
-				ft.Builtin = value.Bool
+				ft.BuiltIn = value.Bool
 			}
 		case facttype.FieldValidation:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -150,8 +150,8 @@ func (ft *FactType) String() string {
 	builder.WriteString(ft.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", slug=")
 	builder.WriteString(ft.Slug)
-	builder.WriteString(", builtin=")
-	builder.WriteString(fmt.Sprintf("%v", ft.Builtin))
+	builder.WriteString(", built_in=")
+	builder.WriteString(fmt.Sprintf("%v", ft.BuiltIn))
 	builder.WriteString(", validation=")
 	builder.WriteString(ft.Validation)
 	builder.WriteByte(')')

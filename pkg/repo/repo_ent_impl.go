@@ -154,7 +154,7 @@ func (e *entImpl) CreateFactType(ctx context.Context, opt *CreateFactTypeOption)
 	ft, err := e.GetFactTypeBySlug(ctx, opt.FactTypeSlug)
 	if ent.IsNotFound(err) {
 		ft, err = e.entClient.FactType.Create().
-			SetBuiltin(opt.BuiltIn).
+			SetBuiltIn(opt.BuiltIn).
 			SetSlug(opt.FactTypeSlug).
 			SetValidation(opt.FactTypeValidation).
 			Save(ctx)

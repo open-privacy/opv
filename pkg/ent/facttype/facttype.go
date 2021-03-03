@@ -17,8 +17,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldSlug holds the string denoting the slug field in the database.
 	FieldSlug = "slug"
-	// FieldBuiltin holds the string denoting the builtin field in the database.
-	FieldBuiltin = "builtin"
+	// FieldBuiltIn holds the string denoting the built_in field in the database.
+	FieldBuiltIn = "built_in"
 	// FieldValidation holds the string denoting the validation field in the database.
 	FieldValidation = "validation"
 
@@ -42,7 +42,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldSlug,
-	FieldBuiltin,
+	FieldBuiltIn,
 	FieldValidation,
 }
 
@@ -63,8 +63,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultBuiltin holds the default value on creation for the "builtin" field.
-	DefaultBuiltin bool
+	// DefaultBuiltIn holds the default value on creation for the "built_in" field.
+	DefaultBuiltIn bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() string
 )

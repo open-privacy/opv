@@ -55,16 +55,16 @@ func (ftc *FactTypeCreate) SetSlug(s string) *FactTypeCreate {
 	return ftc
 }
 
-// SetBuiltin sets the "builtin" field.
-func (ftc *FactTypeCreate) SetBuiltin(b bool) *FactTypeCreate {
-	ftc.mutation.SetBuiltin(b)
+// SetBuiltIn sets the "built_in" field.
+func (ftc *FactTypeCreate) SetBuiltIn(b bool) *FactTypeCreate {
+	ftc.mutation.SetBuiltIn(b)
 	return ftc
 }
 
-// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
-func (ftc *FactTypeCreate) SetNillableBuiltin(b *bool) *FactTypeCreate {
+// SetNillableBuiltIn sets the "built_in" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableBuiltIn(b *bool) *FactTypeCreate {
 	if b != nil {
-		ftc.SetBuiltin(*b)
+		ftc.SetBuiltIn(*b)
 	}
 	return ftc
 }
@@ -172,9 +172,9 @@ func (ftc *FactTypeCreate) defaults() {
 		v := facttype.DefaultUpdatedAt()
 		ftc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := ftc.mutation.Builtin(); !ok {
-		v := facttype.DefaultBuiltin
-		ftc.mutation.SetBuiltin(v)
+	if _, ok := ftc.mutation.BuiltIn(); !ok {
+		v := facttype.DefaultBuiltIn
+		ftc.mutation.SetBuiltIn(v)
 	}
 	if _, ok := ftc.mutation.ID(); !ok {
 		v := facttype.DefaultID()
@@ -193,8 +193,8 @@ func (ftc *FactTypeCreate) check() error {
 	if _, ok := ftc.mutation.Slug(); !ok {
 		return &ValidationError{Name: "slug", err: errors.New("ent: missing required field \"slug\"")}
 	}
-	if _, ok := ftc.mutation.Builtin(); !ok {
-		return &ValidationError{Name: "builtin", err: errors.New("ent: missing required field \"builtin\"")}
+	if _, ok := ftc.mutation.BuiltIn(); !ok {
+		return &ValidationError{Name: "built_in", err: errors.New("ent: missing required field \"built_in\"")}
 	}
 	return nil
 }
@@ -249,13 +249,13 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 		})
 		_node.Slug = value
 	}
-	if value, ok := ftc.mutation.Builtin(); ok {
+	if value, ok := ftc.mutation.BuiltIn(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: facttype.FieldBuiltin,
+			Column: facttype.FieldBuiltIn,
 		})
-		_node.Builtin = value
+		_node.BuiltIn = value
 	}
 	if value, ok := ftc.mutation.Validation(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

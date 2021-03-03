@@ -50,7 +50,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			facttype.FieldCreatedAt:  {Type: field.TypeTime, Column: facttype.FieldCreatedAt},
 			facttype.FieldUpdatedAt:  {Type: field.TypeTime, Column: facttype.FieldUpdatedAt},
 			facttype.FieldSlug:       {Type: field.TypeString, Column: facttype.FieldSlug},
-			facttype.FieldBuiltin:    {Type: field.TypeBool, Column: facttype.FieldBuiltin},
+			facttype.FieldBuiltIn:    {Type: field.TypeBool, Column: facttype.FieldBuiltIn},
 			facttype.FieldValidation: {Type: field.TypeString, Column: facttype.FieldValidation},
 		},
 	}
@@ -294,9 +294,9 @@ func (f *FactTypeFilter) WhereSlug(p entql.StringP) {
 	f.Where(p.Field(facttype.FieldSlug))
 }
 
-// WhereBuiltin applies the entql bool predicate on the builtin field.
-func (f *FactTypeFilter) WhereBuiltin(p entql.BoolP) {
-	f.Where(p.Field(facttype.FieldBuiltin))
+// WhereBuiltIn applies the entql bool predicate on the built_in field.
+func (f *FactTypeFilter) WhereBuiltIn(p entql.BoolP) {
+	f.Where(p.Field(facttype.FieldBuiltIn))
 }
 
 // WhereValidation applies the entql string predicate on the validation field.

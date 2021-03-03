@@ -8,27 +8,26 @@ import (
 	"github.com/open-privacy/opv/pkg/repo"
 )
 
-// ShowScope godoc
+// QueryScopes godoc
 // @tags Scope
-// @summary Show a scope
-// @description Show scope by Custom ID
-// @id show-scope-by-custom-id
-// @accept  json
-// @produce  json
+// @summary Query scopes
+// @description Query scopes
+// @id query-scopes
+// @produce json
 // @security ApiKeyAuth
-// @param custom_id path string true "Scope CustomID"
-// @success 200 {object} apimodel.Scope
+// @param custom_id query string false "get scopes by custom_id"
+// @success 200 {object} []apimodel.Scope
 // @failure 400 {object} apimodel.HTTPError
 // @failure 404 {object} apimodel.HTTPError
 // @failure 500 {object} apimodel.HTTPError
-// @router /scopes/{custom_id} [get]
-func (dp *DataPlane) ShowScope(c echo.Context) error {
+// @router /scopes [get]
+func (dp *DataPlane) QueryScopes(c echo.Context) error {
 	s, err := dp.Repo.GetScope(c.Request().Context(), &repo.GetScopeOption{
-		ScopeCustomID: c.Param("custom_id"),
+		ScopeCustomID: c.QueryParam("custom_id"),
 		Domain:        currentDomain(c),
 	})
 	if err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+		return apimodel.NewEntError(c, err)
 	}
 	return c.JSON(http.StatusOK, apimodel.Scope{
 		ID:       s.ID,

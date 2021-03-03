@@ -74,7 +74,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "slug", Type: field.TypeString},
-		{Name: "builtin", Type: field.TypeBool},
+		{Name: "built_in", Type: field.TypeBool},
 		{Name: "validation", Type: field.TypeString, Nullable: true},
 	}
 	// FactTypesTable holds the schema information for the "fact_types" table.

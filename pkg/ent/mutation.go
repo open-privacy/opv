@@ -678,7 +678,7 @@ type FactTypeMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	slug          *string
-	builtin       *bool
+	built_in      *bool
 	validation    *string
 	clearedFields map[string]struct{}
 	facts         map[string]struct{}
@@ -882,40 +882,40 @@ func (m *FactTypeMutation) ResetSlug() {
 	m.slug = nil
 }
 
-// SetBuiltin sets the "builtin" field.
-func (m *FactTypeMutation) SetBuiltin(b bool) {
-	m.builtin = &b
+// SetBuiltIn sets the "built_in" field.
+func (m *FactTypeMutation) SetBuiltIn(b bool) {
+	m.built_in = &b
 }
 
-// Builtin returns the value of the "builtin" field in the mutation.
-func (m *FactTypeMutation) Builtin() (r bool, exists bool) {
-	v := m.builtin
+// BuiltIn returns the value of the "built_in" field in the mutation.
+func (m *FactTypeMutation) BuiltIn() (r bool, exists bool) {
+	v := m.built_in
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBuiltin returns the old "builtin" field's value of the FactType entity.
+// OldBuiltIn returns the old "built_in" field's value of the FactType entity.
 // If the FactType object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FactTypeMutation) OldBuiltin(ctx context.Context) (v bool, err error) {
+func (m *FactTypeMutation) OldBuiltIn(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldBuiltin is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldBuiltIn is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldBuiltin requires an ID field in the mutation")
+		return v, fmt.Errorf("OldBuiltIn requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBuiltin: %w", err)
+		return v, fmt.Errorf("querying old value for OldBuiltIn: %w", err)
 	}
-	return oldValue.Builtin, nil
+	return oldValue.BuiltIn, nil
 }
 
-// ResetBuiltin resets all changes to the "builtin" field.
-func (m *FactTypeMutation) ResetBuiltin() {
-	m.builtin = nil
+// ResetBuiltIn resets all changes to the "built_in" field.
+func (m *FactTypeMutation) ResetBuiltIn() {
+	m.built_in = nil
 }
 
 // SetValidation sets the "validation" field.
@@ -1044,8 +1044,8 @@ func (m *FactTypeMutation) Fields() []string {
 	if m.slug != nil {
 		fields = append(fields, facttype.FieldSlug)
 	}
-	if m.builtin != nil {
-		fields = append(fields, facttype.FieldBuiltin)
+	if m.built_in != nil {
+		fields = append(fields, facttype.FieldBuiltIn)
 	}
 	if m.validation != nil {
 		fields = append(fields, facttype.FieldValidation)
@@ -1064,8 +1064,8 @@ func (m *FactTypeMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case facttype.FieldSlug:
 		return m.Slug()
-	case facttype.FieldBuiltin:
-		return m.Builtin()
+	case facttype.FieldBuiltIn:
+		return m.BuiltIn()
 	case facttype.FieldValidation:
 		return m.Validation()
 	}
@@ -1083,8 +1083,8 @@ func (m *FactTypeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldUpdatedAt(ctx)
 	case facttype.FieldSlug:
 		return m.OldSlug(ctx)
-	case facttype.FieldBuiltin:
-		return m.OldBuiltin(ctx)
+	case facttype.FieldBuiltIn:
+		return m.OldBuiltIn(ctx)
 	case facttype.FieldValidation:
 		return m.OldValidation(ctx)
 	}
@@ -1117,12 +1117,12 @@ func (m *FactTypeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSlug(v)
 		return nil
-	case facttype.FieldBuiltin:
+	case facttype.FieldBuiltIn:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBuiltin(v)
+		m.SetBuiltIn(v)
 		return nil
 	case facttype.FieldValidation:
 		v, ok := value.(string)
@@ -1198,8 +1198,8 @@ func (m *FactTypeMutation) ResetField(name string) error {
 	case facttype.FieldSlug:
 		m.ResetSlug()
 		return nil
-	case facttype.FieldBuiltin:
-		m.ResetBuiltin()
+	case facttype.FieldBuiltIn:
+		m.ResetBuiltIn()
 		return nil
 	case facttype.FieldValidation:
 		m.ResetValidation()

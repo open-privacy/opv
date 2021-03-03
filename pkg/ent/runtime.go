@@ -50,10 +50,10 @@ func init() {
 	facttype.DefaultUpdatedAt = facttypeDescUpdatedAt.Default.(func() time.Time)
 	// facttype.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	facttype.UpdateDefaultUpdatedAt = facttypeDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// facttypeDescBuiltin is the schema descriptor for builtin field.
-	facttypeDescBuiltin := facttypeFields[1].Descriptor()
-	// facttype.DefaultBuiltin holds the default value on creation for the builtin field.
-	facttype.DefaultBuiltin = facttypeDescBuiltin.Default.(bool)
+	// facttypeDescBuiltIn is the schema descriptor for built_in field.
+	facttypeDescBuiltIn := facttypeFields[1].Descriptor()
+	// facttype.DefaultBuiltIn holds the default value on creation for the built_in field.
+	facttype.DefaultBuiltIn = facttypeDescBuiltIn.Default.(bool)
 	// facttypeDescID is the schema descriptor for id field.
 	facttypeDescID := facttypeMixinFields0[0].Descriptor()
 	// facttype.DefaultID holds the default value on creation for the id field.

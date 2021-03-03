@@ -25,6 +25,53 @@ var doc = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/fact_types": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Query fact types",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Fact"
+                ],
+                "summary": "Query fact types",
+                "operationId": "show-fact-types",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fact Type Slug",
+                        "name": "slug",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/apimodel.FactType"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -58,57 +105,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.FactType"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/fact_types/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Show a fact type by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Fact"
-                ],
-                "summary": "Show a fact Type",
-                "operationId": "show-fact-type-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Fact Type ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.FactType"
+                            "$ref": "#/definitions/apimodel.CreateFactType"
                         }
                     },
                     "400": {
@@ -256,6 +253,59 @@ var doc = `{
             }
         },
         "/scopes": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Query scopes",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Scope"
+                ],
+                "summary": "Query scopes",
+                "operationId": "query-scopes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "get scopes by custom_id",
+                        "name": "custom_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/apimodel.Scope"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -306,62 +356,6 @@ var doc = `{
                     }
                 }
             }
-        },
-        "/scopes/{custom_id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Show scope by Custom ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Scope"
-                ],
-                "summary": "Show a scope",
-                "operationId": "show-scope-by-custom-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Scope CustomID",
-                        "name": "custom_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.Scope"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -388,6 +382,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "slug": {
+                    "type": "string"
+                },
+                "validation": {
                     "type": "string"
                 }
             }
@@ -423,10 +420,16 @@ var doc = `{
         "apimodel.FactType": {
             "type": "object",
             "properties": {
+                "built_in": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
                 "slug": {
+                    "type": "string"
+                },
+                "validation": {
                     "type": "string"
                 }
             }

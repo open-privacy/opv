@@ -33,16 +33,16 @@ func (ftu *FactTypeUpdate) SetSlug(s string) *FactTypeUpdate {
 	return ftu
 }
 
-// SetBuiltin sets the "builtin" field.
-func (ftu *FactTypeUpdate) SetBuiltin(b bool) *FactTypeUpdate {
-	ftu.mutation.SetBuiltin(b)
+// SetBuiltIn sets the "built_in" field.
+func (ftu *FactTypeUpdate) SetBuiltIn(b bool) *FactTypeUpdate {
+	ftu.mutation.SetBuiltIn(b)
 	return ftu
 }
 
-// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
-func (ftu *FactTypeUpdate) SetNillableBuiltin(b *bool) *FactTypeUpdate {
+// SetNillableBuiltIn sets the "built_in" field if the given value is not nil.
+func (ftu *FactTypeUpdate) SetNillableBuiltIn(b *bool) *FactTypeUpdate {
 	if b != nil {
-		ftu.SetBuiltin(*b)
+		ftu.SetBuiltIn(*b)
 	}
 	return ftu
 }
@@ -200,11 +200,11 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: facttype.FieldSlug,
 		})
 	}
-	if value, ok := ftu.mutation.Builtin(); ok {
+	if value, ok := ftu.mutation.BuiltIn(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: facttype.FieldBuiltin,
+			Column: facttype.FieldBuiltIn,
 		})
 	}
 	if value, ok := ftu.mutation.Validation(); ok {
@@ -298,16 +298,16 @@ func (ftuo *FactTypeUpdateOne) SetSlug(s string) *FactTypeUpdateOne {
 	return ftuo
 }
 
-// SetBuiltin sets the "builtin" field.
-func (ftuo *FactTypeUpdateOne) SetBuiltin(b bool) *FactTypeUpdateOne {
-	ftuo.mutation.SetBuiltin(b)
+// SetBuiltIn sets the "built_in" field.
+func (ftuo *FactTypeUpdateOne) SetBuiltIn(b bool) *FactTypeUpdateOne {
+	ftuo.mutation.SetBuiltIn(b)
 	return ftuo
 }
 
-// SetNillableBuiltin sets the "builtin" field if the given value is not nil.
-func (ftuo *FactTypeUpdateOne) SetNillableBuiltin(b *bool) *FactTypeUpdateOne {
+// SetNillableBuiltIn sets the "built_in" field if the given value is not nil.
+func (ftuo *FactTypeUpdateOne) SetNillableBuiltIn(b *bool) *FactTypeUpdateOne {
 	if b != nil {
-		ftuo.SetBuiltin(*b)
+		ftuo.SetBuiltIn(*b)
 	}
 	return ftuo
 }
@@ -470,11 +470,11 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Column: facttype.FieldSlug,
 		})
 	}
-	if value, ok := ftuo.mutation.Builtin(); ok {
+	if value, ok := ftuo.mutation.BuiltIn(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: facttype.FieldBuiltin,
+			Column: facttype.FieldBuiltIn,
 		})
 	}
 	if value, ok := ftuo.mutation.Validation(); ok {

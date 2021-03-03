@@ -17,6 +17,8 @@ definitions:
     properties:
       slug:
         type: string
+      validation:
+        type: string
     type: object
   apimodel.CreateScope:
     properties:
@@ -38,9 +40,13 @@ definitions:
     type: object
   apimodel.FactType:
     properties:
+      built_in:
+        type: boolean
       id:
         type: string
       slug:
+        type: string
+      validation:
         type: string
     type: object
   apimodel.HTTPError:
@@ -70,6 +76,36 @@ info:
   version: "1.0"
 paths:
   /fact_types:
+    get:
+      description: Query fact types
+      operationId: show-fact-types
+      parameters:
+      - description: Fact Type Slug
+        in: query
+        name: slug
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/apimodel.FactType'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Query fact types
+      tags:
+      - Fact
     post:
       consumes:
       - application/json
@@ -88,7 +124,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/apimodel.FactType'
+            $ref: '#/definitions/apimodel.CreateFactType'
         "400":
           description: Bad Request
           schema:
@@ -100,38 +136,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create a fact type
-      tags:
-      - Fact
-  /fact_types/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Show a fact type by ID
-      operationId: show-fact-type-by-id
-      parameters:
-      - description: Fact Type ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/apimodel.FactType'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/apimodel.HTTPError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/apimodel.HTTPError'
-      security:
-      - ApiKeyAuth: []
-      summary: Show a fact Type
       tags:
       - Fact
   /facts:
@@ -218,6 +222,40 @@ paths:
       tags:
       - Healthz
   /scopes:
+    get:
+      description: Query scopes
+      operationId: query-scopes
+      parameters:
+      - description: get scopes by custom_id
+        in: query
+        name: custom_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/apimodel.Scope'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apimodel.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Query scopes
+      tags:
+      - Scope
     post:
       consumes:
       - application/json
@@ -248,42 +286,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create a scope
-      tags:
-      - Scope
-  /scopes/{custom_id}:
-    get:
-      consumes:
-      - application/json
-      description: Show scope by Custom ID
-      operationId: show-scope-by-custom-id
-      parameters:
-      - description: Scope CustomID
-        in: path
-        name: custom_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/apimodel.Scope'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/apimodel.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/apimodel.HTTPError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/apimodel.HTTPError'
-      security:
-      - ApiKeyAuth: []
-      summary: Show a scope
       tags:
       - Scope
 securityDefinitions:
