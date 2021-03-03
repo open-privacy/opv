@@ -2,9 +2,11 @@ package dataplane
 
 import (
 	"fmt"
+	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
+	"io"
+	"io/ioutil"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -81,12 +83,17 @@ func (dp *DataPlane) prepareEcho() {
 	apiv1.Use(dp.grantValidationMiddleware())
 	apiv1.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			// Read the content
-			jsonBody := make(map[string]interface{})
-			err := json.NewDecoder(c.Request().Body).Decode(&jsonBody)
+			var bodyBytes []byte
+			if c.Request().Body != nil {
+				bodyBytes, _ = ioutil.ReadAll(c.Request().Body)
+			}
 			// Restore the io.ReadCloser to its original state
-			ioutil.NopCloser(c.Request().Body)
-			if err != nil {
+			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+			// Use the content
+			jsonBody := make(map[string]interface{})
+			err := json.Unmarshal(bodyBytes, &jsonBody)
+
+			if err != nil && err != io.EOF {
 				return apimodel.NewHTTPError(c, apimodel.MessageJSONMalformated, http.StatusBadRequest)
 			}
 
