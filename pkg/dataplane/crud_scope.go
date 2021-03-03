@@ -52,7 +52,7 @@ func (dp *DataPlane) CreateScope(c echo.Context) error {
 	cs := &apimodel.CreateScope{}
 	err := c.Bind(cs)
 	if err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+		return apimodel.NewHTTPError(c, err.Error(), http.StatusBadRequest)
 	}
 
 	s, err := dp.Repo.CreateScope(c.Request().Context(), &repo.CreateScopeOption{

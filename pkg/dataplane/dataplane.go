@@ -16,8 +16,6 @@ import (
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
-	"github.com/open-privacy/opv/pkg/database"
-	"github.com/open-privacy/opv/pkg/ent"
 	"github.com/open-privacy/opv/pkg/apimodel"
 )
 

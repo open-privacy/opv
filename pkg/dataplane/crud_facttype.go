@@ -73,7 +73,7 @@ func (dp *DataPlane) queryBuiltInFactTypes() []apimodel.FactType {
 func (dp *DataPlane) CreateFactType(c echo.Context) error {
 	var cft apimodel.CreateFactType
 	if err := c.Bind(&cft); err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+		return apimodel.NewHTTPError(c, err.Error(), http.StatusBadRequest)
 	}
 
 	ft, err := dp.Repo.CreateFactType(c.Request().Context(), &repo.CreateFactTypeOption{
