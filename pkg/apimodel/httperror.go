@@ -15,10 +15,11 @@ const (
 
 // NewHTTPError creates a new HTTPError
 func NewHTTPError(c echo.Context, message string, status int) error {
-	er := HTTPError{
-		Code:    status,
-		Message: message,
-	}
+	er := HTTPErrorResponse{
+		Error: HTTPError{
+			Code:    status,
+			Message: message,
+	}}
 	return c.JSON(status, er)
 }
 
@@ -45,4 +46,8 @@ func NewEntError(c echo.Context, err error) error {
 type HTTPError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+type HTTPErrorResponse struct {
+	Error    HTTPError    `json:"error"`
 }
