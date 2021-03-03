@@ -196,3 +196,18 @@ func TestCreateFact(t *testing.T) {
 		})
 	})
 }
+
+func TestMalformattedJSON(t *testing.T) {
+	token := assertGetToken(t, []string{"POST"})
+
+	Test(
+		t,
+		Description("Post to dataplane with malformatted JSON"),
+		Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+		Send().Headers("Content-Type").Add("application/json"),
+		Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+		Send().Body().JSON("{"),
+
+		Expect().Status().Equal(http.StatusBadRequest),
+	)
+}
