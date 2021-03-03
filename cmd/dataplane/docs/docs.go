@@ -307,14 +307,14 @@ var doc = `{
                 }
             }
         },
-        "/scopes/{id}": {
+        "/scopes/{custom_id}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Show scope by ID",
+                "description": "Show scope by Custom ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -325,12 +325,12 @@ var doc = `{
                     "Scope"
                 ],
                 "summary": "Show a scope",
-                "operationId": "show-scope-by-id",
+                "operationId": "show-scope-by-custom-id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Scope ID",
-                        "name": "id",
+                        "description": "Scope CustomID",
+                        "name": "custom_id",
                         "in": "path",
                         "required": true
                     }

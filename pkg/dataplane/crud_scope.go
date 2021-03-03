@@ -5,24 +5,35 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/open-privacy/opv/pkg/apimodel"
+	"github.com/open-privacy/opv/pkg/repo"
 )
 
 // ShowScope godoc
 // @tags Scope
 // @summary Show a scope
-// @description Show scope by ID
-// @id show-scope-by-id
+// @description Show scope by Custom ID
+// @id show-scope-by-custom-id
 // @accept  json
 // @produce  json
 // @security ApiKeyAuth
-// @param id path string true "Scope ID"
+// @param custom_id path string true "Scope CustomID"
 // @success 200 {object} apimodel.Scope
 // @failure 400 {object} apimodel.HTTPError
 // @failure 404 {object} apimodel.HTTPError
 // @failure 500 {object} apimodel.HTTPError
-// @router /scopes/{id} [get]
+// @router /scopes/{custom_id} [get]
 func (dp *DataPlane) ShowScope(c echo.Context) error {
-	return c.JSON(http.StatusOK, apimodel.Scope{})
+	s, err := dp.Repo.GetScope(c.Request().Context(), &repo.GetScopeOption{
+		ScopeCustomID: c.Param("custom_id"),
+		Domain:        currentDomain(c),
+	})
+	if err != nil {
+		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+	}
+	return c.JSON(http.StatusOK, apimodel.Scope{
+		ID:       s.ID,
+		CustomID: s.CustomID,
+	})
 }
 
 // CreateScope godoc
@@ -39,5 +50,19 @@ func (dp *DataPlane) ShowScope(c echo.Context) error {
 // @failure 500 {object} apimodel.HTTPError
 // @router /scopes [post]
 func (dp *DataPlane) CreateScope(c echo.Context) error {
-	return c.JSON(http.StatusOK, apimodel.Scope{})
+	cs := &apimodel.CreateScope{}
+	err := c.Bind(cs)
+	if err != nil {
+		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+	}
+
+	s, err := dp.Repo.CreateScope(c.Request().Context(), &repo.CreateScopeOption{
+		ScopeCustomID: cs.CustomID,
+		Domain:        currentDomain(c),
+	})
+
+	return c.JSON(http.StatusOK, apimodel.Scope{
+		ID:       s.ID,
+		CustomID: s.CustomID,
+	})
 }

@@ -283,12 +283,12 @@ func (sq *ScopeQuery) WithFacts(opts ...func(*FactQuery)) *ScopeQuery {
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Scope.Query().
-//		GroupBy(scope.FieldCreateTime).
+//		GroupBy(scope.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -310,11 +310,11 @@ func (sq *ScopeQuery) GroupBy(field string, fields ...string) *ScopeGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Scope.Query().
-//		Select(scope.FieldCreateTime).
+//		Select(scope.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (sq *ScopeQuery) Select(field string, fields ...string) *ScopeSelect {

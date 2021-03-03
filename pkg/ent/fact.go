@@ -18,10 +18,10 @@ type Fact struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
-	// CreateTime holds the value of the "create_time" field.
-	CreateTime time.Time `json:"create_time,omitempty"`
-	// UpdateTime holds the value of the "update_time" field.
-	UpdateTime time.Time `json:"update_time,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// HashedValue holds the value of the "hashed_value" field.
 	HashedValue string `json:"-"`
 	// EncryptedValue holds the value of the "encrypted_value" field.
@@ -81,7 +81,7 @@ func (*Fact) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case fact.FieldID, fact.FieldHashedValue, fact.FieldEncryptedValue, fact.FieldDomain:
 			values[i] = &sql.NullString{}
-		case fact.FieldCreateTime, fact.FieldUpdateTime:
+		case fact.FieldCreatedAt, fact.FieldUpdatedAt:
 			values[i] = &sql.NullTime{}
 		case fact.ForeignKeys[0]: // fact_type_facts
 			values[i] = &sql.NullString{}
@@ -108,17 +108,17 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				f.ID = value.String
 			}
-		case fact.FieldCreateTime:
+		case fact.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				f.CreateTime = value.Time
+				f.CreatedAt = value.Time
 			}
-		case fact.FieldUpdateTime:
+		case fact.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field update_time", values[i])
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				f.UpdateTime = value.Time
+				f.UpdatedAt = value.Time
 			}
 		case fact.FieldHashedValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -190,10 +190,10 @@ func (f *Fact) String() string {
 	var builder strings.Builder
 	builder.WriteString("Fact(")
 	builder.WriteString(fmt.Sprintf("id=%v", f.ID))
-	builder.WriteString(", create_time=")
-	builder.WriteString(f.CreateTime.Format(time.ANSIC))
-	builder.WriteString(", update_time=")
-	builder.WriteString(f.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", created_at=")
+	builder.WriteString(f.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_at=")
+	builder.WriteString(f.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", hashed_value=<sensitive>")
 	builder.WriteString(", encrypted_value=<sensitive>")
 	builder.WriteString(", domain=")

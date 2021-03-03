@@ -148,9 +148,9 @@ func (su *ScopeUpdate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (su *ScopeUpdate) defaults() {
-	if _, ok := su.mutation.UpdateTime(); !ok {
-		v := scope.UpdateDefaultUpdateTime()
-		su.mutation.SetUpdateTime(v)
+	if _, ok := su.mutation.UpdatedAt(); !ok {
+		v := scope.UpdateDefaultUpdatedAt()
+		su.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -172,11 +172,11 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := su.mutation.UpdateTime(); ok {
+	if value, ok := su.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: scope.FieldUpdateTime,
+			Column: scope.FieldUpdatedAt,
 		})
 	}
 	if value, ok := su.mutation.CustomID(); ok {
@@ -393,9 +393,9 @@ func (suo *ScopeUpdateOne) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (suo *ScopeUpdateOne) defaults() {
-	if _, ok := suo.mutation.UpdateTime(); !ok {
-		v := scope.UpdateDefaultUpdateTime()
-		suo.mutation.SetUpdateTime(v)
+	if _, ok := suo.mutation.UpdatedAt(); !ok {
+		v := scope.UpdateDefaultUpdatedAt()
+		suo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -422,11 +422,11 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			}
 		}
 	}
-	if value, ok := suo.mutation.UpdateTime(); ok {
+	if value, ok := suo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: scope.FieldUpdateTime,
+			Column: scope.FieldUpdatedAt,
 		})
 	}
 	if value, ok := suo.mutation.CustomID(); ok {

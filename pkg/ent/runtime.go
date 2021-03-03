@@ -7,6 +7,7 @@ import (
 
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
+	"github.com/open-privacy/opv/pkg/ent/grant"
 	"github.com/open-privacy/opv/pkg/ent/schema"
 	"github.com/open-privacy/opv/pkg/ent/scope"
 )
@@ -18,20 +19,18 @@ func init() {
 	factMixin := schema.Fact{}.Mixin()
 	factMixinFields0 := factMixin[0].Fields()
 	_ = factMixinFields0
-	factMixinFields1 := factMixin[1].Fields()
-	_ = factMixinFields1
 	factFields := schema.Fact{}.Fields()
 	_ = factFields
-	// factDescCreateTime is the schema descriptor for create_time field.
-	factDescCreateTime := factMixinFields1[0].Descriptor()
-	// fact.DefaultCreateTime holds the default value on creation for the create_time field.
-	fact.DefaultCreateTime = factDescCreateTime.Default.(func() time.Time)
-	// factDescUpdateTime is the schema descriptor for update_time field.
-	factDescUpdateTime := factMixinFields1[1].Descriptor()
-	// fact.DefaultUpdateTime holds the default value on creation for the update_time field.
-	fact.DefaultUpdateTime = factDescUpdateTime.Default.(func() time.Time)
-	// fact.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	fact.UpdateDefaultUpdateTime = factDescUpdateTime.UpdateDefault.(func() time.Time)
+	// factDescCreatedAt is the schema descriptor for created_at field.
+	factDescCreatedAt := factMixinFields0[1].Descriptor()
+	// fact.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fact.DefaultCreatedAt = factDescCreatedAt.Default.(func() time.Time)
+	// factDescUpdatedAt is the schema descriptor for updated_at field.
+	factDescUpdatedAt := factMixinFields0[2].Descriptor()
+	// fact.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fact.DefaultUpdatedAt = factDescUpdatedAt.Default.(func() time.Time)
+	// fact.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fact.UpdateDefaultUpdatedAt = factDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// factDescID is the schema descriptor for id field.
 	factDescID := factMixinFields0[0].Descriptor()
 	// fact.DefaultID holds the default value on creation for the id field.
@@ -39,20 +38,18 @@ func init() {
 	facttypeMixin := schema.FactType{}.Mixin()
 	facttypeMixinFields0 := facttypeMixin[0].Fields()
 	_ = facttypeMixinFields0
-	facttypeMixinFields1 := facttypeMixin[1].Fields()
-	_ = facttypeMixinFields1
 	facttypeFields := schema.FactType{}.Fields()
 	_ = facttypeFields
-	// facttypeDescCreateTime is the schema descriptor for create_time field.
-	facttypeDescCreateTime := facttypeMixinFields1[0].Descriptor()
-	// facttype.DefaultCreateTime holds the default value on creation for the create_time field.
-	facttype.DefaultCreateTime = facttypeDescCreateTime.Default.(func() time.Time)
-	// facttypeDescUpdateTime is the schema descriptor for update_time field.
-	facttypeDescUpdateTime := facttypeMixinFields1[1].Descriptor()
-	// facttype.DefaultUpdateTime holds the default value on creation for the update_time field.
-	facttype.DefaultUpdateTime = facttypeDescUpdateTime.Default.(func() time.Time)
-	// facttype.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	facttype.UpdateDefaultUpdateTime = facttypeDescUpdateTime.UpdateDefault.(func() time.Time)
+	// facttypeDescCreatedAt is the schema descriptor for created_at field.
+	facttypeDescCreatedAt := facttypeMixinFields0[1].Descriptor()
+	// facttype.DefaultCreatedAt holds the default value on creation for the created_at field.
+	facttype.DefaultCreatedAt = facttypeDescCreatedAt.Default.(func() time.Time)
+	// facttypeDescUpdatedAt is the schema descriptor for updated_at field.
+	facttypeDescUpdatedAt := facttypeMixinFields0[2].Descriptor()
+	// facttype.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	facttype.DefaultUpdatedAt = facttypeDescUpdatedAt.Default.(func() time.Time)
+	// facttype.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	facttype.UpdateDefaultUpdatedAt = facttypeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// facttypeDescBuiltin is the schema descriptor for builtin field.
 	facttypeDescBuiltin := facttypeFields[1].Descriptor()
 	// facttype.DefaultBuiltin holds the default value on creation for the builtin field.
@@ -61,23 +58,40 @@ func init() {
 	facttypeDescID := facttypeMixinFields0[0].Descriptor()
 	// facttype.DefaultID holds the default value on creation for the id field.
 	facttype.DefaultID = facttypeDescID.Default.(func() string)
+	grantMixin := schema.Grant{}.Mixin()
+	grantMixinFields0 := grantMixin[0].Fields()
+	_ = grantMixinFields0
+	grantFields := schema.Grant{}.Fields()
+	_ = grantFields
+	// grantDescCreatedAt is the schema descriptor for created_at field.
+	grantDescCreatedAt := grantMixinFields0[1].Descriptor()
+	// grant.DefaultCreatedAt holds the default value on creation for the created_at field.
+	grant.DefaultCreatedAt = grantDescCreatedAt.Default.(func() time.Time)
+	// grantDescUpdatedAt is the schema descriptor for updated_at field.
+	grantDescUpdatedAt := grantMixinFields0[2].Descriptor()
+	// grant.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	grant.DefaultUpdatedAt = grantDescUpdatedAt.Default.(func() time.Time)
+	// grant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	grant.UpdateDefaultUpdatedAt = grantDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// grantDescID is the schema descriptor for id field.
+	grantDescID := grantMixinFields0[0].Descriptor()
+	// grant.DefaultID holds the default value on creation for the id field.
+	grant.DefaultID = grantDescID.Default.(func() string)
 	scopeMixin := schema.Scope{}.Mixin()
 	scopeMixinFields0 := scopeMixin[0].Fields()
 	_ = scopeMixinFields0
-	scopeMixinFields1 := scopeMixin[1].Fields()
-	_ = scopeMixinFields1
 	scopeFields := schema.Scope{}.Fields()
 	_ = scopeFields
-	// scopeDescCreateTime is the schema descriptor for create_time field.
-	scopeDescCreateTime := scopeMixinFields1[0].Descriptor()
-	// scope.DefaultCreateTime holds the default value on creation for the create_time field.
-	scope.DefaultCreateTime = scopeDescCreateTime.Default.(func() time.Time)
-	// scopeDescUpdateTime is the schema descriptor for update_time field.
-	scopeDescUpdateTime := scopeMixinFields1[1].Descriptor()
-	// scope.DefaultUpdateTime holds the default value on creation for the update_time field.
-	scope.DefaultUpdateTime = scopeDescUpdateTime.Default.(func() time.Time)
-	// scope.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	scope.UpdateDefaultUpdateTime = scopeDescUpdateTime.UpdateDefault.(func() time.Time)
+	// scopeDescCreatedAt is the schema descriptor for created_at field.
+	scopeDescCreatedAt := scopeMixinFields0[1].Descriptor()
+	// scope.DefaultCreatedAt holds the default value on creation for the created_at field.
+	scope.DefaultCreatedAt = scopeDescCreatedAt.Default.(func() time.Time)
+	// scopeDescUpdatedAt is the schema descriptor for updated_at field.
+	scopeDescUpdatedAt := scopeMixinFields0[2].Descriptor()
+	// scope.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	scope.DefaultUpdatedAt = scopeDescUpdatedAt.Default.(func() time.Time)
+	// scope.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	scope.UpdateDefaultUpdatedAt = scopeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// scopeDescNonce is the schema descriptor for nonce field.
 	scopeDescNonce := scopeFields[1].Descriptor()
 	// scope.DefaultNonce holds the default value on creation for the nonce field.

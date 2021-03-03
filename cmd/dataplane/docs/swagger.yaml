@@ -250,16 +250,16 @@ paths:
       summary: Create a scope
       tags:
       - Scope
-  /scopes/{id}:
+  /scopes/{custom_id}:
     get:
       consumes:
       - application/json
-      description: Show scope by ID
-      operationId: show-scope-by-id
+      description: Show scope by Custom ID
+      operationId: show-scope-by-custom-id
       parameters:
-      - description: Scope ID
+      - description: Scope CustomID
         in: path
-        name: id
+        name: custom_id
         required: true
         type: string
       produces:

@@ -5,6 +5,7 @@ package ent
 import (
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
+	"github.com/open-privacy/opv/pkg/ent/grant"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
 	"github.com/open-privacy/opv/pkg/ent/scope"
 
@@ -16,7 +17,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 3)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   fact.Table,
@@ -28,8 +29,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Fact",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			fact.FieldCreateTime:     {Type: field.TypeTime, Column: fact.FieldCreateTime},
-			fact.FieldUpdateTime:     {Type: field.TypeTime, Column: fact.FieldUpdateTime},
+			fact.FieldCreatedAt:      {Type: field.TypeTime, Column: fact.FieldCreatedAt},
+			fact.FieldUpdatedAt:      {Type: field.TypeTime, Column: fact.FieldUpdatedAt},
 			fact.FieldHashedValue:    {Type: field.TypeString, Column: fact.FieldHashedValue},
 			fact.FieldEncryptedValue: {Type: field.TypeString, Column: fact.FieldEncryptedValue},
 			fact.FieldDomain:         {Type: field.TypeString, Column: fact.FieldDomain},
@@ -46,13 +47,33 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "FactType",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			facttype.FieldCreateTime: {Type: field.TypeTime, Column: facttype.FieldCreateTime},
-			facttype.FieldUpdateTime: {Type: field.TypeTime, Column: facttype.FieldUpdateTime},
+			facttype.FieldCreatedAt:  {Type: field.TypeTime, Column: facttype.FieldCreatedAt},
+			facttype.FieldUpdatedAt:  {Type: field.TypeTime, Column: facttype.FieldUpdatedAt},
 			facttype.FieldSlug:       {Type: field.TypeString, Column: facttype.FieldSlug},
 			facttype.FieldBuiltin:    {Type: field.TypeBool, Column: facttype.FieldBuiltin},
+			facttype.FieldValidation: {Type: field.TypeString, Column: facttype.FieldValidation},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   grant.Table,
+			Columns: grant.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: grant.FieldID,
+			},
+		},
+		Type: "Grant",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			grant.FieldCreatedAt:          {Type: field.TypeTime, Column: grant.FieldCreatedAt},
+			grant.FieldUpdatedAt:          {Type: field.TypeTime, Column: grant.FieldUpdatedAt},
+			grant.FieldHashedToken:        {Type: field.TypeString, Column: grant.FieldHashedToken},
+			grant.FieldDomain:             {Type: field.TypeString, Column: grant.FieldDomain},
+			grant.FieldVersion:            {Type: field.TypeString, Column: grant.FieldVersion},
+			grant.FieldAllowedHTTPMethods: {Type: field.TypeString, Column: grant.FieldAllowedHTTPMethods},
+		},
+	}
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   scope.Table,
 			Columns: scope.Columns,
@@ -63,11 +84,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Scope",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			scope.FieldCreateTime: {Type: field.TypeTime, Column: scope.FieldCreateTime},
-			scope.FieldUpdateTime: {Type: field.TypeTime, Column: scope.FieldUpdateTime},
-			scope.FieldCustomID:   {Type: field.TypeString, Column: scope.FieldCustomID},
-			scope.FieldNonce:      {Type: field.TypeString, Column: scope.FieldNonce},
-			scope.FieldDomain:     {Type: field.TypeString, Column: scope.FieldDomain},
+			scope.FieldCreatedAt: {Type: field.TypeTime, Column: scope.FieldCreatedAt},
+			scope.FieldUpdatedAt: {Type: field.TypeTime, Column: scope.FieldUpdatedAt},
+			scope.FieldCustomID:  {Type: field.TypeString, Column: scope.FieldCustomID},
+			scope.FieldNonce:     {Type: field.TypeString, Column: scope.FieldNonce},
+			scope.FieldDomain:    {Type: field.TypeString, Column: scope.FieldDomain},
 		},
 	}
 	graph.MustAddE(
@@ -166,14 +187,14 @@ func (f *FactFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(fact.FieldID))
 }
 
-// WhereCreateTime applies the entql time.Time predicate on the create_time field.
-func (f *FactFilter) WhereCreateTime(p entql.TimeP) {
-	f.Where(p.Field(fact.FieldCreateTime))
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *FactFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(fact.FieldCreatedAt))
 }
 
-// WhereUpdateTime applies the entql time.Time predicate on the update_time field.
-func (f *FactFilter) WhereUpdateTime(p entql.TimeP) {
-	f.Where(p.Field(fact.FieldUpdateTime))
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *FactFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(fact.FieldUpdatedAt))
 }
 
 // WhereHashedValue applies the entql string predicate on the hashed_value field.
@@ -258,14 +279,14 @@ func (f *FactTypeFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(facttype.FieldID))
 }
 
-// WhereCreateTime applies the entql time.Time predicate on the create_time field.
-func (f *FactTypeFilter) WhereCreateTime(p entql.TimeP) {
-	f.Where(p.Field(facttype.FieldCreateTime))
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *FactTypeFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(facttype.FieldCreatedAt))
 }
 
-// WhereUpdateTime applies the entql time.Time predicate on the update_time field.
-func (f *FactTypeFilter) WhereUpdateTime(p entql.TimeP) {
-	f.Where(p.Field(facttype.FieldUpdateTime))
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *FactTypeFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(facttype.FieldUpdatedAt))
 }
 
 // WhereSlug applies the entql string predicate on the slug field.
@@ -276,6 +297,11 @@ func (f *FactTypeFilter) WhereSlug(p entql.StringP) {
 // WhereBuiltin applies the entql bool predicate on the builtin field.
 func (f *FactTypeFilter) WhereBuiltin(p entql.BoolP) {
 	f.Where(p.Field(facttype.FieldBuiltin))
+}
+
+// WhereValidation applies the entql string predicate on the validation field.
+func (f *FactTypeFilter) WhereValidation(p entql.StringP) {
+	f.Where(p.Field(facttype.FieldValidation))
 }
 
 // WhereHasFacts applies a predicate to check if query has an edge facts.
@@ -290,6 +316,75 @@ func (f *FactTypeFilter) WhereHasFactsWith(preds ...predicate.Fact) {
 			p(s)
 		}
 	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (gq *GrantQuery) addPredicate(pred func(s *sql.Selector)) {
+	gq.predicates = append(gq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the GrantQuery builder.
+func (gq *GrantQuery) Filter() *GrantFilter {
+	return &GrantFilter{gq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *GrantMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the GrantMutation builder.
+func (m *GrantMutation) Filter() *GrantFilter {
+	return &GrantFilter{m}
+}
+
+// GrantFilter provides a generic filtering capability at runtime for GrantQuery.
+type GrantFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *GrantFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *GrantFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(grant.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *GrantFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(grant.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *GrantFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(grant.FieldUpdatedAt))
+}
+
+// WhereHashedToken applies the entql string predicate on the hashed_token field.
+func (f *GrantFilter) WhereHashedToken(p entql.StringP) {
+	f.Where(p.Field(grant.FieldHashedToken))
+}
+
+// WhereDomain applies the entql string predicate on the domain field.
+func (f *GrantFilter) WhereDomain(p entql.StringP) {
+	f.Where(p.Field(grant.FieldDomain))
+}
+
+// WhereVersion applies the entql string predicate on the version field.
+func (f *GrantFilter) WhereVersion(p entql.StringP) {
+	f.Where(p.Field(grant.FieldVersion))
+}
+
+// WhereAllowedHTTPMethods applies the entql string predicate on the allowed_http_methods field.
+func (f *GrantFilter) WhereAllowedHTTPMethods(p entql.StringP) {
+	f.Where(p.Field(grant.FieldAllowedHTTPMethods))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -320,7 +415,7 @@ type ScopeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ScopeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -331,14 +426,14 @@ func (f *ScopeFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(scope.FieldID))
 }
 
-// WhereCreateTime applies the entql time.Time predicate on the create_time field.
-func (f *ScopeFilter) WhereCreateTime(p entql.TimeP) {
-	f.Where(p.Field(scope.FieldCreateTime))
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *ScopeFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(scope.FieldCreatedAt))
 }
 
-// WhereUpdateTime applies the entql time.Time predicate on the update_time field.
-func (f *ScopeFilter) WhereUpdateTime(p entql.TimeP) {
-	f.Where(p.Field(scope.FieldUpdateTime))
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *ScopeFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(scope.FieldUpdatedAt))
 }
 
 // WhereCustomID applies the entql string predicate on the custom_id field.

@@ -16,10 +16,10 @@ type Scope struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
-	// CreateTime holds the value of the "create_time" field.
-	CreateTime time.Time `json:"create_time,omitempty"`
-	// UpdateTime holds the value of the "update_time" field.
-	UpdateTime time.Time `json:"update_time,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// CustomID holds the value of the "custom_id" field.
 	CustomID string `json:"custom_id,omitempty"`
 	// Nonce holds the value of the "nonce" field.
@@ -56,7 +56,7 @@ func (*Scope) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case scope.FieldID, scope.FieldCustomID, scope.FieldNonce, scope.FieldDomain:
 			values[i] = &sql.NullString{}
-		case scope.FieldCreateTime, scope.FieldUpdateTime:
+		case scope.FieldCreatedAt, scope.FieldUpdatedAt:
 			values[i] = &sql.NullTime{}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Scope", columns[i])
@@ -79,17 +79,17 @@ func (s *Scope) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.ID = value.String
 			}
-		case scope.FieldCreateTime:
+		case scope.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				s.CreateTime = value.Time
+				s.CreatedAt = value.Time
 			}
-		case scope.FieldUpdateTime:
+		case scope.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field update_time", values[i])
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				s.UpdateTime = value.Time
+				s.UpdatedAt = value.Time
 			}
 		case scope.FieldCustomID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -142,10 +142,10 @@ func (s *Scope) String() string {
 	var builder strings.Builder
 	builder.WriteString("Scope(")
 	builder.WriteString(fmt.Sprintf("id=%v", s.ID))
-	builder.WriteString(", create_time=")
-	builder.WriteString(s.CreateTime.Format(time.ANSIC))
-	builder.WriteString(", update_time=")
-	builder.WriteString(s.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", created_at=")
+	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_at=")
+	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", custom_id=")
 	builder.WriteString(s.CustomID)
 	builder.WriteString(", nonce=<sensitive>")

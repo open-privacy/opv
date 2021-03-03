@@ -22,30 +22,30 @@ type FactCreate struct {
 	hooks    []Hook
 }
 
-// SetCreateTime sets the "create_time" field.
-func (fc *FactCreate) SetCreateTime(t time.Time) *FactCreate {
-	fc.mutation.SetCreateTime(t)
+// SetCreatedAt sets the "created_at" field.
+func (fc *FactCreate) SetCreatedAt(t time.Time) *FactCreate {
+	fc.mutation.SetCreatedAt(t)
 	return fc
 }
 
-// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
-func (fc *FactCreate) SetNillableCreateTime(t *time.Time) *FactCreate {
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (fc *FactCreate) SetNillableCreatedAt(t *time.Time) *FactCreate {
 	if t != nil {
-		fc.SetCreateTime(*t)
+		fc.SetCreatedAt(*t)
 	}
 	return fc
 }
 
-// SetUpdateTime sets the "update_time" field.
-func (fc *FactCreate) SetUpdateTime(t time.Time) *FactCreate {
-	fc.mutation.SetUpdateTime(t)
+// SetUpdatedAt sets the "updated_at" field.
+func (fc *FactCreate) SetUpdatedAt(t time.Time) *FactCreate {
+	fc.mutation.SetUpdatedAt(t)
 	return fc
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (fc *FactCreate) SetNillableUpdateTime(t *time.Time) *FactCreate {
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (fc *FactCreate) SetNillableUpdatedAt(t *time.Time) *FactCreate {
 	if t != nil {
-		fc.SetUpdateTime(*t)
+		fc.SetUpdatedAt(*t)
 	}
 	return fc
 }
@@ -172,13 +172,13 @@ func (fc *FactCreate) SaveX(ctx context.Context) *Fact {
 
 // defaults sets the default values of the builder before save.
 func (fc *FactCreate) defaults() {
-	if _, ok := fc.mutation.CreateTime(); !ok {
-		v := fact.DefaultCreateTime()
-		fc.mutation.SetCreateTime(v)
+	if _, ok := fc.mutation.CreatedAt(); !ok {
+		v := fact.DefaultCreatedAt()
+		fc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := fc.mutation.UpdateTime(); !ok {
-		v := fact.DefaultUpdateTime()
-		fc.mutation.SetUpdateTime(v)
+	if _, ok := fc.mutation.UpdatedAt(); !ok {
+		v := fact.DefaultUpdatedAt()
+		fc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := fc.mutation.ID(); !ok {
 		v := fact.DefaultID()
@@ -188,11 +188,11 @@ func (fc *FactCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (fc *FactCreate) check() error {
-	if _, ok := fc.mutation.CreateTime(); !ok {
-		return &ValidationError{Name: "create_time", err: errors.New("ent: missing required field \"create_time\"")}
+	if _, ok := fc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
 	}
-	if _, ok := fc.mutation.UpdateTime(); !ok {
-		return &ValidationError{Name: "update_time", err: errors.New("ent: missing required field \"update_time\"")}
+	if _, ok := fc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
 	}
 	if _, ok := fc.mutation.HashedValue(); !ok {
 		return &ValidationError{Name: "hashed_value", err: errors.New("ent: missing required field \"hashed_value\"")}
@@ -232,21 +232,21 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := fc.mutation.CreateTime(); ok {
+	if value, ok := fc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldCreateTime,
+			Column: fact.FieldCreatedAt,
 		})
-		_node.CreateTime = value
+		_node.CreatedAt = value
 	}
-	if value, ok := fc.mutation.UpdateTime(); ok {
+	if value, ok := fc.mutation.UpdatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: fact.FieldUpdateTime,
+			Column: fact.FieldUpdatedAt,
 		})
-		_node.UpdateTime = value
+		_node.UpdatedAt = value
 	}
 	if value, ok := fc.mutation.HashedValue(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
