@@ -40,8 +40,8 @@ func (dp *DataPlane) QueryFactTypes(c echo.Context) error {
 // @summary Create a fact type
 // @description create a fact type
 // @id create-fact-type
-// @accept  json
-// @produce  json
+// @accept json
+// @produce json
 // @security ApiKeyAuth
 // @param createFact body apimodel.CreateFactType true "Create Fact Type Parameters"
 // @success 200 {object} apimodel.CreateFactType
