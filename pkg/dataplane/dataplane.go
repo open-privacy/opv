@@ -87,15 +87,17 @@ func (dp *DataPlane) prepareEcho() {
 			var bodyBytes []byte
 			if c.Request().Body != nil {
 				bodyBytes, _ = ioutil.ReadAll(c.Request().Body)
-			}
-			// Restore the io.ReadCloser to its original state
-			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-			// Use the content
-			jsonBody := make(map[string]interface{})
-			err := json.Unmarshal(bodyBytes, &jsonBody)
+				// Restore the io.ReadCloser to its original state
+				c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+				// Use the content
+				if len(bodyBytes) > 0 {
+					jsonBody := make(map[string]interface{})
+					err := json.Unmarshal(bodyBytes, &jsonBody)
 
-			if err != nil && err != io.EOF {
-				return apimodel.NewHTTPError(c, apimodel.MessageJSONMalformated, http.StatusBadRequest)
+					if err != nil && err != io.EOF {
+						return apimodel.NewHTTPError(c, apimodel.MessageJSONMalformated, http.StatusBadRequest)
+					}
+				}
 			}
 
 			return next(c)
