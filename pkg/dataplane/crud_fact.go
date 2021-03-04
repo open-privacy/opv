@@ -119,7 +119,10 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 var builtInFactTypeValuations map[string]interface{}
 
 func init() {
-	customValidationTags := map[string]func(str string) bool{
+	// customValidationTags is a map of string [validation tag] to a govalidator.Validator function map
+	// we can add or override the existing govalidator.TagMap
+	// https://github.com/asaskevich/govalidator/blob/7a23bdc65eef5f3783e782b436f3065eae3fc72d/types.go#L113
+	customTags := map[string]func(str string) bool{
 		"phonenumber": func(str string) bool {
 			return govalidator.StringMatches(str, `^((\+?[0-9]{1,3})|(\+?\([0-9]{1,3}\)))[\s-]?(?:\(0?[0-9]{1,5}\)|[0-9]{1,5})[-\s]?[0-9][\d\s-]{5,7}\s?(?:x[\d-]{0,4})?$`)
 		},
@@ -130,12 +133,19 @@ func init() {
 			return govalidator.StringMatches(str, `^(?!666|000|9\d{2})\d{3}-(?!00)\d{2}-(?!0{4})\d{4}$`)
 		},
 	}
-	customValidationMap := map[string]interface{}{
+
+	// customSlugMap is a map of string [fact type slug] to either a string or map[string]interface{} value
+	// 1. By default, builtInFactTypeValuations will have all the fact type slug supported in govalidator.TagMap
+	customSlugMap := map[string]interface{}{
+		// string => string validates plain string type of fact values
+		"photourl": "url",
+
+		// string => map[string]interface{} validates JSON string type of fact values
 		"address": map[string]interface{}{
 			"name":            "type(string)",
-			"phone":           "alphanum",
+			"phone":           "phonenumber",
 			"company":         "type(string)",
-			"email":           "type(string)",
+			"email":           "email",
 			"address_line1":   "type(string)",
 			"address_line2":   "type(string)",
 			"address_city":    "type(string)",
@@ -145,7 +155,7 @@ func init() {
 		},
 	}
 
-	for k, v := range customValidationTags {
+	for k, v := range customTags {
 		govalidator.TagMap[k] = govalidator.Validator(v)
 	}
 
@@ -153,7 +163,7 @@ func init() {
 	for k := range govalidator.TagMap {
 		builtInFactTypeValuations[k] = k
 	}
-	for k, v := range customValidationMap {
+	for k, v := range customSlugMap {
 		builtInFactTypeValuations[k] = v
 	}
 }

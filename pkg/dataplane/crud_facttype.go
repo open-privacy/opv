@@ -1,6 +1,7 @@
 package dataplane
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -16,23 +17,44 @@ import (
 // @produce json
 // @security ApiKeyAuth
 // @param slug query string false "Fact Type Slug"
+// @param builtin query boolean false "Builtin Fact Type Slug"
 // @success 200 {object} []apimodel.FactType
 // @failure 400 {object} apimodel.HTTPError
 // @failure 500 {object} apimodel.HTTPError
 // @router /fact_types [get]
 func (dp *DataPlane) QueryFactTypes(c echo.Context) error {
-	ft, err := dp.Repo.GetFactTypeBySlug(c.Request().Context(), c.QueryParam("slug"))
-	if err != nil {
-		return apimodel.NewEntError(c, err)
+	if c.QueryParam("slug") != "" {
+		ft, err := dp.Repo.GetFactTypeBySlug(c.Request().Context(), c.QueryParam("slug"))
+		if err != nil {
+			return apimodel.NewEntError(c, err)
+		}
+		return c.JSON(http.StatusOK, []apimodel.FactType{
+			{
+				ID:         ft.ID,
+				Slug:       ft.Slug,
+				Validation: ft.Validation,
+				BuiltIn:    ft.BuiltIn,
+			},
+		})
 	}
-	return c.JSON(http.StatusOK, []apimodel.FactType{
-		{
-			ID:         ft.ID,
-			Slug:       ft.Slug,
-			Validation: ft.Validation,
-			BuiltIn:    ft.BuiltIn,
-		},
-	})
+
+	if c.QueryParam("builtin") == "false" {
+		return c.JSON(http.StatusOK, []apimodel.FactType{})
+	}
+	return c.JSON(http.StatusOK, dp.queryBuiltInFactTypes())
+}
+
+func (dp *DataPlane) queryBuiltInFactTypes() []apimodel.FactType {
+	fts := []apimodel.FactType{}
+	for slug, rule := range builtInFactTypeValuations {
+		validation, _ := json.Marshal(rule)
+		fts = append(fts, apimodel.FactType{
+			Slug:       slug,
+			BuiltIn:    true,
+			Validation: string(validation),
+		})
+	}
+	return fts
 }
 
 // CreateFactType godoc

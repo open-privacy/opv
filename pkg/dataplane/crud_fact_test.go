@@ -19,6 +19,10 @@ func TestValidateFactType(t *testing.T) {
 	}{
 		// phonenumber
 		{factTypeSlug: "phonenumber", factValue: "3979435680", valid: true},
+		{factTypeSlug: "phonenumber", factValue: "397-943-5680", valid: true},
+
+		// photourl
+		{factTypeSlug: "photourl", factValue: "https://example.com/photo.png", valid: true},
 
 		// ssn
 		{factTypeSlug: "ssn", factValue: "123-45-6789", valid: true},
