@@ -118,8 +118,8 @@ func TestCreateFact(t *testing.T) {
 	token := assertGetToken(t, []string{"POST"})
 
 	t.Run("happy code path", func(t *testing.T) {
-		scopeID := "scope_id_123"
-		factTypeSlug := "something_unique_fact_type"
+		scopeID := uniuri.NewLen(uniuri.UUIDLen)
+		factTypeSlug := "ssn"
 
 		Test(
 			t,
@@ -130,7 +130,7 @@ func TestCreateFact(t *testing.T) {
 			Send().Body().JSON(map[string]interface{}{
 				"scope_custom_id": scopeID,
 				"fact_type_slug":  factTypeSlug,
-				"value":           uniuri.New(),
+				"value":           "123-45-6789",
 			}),
 
 			Expect().Status().Equal(http.StatusOK),
@@ -138,5 +138,61 @@ func TestCreateFact(t *testing.T) {
 			Expect().Body().JSON().JQ(".scope_custom_id").Equal(scopeID),
 			Expect().Body().JSON().JQ(".fact_type_slug").Equal(factTypeSlug),
 		)
+	})
+
+	t.Run("ssn fact type slug", func(t *testing.T) {
+		t.Run("valid ssns", func(t *testing.T) {
+			scopeID := uniuri.NewLen(uniuri.UUIDLen)
+			factTypeSlug := "ssn"
+			validSSNs := []string{
+				"123-45-6789",
+				"123456789",
+				"123 45 6789",
+			}
+
+			for _, ssn := range validSSNs {
+				Test(
+					t,
+					Description("Post to dataplane to create a fact"),
+					Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+					Send().Headers("Content-Type").Add("application/json"),
+					Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+					Send().Body().JSON(map[string]interface{}{
+						"scope_custom_id": scopeID,
+						"fact_type_slug":  factTypeSlug,
+						"value":           ssn,
+					}),
+
+					Expect().Status().Equal(http.StatusOK),
+					Expect().Body().JSON().JQ(".id").NotEqual(""),
+				)
+			}
+		})
+
+		t.Run("error with invalid ssn", func(t *testing.T) {
+			scopeID := uniuri.NewLen(uniuri.UUIDLen)
+			factTypeSlug := "ssn"
+			invalidSSNs := []string{
+				"invalid",
+				"1234",
+			}
+
+			for _, ssn := range invalidSSNs {
+				Test(
+					t,
+					Description("Post to dataplane to create a fact"),
+					Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+					Send().Headers("Content-Type").Add("application/json"),
+					Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+					Send().Body().JSON(map[string]interface{}{
+						"scope_custom_id": scopeID,
+						"fact_type_slug":  factTypeSlug,
+						"value":           ssn,
+					}),
+
+					Expect().Status().Equal(http.StatusBadRequest),
+				)
+			}
+		})
 	})
 }

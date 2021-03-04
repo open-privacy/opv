@@ -23,6 +23,7 @@ docker run -it -p 27999-28001:27999-28001 open-privacy/opv
 ```
 
 Create a new grant token by calling the control plane:
+
 ```sh
 curl -X POST 'http://localhost:27999/api/v1/grants' \
 --header 'Content-Type: application/json' \
@@ -35,6 +36,7 @@ curl -X POST 'http://localhost:27999/api/v1/grants' \
 ```
 
 Store a new fact by calling the data plane:
+
 ```sh
 curl -X POST 'http://localhost:28000/api/v1/facts' \
 -H 'Content-Type: application/json' \
@@ -51,12 +53,7 @@ All the configuration is currently done via the environment variables.
 
 ## 2. Architecture
 
-<!-- markdownlint-disable MD033 -->
-<details>
-<summary>Click to see the OPV Architecture</summary>
-![OPV Architecture](docs/arch.png)
-</details>
-<!-- markdownlint-enable MD033 -->
+![OPV Architecture](./docs/arch.png)
 
 ### 2.1 Planes
 
@@ -116,7 +113,18 @@ OPV uses an entity framework [ent](https://github.com/ent/ent) to manages the co
 make ent
 ```
 
-## 3. Development
+### 3. PII Fact Types
+
+OPV supports a long list of built-in fact types. For example `email`, `ssn`, `ssnstrict`, `phonenumber`, and etc.
+The full list of the current fact types can be found at
+
+```sh
+curl --request GET \
+  --url http://127.0.0.1:28000/api/v1/fact_types \
+  --header 'x-opv-grant-token: v1:example.com:yourtoken'
+```
+
+## 4. Development
 
 Make sure you have `go` and `make` installed.
 

@@ -46,6 +46,12 @@ var doc = `{
                         "description": "Fact Type Slug",
                         "name": "slug",
                         "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Builtin Fact Type Slug",
+                        "name": "builtin",
+                        "in": "query"
                     }
                 ],
                 "responses": {
