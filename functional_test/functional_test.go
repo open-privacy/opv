@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"testing"
 	"time"
+	"fmt"
 
 	. "github.com/Eun/go-hit"
 	"github.com/avast/retry-go"
@@ -44,6 +45,29 @@ var assertGetToken = func(t *testing.T, allowedHttpMethods []string) string {
 	)
 	time.Sleep(config.ENV.AuthzCasbinAutoloadInterval + time.Second)
 	return token
+}
+
+var assertCreateFact = func(t *testing.T, token, factValue string) string {
+	var factID string
+	scopeID := uniuri.NewLen(uniuri.UUIDLen)
+
+	Test(
+		t,
+		Description("Post to dataplane to create a fact"),
+		Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+		Send().Headers("Content-Type").Add("application/json"),
+		Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+		Send().Body().JSON(map[string]interface{}{
+			"scope_custom_id": scopeID,
+			"value": factValue,
+			"fact_type_slug":  "ascii",
+		}),
+
+		Expect().Status().Equal(http.StatusOK),
+		Expect().Body().JSON().JQ(".id").Len().GreaterThan(0),
+		Store().Response().Body().JSON().JQ(".id").In(&factID),
+	)
+	return factID
 }
 
 func TestHealthz(t *testing.T) {
@@ -194,6 +218,25 @@ func TestCreateFact(t *testing.T) {
 				)
 			}
 		})
+	})
+}
+
+func TestGetFact(t *testing.T) {
+	token := assertGetToken(t, []string{"POST", "GET"})
+	factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
+	factID := assertCreateFact(t, token, factValue)
+
+	t.Run("happy code path", func(t *testing.T) {
+		Test(
+			t,
+			Description("GET to dataplane to retrieve a fact"),
+			Get(TESTENV.DataplaneHostport+"/api/v1/facts/"+factID),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+
+			Expect().Status().Equal(http.StatusOK),
+			Expect().Body().JSON().JQ(".id").Equal(factID),
+		)
 	})
 }
 
