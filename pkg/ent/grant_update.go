@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -23,6 +24,26 @@ type GrantUpdate struct {
 // Where adds a new predicate for the GrantUpdate builder.
 func (gu *GrantUpdate) Where(ps ...predicate.Grant) *GrantUpdate {
 	gu.mutation.predicates = append(gu.mutation.predicates, ps...)
+	return gu
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (gu *GrantUpdate) SetDeletedAt(t time.Time) *GrantUpdate {
+	gu.mutation.SetDeletedAt(t)
+	return gu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (gu *GrantUpdate) SetNillableDeletedAt(t *time.Time) *GrantUpdate {
+	if t != nil {
+		gu.SetDeletedAt(*t)
+	}
+	return gu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (gu *GrantUpdate) ClearDeletedAt() *GrantUpdate {
+	gu.mutation.ClearDeletedAt()
 	return gu
 }
 
@@ -140,6 +161,19 @@ func (gu *GrantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: grant.FieldUpdatedAt,
 		})
 	}
+	if value, ok := gu.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: grant.FieldDeletedAt,
+		})
+	}
+	if gu.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: grant.FieldDeletedAt,
+		})
+	}
 	if value, ok := gu.mutation.HashedToken(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -184,6 +218,26 @@ type GrantUpdateOne struct {
 	config
 	hooks    []Hook
 	mutation *GrantMutation
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (guo *GrantUpdateOne) SetDeletedAt(t time.Time) *GrantUpdateOne {
+	guo.mutation.SetDeletedAt(t)
+	return guo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (guo *GrantUpdateOne) SetNillableDeletedAt(t *time.Time) *GrantUpdateOne {
+	if t != nil {
+		guo.SetDeletedAt(*t)
+	}
+	return guo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (guo *GrantUpdateOne) ClearDeletedAt() *GrantUpdateOne {
+	guo.mutation.ClearDeletedAt()
+	return guo
 }
 
 // SetHashedToken sets the "hashed_token" field.
@@ -303,6 +357,19 @@ func (guo *GrantUpdateOne) sqlSave(ctx context.Context) (_node *Grant, err error
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: grant.FieldUpdatedAt,
+		})
+	}
+	if value, ok := guo.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: grant.FieldDeletedAt,
+		})
+	}
+	if guo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: grant.FieldDeletedAt,
 		})
 	}
 	if value, ok := guo.mutation.HashedToken(); ok {

@@ -15,6 +15,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
 	// FieldCustomID holds the string denoting the custom_id field in the database.
 	FieldCustomID = "custom_id"
 	// FieldNonce holds the string denoting the nonce field in the database.
@@ -41,6 +43,7 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldDeletedAt,
 	FieldCustomID,
 	FieldNonce,
 	FieldDomain,

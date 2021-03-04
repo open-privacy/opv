@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,6 +25,26 @@ type ScopeUpdate struct {
 // Where adds a new predicate for the ScopeUpdate builder.
 func (su *ScopeUpdate) Where(ps ...predicate.Scope) *ScopeUpdate {
 	su.mutation.predicates = append(su.mutation.predicates, ps...)
+	return su
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (su *ScopeUpdate) SetDeletedAt(t time.Time) *ScopeUpdate {
+	su.mutation.SetDeletedAt(t)
+	return su
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (su *ScopeUpdate) SetNillableDeletedAt(t *time.Time) *ScopeUpdate {
+	if t != nil {
+		su.SetDeletedAt(*t)
+	}
+	return su
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (su *ScopeUpdate) ClearDeletedAt() *ScopeUpdate {
+	su.mutation.ClearDeletedAt()
 	return su
 }
 
@@ -179,6 +200,19 @@ func (su *ScopeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: scope.FieldUpdatedAt,
 		})
 	}
+	if value, ok := su.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: scope.FieldDeletedAt,
+		})
+	}
+	if su.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: scope.FieldDeletedAt,
+		})
+	}
 	if value, ok := su.mutation.CustomID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -270,6 +304,26 @@ type ScopeUpdateOne struct {
 	config
 	hooks    []Hook
 	mutation *ScopeMutation
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (suo *ScopeUpdateOne) SetDeletedAt(t time.Time) *ScopeUpdateOne {
+	suo.mutation.SetDeletedAt(t)
+	return suo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (suo *ScopeUpdateOne) SetNillableDeletedAt(t *time.Time) *ScopeUpdateOne {
+	if t != nil {
+		suo.SetDeletedAt(*t)
+	}
+	return suo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (suo *ScopeUpdateOne) ClearDeletedAt() *ScopeUpdateOne {
+	suo.mutation.ClearDeletedAt()
+	return suo
 }
 
 // SetCustomID sets the "custom_id" field.
@@ -427,6 +481,19 @@ func (suo *ScopeUpdateOne) sqlSave(ctx context.Context) (_node *Scope, err error
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: scope.FieldUpdatedAt,
+		})
+	}
+	if value, ok := suo.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: scope.FieldDeletedAt,
+		})
+	}
+	if suo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: scope.FieldDeletedAt,
 		})
 	}
 	if value, ok := suo.mutation.CustomID(); ok {

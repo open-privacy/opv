@@ -15,6 +15,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
 	// FieldHashedValue holds the string denoting the hashed_value field in the database.
 	FieldHashedValue = "hashed_value"
 	// FieldEncryptedValue holds the string denoting the encrypted_value field in the database.
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldDeletedAt,
 	FieldHashedValue,
 	FieldEncryptedValue,
 	FieldDomain,

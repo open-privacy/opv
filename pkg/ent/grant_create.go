@@ -48,6 +48,20 @@ func (gc *GrantCreate) SetNillableUpdatedAt(t *time.Time) *GrantCreate {
 	return gc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (gc *GrantCreate) SetDeletedAt(t time.Time) *GrantCreate {
+	gc.mutation.SetDeletedAt(t)
+	return gc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (gc *GrantCreate) SetNillableDeletedAt(t *time.Time) *GrantCreate {
+	if t != nil {
+		gc.SetDeletedAt(*t)
+	}
+	return gc
+}
+
 // SetHashedToken sets the "hashed_token" field.
 func (gc *GrantCreate) SetHashedToken(s string) *GrantCreate {
 	gc.mutation.SetHashedToken(s)
@@ -216,6 +230,14 @@ func (gc *GrantCreate) createSpec() (*Grant, *sqlgraph.CreateSpec) {
 			Column: grant.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := gc.mutation.DeletedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: grant.FieldDeletedAt,
+		})
+		_node.DeletedAt = value
 	}
 	if value, ok := gc.mutation.HashedToken(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

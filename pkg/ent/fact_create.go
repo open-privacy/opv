@@ -50,6 +50,20 @@ func (fc *FactCreate) SetNillableUpdatedAt(t *time.Time) *FactCreate {
 	return fc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (fc *FactCreate) SetDeletedAt(t time.Time) *FactCreate {
+	fc.mutation.SetDeletedAt(t)
+	return fc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (fc *FactCreate) SetNillableDeletedAt(t *time.Time) *FactCreate {
+	if t != nil {
+		fc.SetDeletedAt(*t)
+	}
+	return fc
+}
+
 // SetHashedValue sets the "hashed_value" field.
 func (fc *FactCreate) SetHashedValue(s string) *FactCreate {
 	fc.mutation.SetHashedValue(s)
@@ -247,6 +261,14 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 			Column: fact.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := fc.mutation.DeletedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: fact.FieldDeletedAt,
+		})
+		_node.DeletedAt = value
 	}
 	if value, ok := fc.mutation.HashedValue(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

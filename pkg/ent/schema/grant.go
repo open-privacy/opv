@@ -14,6 +14,7 @@ type Grant struct {
 // Fields of the Grant.
 func (Grant) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").Immutable().DefaultFunc(DefaultID("grant")),
 		field.String("hashed_token"),
 		field.String("domain"),
 		field.String("version"),

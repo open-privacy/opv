@@ -15,6 +15,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
 	// FieldHashedToken holds the string denoting the hashed_token field in the database.
 	FieldHashedToken = "hashed_token"
 	// FieldDomain holds the string denoting the domain field in the database.
@@ -33,6 +35,7 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldDeletedAt,
 	FieldHashedToken,
 	FieldDomain,
 	FieldVersion,

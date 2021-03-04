@@ -31,6 +31,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			fact.FieldCreatedAt:      {Type: field.TypeTime, Column: fact.FieldCreatedAt},
 			fact.FieldUpdatedAt:      {Type: field.TypeTime, Column: fact.FieldUpdatedAt},
+			fact.FieldDeletedAt:      {Type: field.TypeTime, Column: fact.FieldDeletedAt},
 			fact.FieldHashedValue:    {Type: field.TypeString, Column: fact.FieldHashedValue},
 			fact.FieldEncryptedValue: {Type: field.TypeString, Column: fact.FieldEncryptedValue},
 			fact.FieldDomain:         {Type: field.TypeString, Column: fact.FieldDomain},
@@ -49,6 +50,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			facttype.FieldCreatedAt:  {Type: field.TypeTime, Column: facttype.FieldCreatedAt},
 			facttype.FieldUpdatedAt:  {Type: field.TypeTime, Column: facttype.FieldUpdatedAt},
+			facttype.FieldDeletedAt:  {Type: field.TypeTime, Column: facttype.FieldDeletedAt},
 			facttype.FieldSlug:       {Type: field.TypeString, Column: facttype.FieldSlug},
 			facttype.FieldBuiltIn:    {Type: field.TypeBool, Column: facttype.FieldBuiltIn},
 			facttype.FieldValidation: {Type: field.TypeString, Column: facttype.FieldValidation},
@@ -67,6 +69,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			grant.FieldCreatedAt:          {Type: field.TypeTime, Column: grant.FieldCreatedAt},
 			grant.FieldUpdatedAt:          {Type: field.TypeTime, Column: grant.FieldUpdatedAt},
+			grant.FieldDeletedAt:          {Type: field.TypeTime, Column: grant.FieldDeletedAt},
 			grant.FieldHashedToken:        {Type: field.TypeString, Column: grant.FieldHashedToken},
 			grant.FieldDomain:             {Type: field.TypeString, Column: grant.FieldDomain},
 			grant.FieldVersion:            {Type: field.TypeString, Column: grant.FieldVersion},
@@ -86,6 +89,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			scope.FieldCreatedAt: {Type: field.TypeTime, Column: scope.FieldCreatedAt},
 			scope.FieldUpdatedAt: {Type: field.TypeTime, Column: scope.FieldUpdatedAt},
+			scope.FieldDeletedAt: {Type: field.TypeTime, Column: scope.FieldDeletedAt},
 			scope.FieldCustomID:  {Type: field.TypeString, Column: scope.FieldCustomID},
 			scope.FieldNonce:     {Type: field.TypeString, Column: scope.FieldNonce},
 			scope.FieldDomain:    {Type: field.TypeString, Column: scope.FieldDomain},
@@ -197,6 +201,11 @@ func (f *FactFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(fact.FieldUpdatedAt))
 }
 
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *FactFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(fact.FieldDeletedAt))
+}
+
 // WhereHashedValue applies the entql string predicate on the hashed_value field.
 func (f *FactFilter) WhereHashedValue(p entql.StringP) {
 	f.Where(p.Field(fact.FieldHashedValue))
@@ -289,6 +298,11 @@ func (f *FactTypeFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(facttype.FieldUpdatedAt))
 }
 
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *FactTypeFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(facttype.FieldDeletedAt))
+}
+
 // WhereSlug applies the entql string predicate on the slug field.
 func (f *FactTypeFilter) WhereSlug(p entql.StringP) {
 	f.Where(p.Field(facttype.FieldSlug))
@@ -367,6 +381,11 @@ func (f *GrantFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(grant.FieldUpdatedAt))
 }
 
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *GrantFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(grant.FieldDeletedAt))
+}
+
 // WhereHashedToken applies the entql string predicate on the hashed_token field.
 func (f *GrantFilter) WhereHashedToken(p entql.StringP) {
 	f.Where(p.Field(grant.FieldHashedToken))
@@ -434,6 +453,11 @@ func (f *ScopeFilter) WhereCreatedAt(p entql.TimeP) {
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
 func (f *ScopeFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(scope.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *ScopeFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(scope.FieldDeletedAt))
 }
 
 // WhereCustomID applies the entql string predicate on the custom_id field.

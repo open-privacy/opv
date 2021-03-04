@@ -13,6 +13,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "hashed_value", Type: field.TypeString},
 		{Name: "encrypted_value", Type: field.TypeString},
 		{Name: "domain", Type: field.TypeString},
@@ -27,14 +28,14 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:  "facts_fact_types_facts",
-				Columns: []*schema.Column{FactsColumns[6]},
+				Columns: []*schema.Column{FactsColumns[7]},
 
 				RefColumns: []*schema.Column{FactTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:  "facts_scopes_facts",
-				Columns: []*schema.Column{FactsColumns[7]},
+				Columns: []*schema.Column{FactsColumns[8]},
 
 				RefColumns: []*schema.Column{ScopesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -57,14 +58,19 @@ var (
 				Columns: []*schema.Column{FactsColumns[2]},
 			},
 			{
-				Name:    "fact_hashed_value_scope_facts_fact_type_facts",
-				Unique:  true,
-				Columns: []*schema.Column{FactsColumns[3], FactsColumns[7], FactsColumns[6]},
+				Name:    "fact_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{FactsColumns[3]},
+			},
+			{
+				Name:    "fact_hashed_value",
+				Unique:  false,
+				Columns: []*schema.Column{FactsColumns[4]},
 			},
 			{
 				Name:    "fact_domain",
 				Unique:  false,
-				Columns: []*schema.Column{FactsColumns[5]},
+				Columns: []*schema.Column{FactsColumns[6]},
 			},
 		},
 	}
@@ -73,6 +79,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "slug", Type: field.TypeString},
 		{Name: "built_in", Type: field.TypeBool},
 		{Name: "validation", Type: field.TypeString, Nullable: true},
@@ -100,9 +107,14 @@ var (
 				Columns: []*schema.Column{FactTypesColumns[2]},
 			},
 			{
+				Name:    "facttype_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{FactTypesColumns[3]},
+			},
+			{
 				Name:    "facttype_slug",
 				Unique:  true,
-				Columns: []*schema.Column{FactTypesColumns[3]},
+				Columns: []*schema.Column{FactTypesColumns[4]},
 			},
 		},
 	}
@@ -111,6 +123,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "hashed_token", Type: field.TypeString},
 		{Name: "domain", Type: field.TypeString},
 		{Name: "version", Type: field.TypeString},
@@ -139,14 +152,19 @@ var (
 				Columns: []*schema.Column{GrantsColumns[2]},
 			},
 			{
-				Name:    "grant_hashed_token",
+				Name:    "grant_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{GrantsColumns[3]},
 			},
 			{
-				Name:    "grant_domain",
+				Name:    "grant_hashed_token",
 				Unique:  false,
 				Columns: []*schema.Column{GrantsColumns[4]},
+			},
+			{
+				Name:    "grant_domain",
+				Unique:  false,
+				Columns: []*schema.Column{GrantsColumns[5]},
 			},
 		},
 	}
@@ -155,6 +173,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "custom_id", Type: field.TypeString},
 		{Name: "nonce", Type: field.TypeString},
 		{Name: "domain", Type: field.TypeString},
@@ -182,14 +201,19 @@ var (
 				Columns: []*schema.Column{ScopesColumns[2]},
 			},
 			{
+				Name:    "scope_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ScopesColumns[3]},
+			},
+			{
 				Name:    "scope_custom_id",
 				Unique:  true,
-				Columns: []*schema.Column{ScopesColumns[3]},
+				Columns: []*schema.Column{ScopesColumns[4]},
 			},
 			{
 				Name:    "scope_domain",
 				Unique:  false,
-				Columns: []*schema.Column{ScopesColumns[5]},
+				Columns: []*schema.Column{ScopesColumns[6]},
 			},
 		},
 	}

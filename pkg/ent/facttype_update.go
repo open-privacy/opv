@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,6 +25,26 @@ type FactTypeUpdate struct {
 // Where adds a new predicate for the FactTypeUpdate builder.
 func (ftu *FactTypeUpdate) Where(ps ...predicate.FactType) *FactTypeUpdate {
 	ftu.mutation.predicates = append(ftu.mutation.predicates, ps...)
+	return ftu
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (ftu *FactTypeUpdate) SetDeletedAt(t time.Time) *FactTypeUpdate {
+	ftu.mutation.SetDeletedAt(t)
+	return ftu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ftu *FactTypeUpdate) SetNillableDeletedAt(t *time.Time) *FactTypeUpdate {
+	if t != nil {
+		ftu.SetDeletedAt(*t)
+	}
+	return ftu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (ftu *FactTypeUpdate) ClearDeletedAt() *FactTypeUpdate {
+	ftu.mutation.ClearDeletedAt()
 	return ftu
 }
 
@@ -193,6 +214,19 @@ func (ftu *FactTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: facttype.FieldUpdatedAt,
 		})
 	}
+	if value, ok := ftu.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: facttype.FieldDeletedAt,
+		})
+	}
+	if ftu.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: facttype.FieldDeletedAt,
+		})
+	}
 	if value, ok := ftu.mutation.Slug(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -290,6 +324,26 @@ type FactTypeUpdateOne struct {
 	config
 	hooks    []Hook
 	mutation *FactTypeMutation
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (ftuo *FactTypeUpdateOne) SetDeletedAt(t time.Time) *FactTypeUpdateOne {
+	ftuo.mutation.SetDeletedAt(t)
+	return ftuo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ftuo *FactTypeUpdateOne) SetNillableDeletedAt(t *time.Time) *FactTypeUpdateOne {
+	if t != nil {
+		ftuo.SetDeletedAt(*t)
+	}
+	return ftuo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (ftuo *FactTypeUpdateOne) ClearDeletedAt() *FactTypeUpdateOne {
+	ftuo.mutation.ClearDeletedAt()
+	return ftuo
 }
 
 // SetSlug sets the "slug" field.
@@ -461,6 +515,19 @@ func (ftuo *FactTypeUpdateOne) sqlSave(ctx context.Context) (_node *FactType, er
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: facttype.FieldUpdatedAt,
+		})
+	}
+	if value, ok := ftuo.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: facttype.FieldDeletedAt,
+		})
+	}
+	if ftuo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: facttype.FieldDeletedAt,
 		})
 	}
 	if value, ok := ftuo.mutation.Slug(); ok {

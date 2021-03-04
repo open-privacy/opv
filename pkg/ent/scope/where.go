@@ -107,6 +107,13 @@ func UpdatedAt(v time.Time) predicate.Scope {
 	})
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v time.Time) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
+	})
+}
+
 // CustomID applies equality check predicate on the "custom_id" field. It's identical to CustomIDEQ.
 func CustomID(v string) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
@@ -277,6 +284,96 @@ func UpdatedAtLT(v time.Time) predicate.Scope {
 func UpdatedAtLTE(v time.Time) predicate.Scope {
 	return predicate.Scope(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v time.Time) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
+	})
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v time.Time) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
+	})
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...time.Time) predicate.Scope {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Scope(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeletedAt), v...))
+	})
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...time.Time) predicate.Scope {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Scope(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
+	})
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v time.Time) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeletedAt), v))
+	})
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v time.Time) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
+	})
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v time.Time) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeletedAt), v))
+	})
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v time.Time) predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
+	})
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
+	})
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Scope {
+	return predicate.Scope(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
 	})
 }
 
