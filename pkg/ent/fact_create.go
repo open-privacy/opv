@@ -217,6 +217,11 @@ func (fc *FactCreate) check() error {
 	if _, ok := fc.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New("ent: missing required field \"domain\"")}
 	}
+	if v, ok := fc.mutation.ID(); ok {
+		if err := fact.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf("ent: validator failed for field \"id\": %w", err)}
+		}
+	}
 	return nil
 }
 

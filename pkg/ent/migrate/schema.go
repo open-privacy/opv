@@ -10,15 +10,15 @@ import (
 var (
 	// FactsColumns holds the columns for the "facts" table.
 	FactsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "hashed_value", Type: field.TypeString},
 		{Name: "encrypted_value", Type: field.TypeString},
 		{Name: "domain", Type: field.TypeString},
-		{Name: "fact_type_facts", Type: field.TypeString, Nullable: true},
-		{Name: "scope_facts", Type: field.TypeString, Nullable: true},
+		{Name: "fact_type_facts", Type: field.TypeString, Nullable: true, Size: 255},
+		{Name: "scope_facts", Type: field.TypeString, Nullable: true, Size: 255},
 	}
 	// FactsTable holds the schema information for the "facts" table.
 	FactsTable = &schema.Table{
@@ -76,7 +76,7 @@ var (
 	}
 	// FactTypesColumns holds the columns for the "fact_types" table.
 	FactTypesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -120,7 +120,7 @@ var (
 	}
 	// GrantsColumns holds the columns for the "grants" table.
 	GrantsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -170,7 +170,7 @@ var (
 	}
 	// ScopesColumns holds the columns for the "scopes" table.
 	ScopesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},

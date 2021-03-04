@@ -16,11 +16,15 @@ type BaseMixin struct {
 	mixin.Schema
 }
 
-// DefaultID generates BaseMixin's default ID
-func DefaultID(prefix string) func() string {
-	return func() string {
-		return fmt.Sprintf("%s_%s", prefix, uniuri.NewLen(uniuri.UUIDLen))
-	}
+// ID generates the id field with a given prefix
+func ID(prefix string) ent.Field {
+	return field.
+		String("id").
+		MaxLen(255).
+		Immutable().
+		DefaultFunc(func() string {
+			return fmt.Sprintf("%s_%s", prefix, uniuri.NewLen(uniuri.UUIDLen))
+		})
 }
 
 // Fields of the BaseMixin.

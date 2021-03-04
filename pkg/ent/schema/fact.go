@@ -15,7 +15,7 @@ type Fact struct {
 // Fields of the Fact.
 func (Fact) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").Immutable().DefaultFunc(DefaultID("fact")),
+		ID("fact"),
 		field.String("hashed_value").Sensitive(),
 		field.String("encrypted_value").Sensitive(),
 		field.String("domain"),

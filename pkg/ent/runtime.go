@@ -35,6 +35,8 @@ func init() {
 	factDescID := factFields[0].Descriptor()
 	// fact.DefaultID holds the default value on creation for the id field.
 	fact.DefaultID = factDescID.Default.(func() string)
+	// fact.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	fact.IDValidator = factDescID.Validators[0].(func(string) error)
 	facttypeMixin := schema.FactType{}.Mixin()
 	facttypeMixinFields0 := facttypeMixin[0].Fields()
 	_ = facttypeMixinFields0
@@ -58,6 +60,8 @@ func init() {
 	facttypeDescID := facttypeFields[0].Descriptor()
 	// facttype.DefaultID holds the default value on creation for the id field.
 	facttype.DefaultID = facttypeDescID.Default.(func() string)
+	// facttype.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	facttype.IDValidator = facttypeDescID.Validators[0].(func(string) error)
 	grantMixin := schema.Grant{}.Mixin()
 	grantMixinFields0 := grantMixin[0].Fields()
 	_ = grantMixinFields0
@@ -77,6 +81,8 @@ func init() {
 	grantDescID := grantFields[0].Descriptor()
 	// grant.DefaultID holds the default value on creation for the id field.
 	grant.DefaultID = grantDescID.Default.(func() string)
+	// grant.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	grant.IDValidator = grantDescID.Validators[0].(func(string) error)
 	scopeMixin := schema.Scope{}.Mixin()
 	scopeMixinFields0 := scopeMixin[0].Fields()
 	_ = scopeMixinFields0
@@ -100,4 +106,6 @@ func init() {
 	scopeDescID := scopeFields[0].Descriptor()
 	// scope.DefaultID holds the default value on creation for the id field.
 	scope.DefaultID = scopeDescID.Default.(func() string)
+	// scope.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	scope.IDValidator = scopeDescID.Validators[0].(func(string) error)
 }

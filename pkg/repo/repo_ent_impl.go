@@ -179,6 +179,7 @@ func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (*ent.F
 
 func (e *entImpl) GetFact(ctx context.Context, opt *GetFactOption) (*ent.Fact, error) {
 	return e.entClient.Fact.Query().WithScope().WithFactType().Where(
+		fact.DeletedAtIsNil(),
 		fact.ID(opt.FactID),
 		fact.Domain(opt.Domain),
 	).Only(ctx)
@@ -202,7 +203,10 @@ func (e *entImpl) CreateFactType(ctx context.Context, opt *CreateFactTypeOption)
 }
 
 func (e *entImpl) GetFactTypeBySlug(ctx context.Context, slug string) (*ent.FactType, error) {
-	return e.entClient.FactType.Query().Where(facttype.Slug(slug)).Only(ctx)
+	return e.entClient.FactType.Query().Where(
+		facttype.DeletedAtIsNil(),
+		facttype.Slug(slug),
+	).Only(ctx)
 }
 
 func (e *entImpl) CreateScope(ctx context.Context, opt *CreateScopeOption) (*ent.Scope, error) {
@@ -227,6 +231,7 @@ func (e *entImpl) CreateScope(ctx context.Context, opt *CreateScopeOption) (*ent
 
 func (e *entImpl) GetScope(ctx context.Context, opt *GetScopeOption) (*ent.Scope, error) {
 	return e.entClient.Scope.Query().Where(
+		scope.DeletedAtIsNil(),
 		scope.CustomID(opt.ScopeCustomID),
 		scope.Domain(opt.Domain),
 	).Only(ctx)

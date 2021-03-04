@@ -205,6 +205,11 @@ func (sc *ScopeCreate) check() error {
 	if _, ok := sc.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New("ent: missing required field \"domain\"")}
 	}
+	if v, ok := sc.mutation.ID(); ok {
+		if err := scope.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf("ent: validator failed for field \"id\": %w", err)}
+		}
+	}
 	return nil
 }
 

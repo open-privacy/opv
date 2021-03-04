@@ -210,6 +210,11 @@ func (ftc *FactTypeCreate) check() error {
 	if _, ok := ftc.mutation.BuiltIn(); !ok {
 		return &ValidationError{Name: "built_in", err: errors.New("ent: missing required field \"built_in\"")}
 	}
+	if v, ok := ftc.mutation.ID(); ok {
+		if err := facttype.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf("ent: validator failed for field \"id\": %w", err)}
+		}
+	}
 	return nil
 }
 

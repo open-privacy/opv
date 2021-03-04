@@ -186,6 +186,11 @@ func (gc *GrantCreate) check() error {
 	if _, ok := gc.mutation.AllowedHTTPMethods(); !ok {
 		return &ValidationError{Name: "allowed_http_methods", err: errors.New("ent: missing required field \"allowed_http_methods\"")}
 	}
+	if v, ok := gc.mutation.ID(); ok {
+		if err := grant.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf("ent: validator failed for field \"id\": %w", err)}
+		}
+	}
 	return nil
 }
 
