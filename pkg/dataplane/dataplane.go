@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"bytes"
 	"encoding/json"
-	"net/http"
 	"io"
 	"io/ioutil"
 
@@ -95,7 +94,7 @@ func (dp *DataPlane) prepareEcho() {
 					err := json.Unmarshal(bodyBytes, &jsonBody)
 
 					if err != nil && err != io.EOF {
-						return apimodel.NewHTTPError(c, apimodel.MessageJSONMalformated, http.StatusBadRequest)
+						return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
 					}
 				}
 			}

@@ -87,12 +87,12 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 	}
 
 	if err := dp.validateFactType(ctx, ft.Slug, cf.Value); err != nil {
-		return dp.Repo.HandleError(c, err)
+		return dp.Repo.HandleError(ctx, err)
 	}
 
 	encryptedValue, err := dp.Encryptor.Encrypt(s.Nonce, cf.Value)
 	if err != nil {
-		return dp.Repo.HandleError(c, err)
+		return dp.Repo.HandleError(ctx, err)
 	}
 	hashedValue := dp.Hasher.Hash(cf.Value, domain)
 

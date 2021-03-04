@@ -7,22 +7,13 @@ import (
 	"github.com/open-privacy/opv/pkg/repo"
 )
 
-const (
-	MessageNotFound = "Resource not found"
-	MessageJSONMalformated = "JSON Malformated"
-	MessageInternalServerError = "Internal server error"
-	MessageValidationError = "Validation error"
+var (
+	ErrInternalServerError = HTTPError{Message: "Internal server error", Code: http.StatusInternalServerError}
+	ErrNotFound            = HTTPError{Message: "Resource not found", Code: http.StatusInternalServerError}
+	ErrUnauthorized        = HTTPError{Message: "Unnauthorized", Code: http.StatusUnauthorized}
+	ErrBadRequest          = func(message string) HTTPError { return HTTPError{Message: message, Code: http.StatusBadRequest} }
+	ErrJSONMalformatted    = ErrBadRequest("JSON Malformatted")
 )
-
-// NewHTTPError creates a new HTTPError
-func NewHTTPError(c echo.Context, message string, status int) error {
-	er := HTTPErrorResponse{
-		Error: HTTPError{
-			Code:    status,
-			Message: message,
-	}}
-	return c.JSON(status, er)
-}
 
 // HTTPError struct
 type HTTPError struct {
@@ -30,18 +21,36 @@ type HTTPError struct {
 	Message string `json:"message"`
 }
 
+func (he *HTTPError) Error() string {
+	return he.Message
+}
+
 type HTTPErrorResponse struct {
 	Error    HTTPError    `json:"error"`
 }
 
 func HTTPErrorHandler(err error, c echo.Context) {
+	FormatHTTPError(c, HTTPErrorFactory(err))
+}
+
+func FormatHTTPError(c echo.Context, err HTTPError) error {
+	er := HTTPErrorResponse{Error: err}
+	return c.JSON(err.Code, er)
+}
+
+func HTTPErrorFactory(err error) HTTPError {
 	switch err.(type) {
 	default:
-		NewHTTPError(c, MessageInternalServerError, http.StatusInternalServerError)
+		return ErrInternalServerError
+	case *echo.HTTPError:
+		if (err == echo.ErrUnauthorized) {
+			return ErrUnauthorized
+		} else {
+			return ErrInternalServerError
+		}
 	case *repo.NotFoundError:
-		NewHTTPError(c, MessageNotFound, http.StatusNotFound)
+		return ErrNotFound
 	case *repo.ValidationError:
-		message := MessageValidationError + ": " + err.Error()
-		NewHTTPError(c, message, http.StatusBadRequest)
+		return ErrBadRequest(err.Error())
 	}
 }

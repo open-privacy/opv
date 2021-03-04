@@ -24,9 +24,10 @@ import (
 // @router /fact_types [get]
 func (dp *DataPlane) QueryFactTypes(c echo.Context) error {
 	if c.QueryParam("slug") != "" {
+		ctx := c.Request().Context()
 		ft, err := dp.Repo.GetFactTypeBySlug(c.Request().Context(), c.QueryParam("slug"))
 		if err != nil {
-			return apimodel.NewEntError(c, err)
+			return dp.Repo.HandleError(ctx, err)
 		}
 		return c.JSON(http.StatusOK, []apimodel.FactType{
 			{
@@ -71,19 +72,20 @@ func (dp *DataPlane) queryBuiltInFactTypes() []apimodel.FactType {
 // @failure 500 {object} apimodel.HTTPError
 // @router /fact_types [post]
 func (dp *DataPlane) CreateFactType(c echo.Context) error {
+	ctx := c.Request().Context()
 	var cft apimodel.CreateFactType
 	if err := c.Bind(&cft); err != nil {
-		return apimodel.NewHTTPError(c, err.Error(), http.StatusBadRequest)
+		return dp.Repo.HandleError(ctx, err)
 	}
 
-	ft, _ := dp.Repo.CreateFactType(c.Request().Context(), &repo.CreateFactTypeOption{
+	ft, err := dp.Repo.CreateFactType(c.Request().Context(), &repo.CreateFactTypeOption{
 		FactTypeSlug:       cft.Slug,
 		FactTypeValidation: cft.Validation,
 		BuiltIn:            true,
 	})
-	// if err != nil {
-	// 	return apimodel.NewEntError(c, err)
-	// }
+	if err != nil {
+		return dp.Repo.HandleError(ctx, err)
+	}
 
 	return c.JSON(http.StatusOK, apimodel.FactType{
 		ID:         ft.ID,

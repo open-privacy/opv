@@ -15,6 +15,7 @@ import (
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
+	"github.com/open-privacy/opv/pkg/apimodel"
 )
 
 // ControlPlane is the control plane for OPV
@@ -64,6 +65,7 @@ func (cp *ControlPlane) prepareEcho() {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+	e.HTTPErrorHandler = apimodel.HTTPErrorHandler
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
