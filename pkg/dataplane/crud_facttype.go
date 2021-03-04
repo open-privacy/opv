@@ -76,14 +76,14 @@ func (dp *DataPlane) CreateFactType(c echo.Context) error {
 		return apimodel.NewHTTPError(c, err.Error(), http.StatusBadRequest)
 	}
 
-	ft, err := dp.Repo.CreateFactType(c.Request().Context(), &repo.CreateFactTypeOption{
+	ft, _ := dp.Repo.CreateFactType(c.Request().Context(), &repo.CreateFactTypeOption{
 		FactTypeSlug:       cft.Slug,
 		FactTypeValidation: cft.Validation,
 		BuiltIn:            true,
 	})
-	if err != nil {
-		return apimodel.NewEntError(c, err)
-	}
+	// if err != nil {
+	// 	return apimodel.NewEntError(c, err)
+	// }
 
 	return c.JSON(http.StatusOK, apimodel.FactType{
 		ID:         ft.ID,

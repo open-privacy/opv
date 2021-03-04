@@ -22,13 +22,13 @@ import (
 // @failure 500 {object} apimodel.HTTPError
 // @router /scopes [get]
 func (dp *DataPlane) QueryScopes(c echo.Context) error {
-	s, err := dp.Repo.GetScope(c.Request().Context(), &repo.GetScopeOption{
+	s, _ := dp.Repo.GetScope(c.Request().Context(), &repo.GetScopeOption{
 		ScopeCustomID: c.QueryParam("custom_id"),
 		Domain:        currentDomain(c),
 	})
-	if err != nil {
-		return apimodel.NewEntError(c, err)
-	}
+	// if err != nil {
+	// 	return apimodel.NewEntError(c, err)
+	// }
 	return c.JSON(http.StatusOK, apimodel.Scope{
 		ID:       s.ID,
 		CustomID: s.CustomID,

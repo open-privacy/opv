@@ -134,6 +134,22 @@ func (e *entImpl) Close() {
 	e.entClient.Close()
 }
 
+func (e *entImpl) HandleError(ctx context.Context, err error) error {
+	if ent.IsNotFound(err) {
+		return NewNotFoundError(err)
+	}
+	if ent.IsValidationError(err) {
+		return NewValidationError(err, "oops")
+	}
+	if ent.IsConstraintError(err) {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: facts.hashed_value, facts.scope_facts, facts.fact_type_facts") {
+			return NewValidationError(err, "This fact value already exists for this scope")
+		}
+	}
+
+	return err;
+}
+
 func (e *entImpl) Enforce(rvals ...interface{}) (bool, error) {
 	return e.enforcer.Enforce(rvals...)
 }

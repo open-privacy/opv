@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/repo"
 )
 
 const (
 	MessageNotFound = "Resource not found"
 	MessageJSONMalformated = "JSON Malformated"
 	MessageInternalServerError = "Internal server error"
+	MessageValidationError = "Validation error"
 )
 
 // NewHTTPError creates a new HTTPError
@@ -23,25 +24,6 @@ func NewHTTPError(c echo.Context, message string, status int) error {
 	return c.JSON(status, er)
 }
 
-// NewEntError creates an error directly from entgo framework
-// The status code is based on the ent error type
-func NewEntError(c echo.Context, err error) error {
-	if err == nil {
-		return nil
-	}
-	if ent.IsNotFound(err) {
-		return NewHTTPError(c, MessageNotFound, http.StatusNotFound)
-	}
-	if ent.IsValidationError(err) {
-		return NewHTTPError(c, err.Error(), http.StatusBadRequest)
-	}
-	if ent.IsConstraintError(err) {
-		return NewHTTPError(c, err.Error(), http.StatusBadRequest)
-	}
-
-	return NewHTTPError(c, MessageInternalServerError, http.StatusInternalServerError)
-}
-
 // HTTPError struct
 type HTTPError struct {
 	Code    int    `json:"code"`
@@ -50,4 +32,16 @@ type HTTPError struct {
 
 type HTTPErrorResponse struct {
 	Error    HTTPError    `json:"error"`
+}
+
+func HTTPErrorHandler(err error, c echo.Context) {
+	switch err.(type) {
+	default:
+		NewHTTPError(c, MessageInternalServerError, http.StatusInternalServerError)
+	case *repo.NotFoundError:
+		NewHTTPError(c, MessageNotFound, http.StatusNotFound)
+	case *repo.ValidationError:
+		message := MessageValidationError + ": " + err.Error()
+		NewHTTPError(c, message, http.StatusBadRequest)
+	}
 }
