@@ -2,6 +2,7 @@ package functional_test
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 	"fmt"
@@ -31,8 +32,14 @@ func generateScopeID() string {
 	return uniuri.NewLen(uniuri.UUIDLen)
 }
 
-var assertGetToken = func(t *testing.T, allowedHttpMethods []string) string {
-	var token string
+var getValidTokenMemo = make(map[string]string)
+var getValidToken = func(t *testing.T, allowedHttpMethods []string) string {
+	methods := strings.Join(allowedHttpMethods, "")
+	token, ok := getValidTokenMemo[methods]
+	if ok {
+		return token
+	}
+
 	Test(
 		t,
 		Description("Post to controlplane to create a grant"),
@@ -48,6 +55,8 @@ var assertGetToken = func(t *testing.T, allowedHttpMethods []string) string {
 		Store().Response().Body().JSON().JQ(".token").In(&token),
 	)
 	time.Sleep(config.ENV.AuthzCasbinAutoloadInterval + time.Second)
+
+	getValidTokenMemo[methods] = token
 	return token
 }
 
@@ -142,7 +151,34 @@ func TestCreateGrant(t *testing.T) {
 }
 
 func TestCreateFact(t *testing.T) {
-	token := assertGetToken(t, []string{"POST"})
+	token := getValidToken(t, []string{"POST"})
+
+	t.Run("happy code path", func(t *testing.T) {
+		scopeID := uniuri.NewLen(uniuri.UUIDLen)
+		factTypeSlug := "ssn"
+
+		Test(
+			t,
+			Description("Post to dataplane to create a fact"),
+			Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id": scopeID,
+				"fact_type_slug":  factTypeSlug,
+				"value":           "123-45-6789",
+			}),
+
+			Expect().Status().Equal(http.StatusOK),
+			Expect().Body().JSON().JQ(".id").NotEqual(""),
+			Expect().Body().JSON().JQ(".scope_custom_id").Equal(scopeID),
+			Expect().Body().JSON().JQ(".fact_type_slug").Equal(factTypeSlug),
+		)
+	})
+}
+
+func TestCreateFactUniqueScopeConstraint(t *testing.T) {
+	token := getValidToken(t, []string{"POST"})
 
 	t.Run("happy code path", func(t *testing.T) {
 		scopeID := generateScopeID()
@@ -167,11 +203,41 @@ func TestCreateFact(t *testing.T) {
 		)
 	})
 
+<<<<<<< HEAD
 	t.Run("fact uniqueness", func(t *testing.T) {
 		factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
 		scopeID := generateScopeID()
 
 		assertCreateFact(t, token, scopeID, factValue)
+=======
+	t.Run("happy code path: create facts with empty scope with the same value multiple times", func(t *testing.T) {
+		n := 2
+
+		for i := 0; i < n; i++ {
+			Test(
+				t,
+				Description("Post to dataplane to create a fact"),
+				Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+				Send().Headers("Content-Type").Add("application/json"),
+				Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+				Send().Body().JSON(map[string]interface{}{
+					// we don't pass scope_custom_id here, so these are associated with the same "empty" scope
+					"fact_type_slug": "ssn",
+					"value":          "123-45-6789",
+				}),
+
+				Expect().Status().Equal(http.StatusOK),
+				Expect().Body().JSON().JQ(".id").NotEqual(""),
+				Expect().Body().JSON().JQ(".scope_custom_id").Equal(""),
+				Expect().Body().JSON().JQ(".fact_type_slug").Equal("ssn"),
+			)
+		}
+	})
+
+	t.Run("error: create facts with non-empty scope with the same value multiple times", func(t *testing.T) {
+		scopeCustomID := uniuri.NewLen(uniuri.UUIDLen)
+
+		// first time should work
 		Test(
 			t,
 			Description("Post to dataplane to create a fact"),
@@ -179,6 +245,24 @@ func TestCreateFact(t *testing.T) {
 			Send().Headers("Content-Type").Add("application/json"),
 			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
 			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id": scopeCustomID,
+				"fact_type_slug":  "ssn",
+				"value":           "123-45-6789",
+			}),
+
+			Expect().Status().Equal(http.StatusOK),
+		)
+
+		// second time should fail
+>>>>>>> b7cb55d... Add unique scope-fact constraint on non-empty scope
+		Test(
+			t,
+			Description("Post to dataplane to create a fact"),
+			Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+<<<<<<< HEAD
 				"scope_custom_id":         scopeID,
 				"fact_type_slug":  "ascii",
 				"value":           factValue,
@@ -187,6 +271,20 @@ func TestCreateFact(t *testing.T) {
 			Expect().Status().Equal(http.StatusBadRequest),
 		)
 	})
+=======
+				"scope_custom_id": scopeCustomID,
+				"fact_type_slug":  "ssn",
+				"value":           "123-45-6789",
+			}),
+
+			Expect().Status().NotEqual(http.StatusOK),
+		)
+	})
+}
+
+func TestCreateFactWithSlugValidation(t *testing.T) {
+	token := getValidToken(t, []string{"POST"})
+>>>>>>> b7cb55d... Add unique scope-fact constraint on non-empty scope
 
 	t.Run("ssn fact type slug", func(t *testing.T) {
 		t.Run("valid ssns", func(t *testing.T) {

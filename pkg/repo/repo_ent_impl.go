@@ -168,6 +168,35 @@ func (e *entImpl) AddPolicy(params ...interface{}) (bool, error) {
 }
 
 func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (*ent.Fact, error) {
+	// If scope is empty (nil or custom_id is empty) then just create the fact anyway
+	if opt.Scope == nil || opt.Scope.CustomID == "" {
+		return e.entClient.Fact.Create().
+			SetScope(opt.Scope).
+			SetFactType(opt.FactType).
+			SetDomain(opt.Domain).
+			SetHashedValue(opt.HashedValue).
+			SetEncryptedValue(opt.EncryptedValue).
+			Save(ctx)
+	}
+
+	// If scope is already set, try to dedup hashed_value first
+	exists, err := e.entClient.Fact.Query().Where(
+		fact.DeletedAtIsNil(),
+		fact.HasScopeWith(scope.CustomID(opt.Scope.CustomID)),
+		fact.HasFactTypeWith(facttype.Slug(opt.FactType.Slug)),
+		fact.HashedValue(opt.HashedValue),
+		fact.Domain(opt.Domain),
+	).Exist(ctx)
+
+	// already exists, we shouldn't create a new fact with the same combination of [scope, fact_type, hashed_value]
+	// return validation error
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, fmt.Errorf("hashed_value already exists")
+	}
+
 	return e.entClient.Fact.Create().
 		SetScope(opt.Scope).
 		SetFactType(opt.FactType).
