@@ -16,3 +16,4 @@ build/
 coverage.txt
 _opv.sqlite
 .vscode
+.DS_Store

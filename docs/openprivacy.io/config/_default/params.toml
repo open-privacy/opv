@@ -1,0 +1,55 @@
+# Meta Data for SEO
+
+## Homepage
+title = "Open Privacy Vault"
+titleSeparator = "-"
+titleAddition = "Open Source PII as a Service"
+description = "Open Privacy Vault is a secure, performant, and privacy focused vault servcie for working with PII."
+
+## Open Graph + Twitter Cards
+images = ["opv.png"]
+twitterSite = "openprivacy"
+twitterCreator = "openprivacy"
+facebookAuthor = "openprivacy"
+facebookPublisher = "openprivacy"
+ogLocale = "en_US"
+
+## JSON-LD
+schemaType = "Organization"
+schemaLogo = "logo-opv.png"
+schemaTwitter = ""
+schemaLinkedIn = ""
+schemaGitHub = "https://github.com/open-privacy"
+schemaSection = "blog"
+
+## Sitelinks Search Box
+siteLinksSearchBox = false
+
+## Chrome Browser
+themeColor = "#fff"
+
+# Images
+quality = 85
+bgColor = "#fff"
+landscapePhotoWidths = [900, 800, 700, 600, 500]
+portraitPhotoWidths = [800, 700, 600, 500]
+lqipWidth = "20x"
+
+# Footer
+footer = "@openprivacy.io"
+
+
+# Alert
+alert = false
+alertText = ""
+
+# Edit Page
+docsRepo = "https://github.com/open-privacy/opv"
+editPage = true
+
+[options]
+  lazySizes = true
+  clipBoard = true
+  instantPage = true
+  flexSearch = true
+  darkMode = true

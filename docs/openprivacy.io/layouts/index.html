@@ -1,0 +1,83 @@
+{{ define "main" }}
+<section class="section pb-5">
+  <div class="row align-items-lg-center mt-n5">
+    <div class="col-lg-1">
+    </div>
+    <div class="col-lg-8">
+      <h1 class="mt-0">{{ .Title }}</h1>
+      <p class="lead">{{ .Params.lead | safeHTML }}</p>
+      <a class="btn btn-primary btn-lg px-4 mb-2" href='{{ "/docs/overview/introduction/" | absURL }}' role="button">Get
+        started</a>
+    </div>
+    <div class="col-lg-7">
+      <img src="/images/vendor/Security.svg" class="img-fluid" alt="security.svg">
+    </div>
+  </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "sidebar-prefooter" }}
+<section class="section section-sm">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-5">
+        <h2 class="h4">PII Structure</h2>
+        <p>
+          Deep understanding of the open standard and various structure of Personal Identifiable Information (PII).
+          Currently supports 50+ PII fact type validations.
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <h2 class="h4">Performant</h2>
+        <p>
+          P99: 10ms
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <h2 class="h4">Security First</h2>
+        <p>
+          Open Privacy Vault never stores the plaintext. It has a pluggable encryption engine design, which can work
+          with
+          various encryption like libsodium, AES, or even just plug in Hashicorp Vault as the encryption
+          backend.
+        </p>
+      </div>
+    </div>
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-5">
+        <h2 class="h4">Flexible Policy & Validation</h2>
+        <p>
+          Flexible token strategy with fine-grained access control. You get to define and control the level of access,
+          redaction, and validation - that can be applied to the individual fields of PIIs.
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <h2 class="h4">Database Storage</h2>
+        <p>
+          Bring your own database. OPV features a database adapter design, and it supports MySQL, PostgreSQL, and
+          SQLite.
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <h2 class="h4">Open Standard</h2>
+        <p>
+          Native support for CCPA, GDPR, and other regional privacy compliance.
+          With OPV Collect, OPV Tokenization, OPV Secure PII Exchange, the community is developing an open standard for
+          fair use of privacy information.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "sidebar-footer" }}
+<section class="section section-sm container-fluid">
+  <div class="row justify-content-center text-center">
+    <div class="col-lg-9">
+      {{- .Content -}}
+    </div>
+  </div>
+</section>
+{{ end }}
