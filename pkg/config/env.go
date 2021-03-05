@@ -21,9 +21,8 @@ var ENV = struct {
 	DBConnectionStr           string        `env:"OPV_DB_CONNECTION_STR" envDefault:"_opv.sqlite?cache=shared&_fk=1"`
 	GracefullyShutdownTimeout time.Duration `env:"OPV_GRACEFULLY_SHUTDOWN_TIMEOUT" envDefault:"3s"`
 
-	EncryptorName                   string   `env:"OPV_ENCRYPTOR_NAME" envDefault:"secretbox"`
-	EncryptorSecretboxKeys          []string `env:"OPV_ENCRYPTOR_SECRETBOX_KEYS" envDefault:"please_change_to_random_32bytes,old_key_rotation_32bytes" envSeparator:","`
-	EncryptorSecretboxBase64Enabled bool     `env:"OPV_ENCRYPTOR_SECRETBOX_BASE64_ENABLED" envDefault:"true"`
+	EncryptorName          string   `env:"OPV_ENCRYPTOR_NAME" envDefault:"secretbox"`
+	EncryptorSecretboxKeys []string `env:"OPV_ENCRYPTOR_SECRETBOX_KEYS" envDefault:"please_change_to_random_32bytes,old_key_rotation_32bytes" envSeparator:","`
 
 	// HasherName represents the hashing algorithm to be used
 	// Supported algorithms: scrypt, keccak256

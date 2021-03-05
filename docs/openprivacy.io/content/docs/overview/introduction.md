@@ -1,58 +1,76 @@
 ---
-title: "Introduction"
-description: "Doks is a Hugo theme helping you build modern documentation websites that are secure, fast, and SEO-ready — by default."
-lead: "Doks is a Hugo theme helping you build modern documentation websites that are secure, fast, and SEO-ready — by default."
-date: 2020-10-06T08:48:57+00:00
-lastmod: 2020-10-06T08:48:57+00:00
-draft: false
+title: "1. Introduction"
+description: "Open Privacy Vault - Secure, Performant, Open Source PII as a Service."
 images: []
 menu:
   docs:
     parent: "overview"
-weight: 100
+weight: 1
 toc: true
 ---
 
-## Get started
+Open Privacy Vault - Secure, Performant, Open Source PII as a Service.
 
-There are two main ways to get started with Doks:
+## Quick Start
 
-### Tutorial
+### Running OPV locally
 
-{{< alert icon="👉" text="The Tutorial is intended for novice to intermediate users." >}}
+Start from source code:
 
-Step-by-step instructions on how to start a new Doks project. [Tutorial →](https://getdoks.org/tutorial/introduction/)
+```sh
+git clone https://github.com/open-privacy/opv
+cd opv
+make deps
+make vendor
+make run
+```
 
-### Quick Start
+Start from docker image (TODO):
 
-{{< alert icon="👉" text="The Quick Start is intended for intermediate to advanced users." >}}
+```sh
+docker run -it -p 27999-28001:27999-28001 open-privacy/opv
+```
 
-One page summary of how to start a new Doks project. [Quick Start →]({{< ref "quick-start" >}})
+### Test Local APIs
 
-## Go further
+Now you can test the APIs with `curl`.
 
-Recipes, Reference Guides, Extensions, and Showcase.
+```sh
+# Create a new grant token from the control plane http://localhost:27999
 
-### Recipes
+curl -X POST 'http://localhost:27999/api/v1/grants' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+        "allowed_http_methods": ["*"],
+        "domain": "test.com"
+}'
 
-Get instructions on how to accomplish common tasks with Doks. [Recipes →](https://getdoks.org/docs/recipes/project-configuration/)
 
-### Reference Guides
+# The response will give you a grant token for data plane access
+# You can pass the token via HTTP header X-OPV-GRANT-TOKEN
+{
+  "token": "v1:test.com:6yBQzIcZUaypri8iysut",
+  "domain": "test.com",
+  "allowed_http_methods": ["*"]
+}
+```
 
-Learn how to customize Doks to fully make it your own. [Reference Guides →](https://getdoks.org/docs/reference-guides/security/)
+```sh
+# Store a new fact by calling the data plane http://localhost:28000
+# Please replace the token with the token you just got above
 
-### Extensions
+curl -X POST 'http://localhost:28000/api/v1/facts' \
+-H 'Content-Type: application/json' \
+-H 'X-OPV-GRANT-TOKEN: v1:test.com:your_new_token' \
+--data-raw '{
+        "fact_type_slug": "ssn",
+        "value": "123-45-6789"
+}'
+```
 
-Get instructions on how to add even more to Doks. [Extensions →](https://getdoks.org/docs/extensions/add-google-fonts/)
+### Open Local Swagger UI
 
-### Showcase
+One can open the local swagger UI to test the APIs:
 
-See what others have build with Doks. [Showcase →](https://getdoks.org/showcase/parietal-numerics-documentation/)
-
-## Contributing
-
-Find out how to contribute to Doks. [Contributing →](https://getdoks.org/docs/contributing/how-to-contribute/)
-
-## Help
-
-Get help on Doks. [Help →]({{< ref "how-to-update" >}})
+- Default DataPlane Swagger URL: [http://127.0.0.1:28000/swagger/index.html](http://127.0.0.1:28000/swagger/index.html)
+- Default ControlPlane Swagger URL: [http://127.0.0.1:27999/swagger/index.html](http://127.0.0.1:27999/swagger/index.html)

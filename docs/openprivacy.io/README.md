@@ -11,3 +11,7 @@ npm install
 ```sh
 npm run start
 ```
+
+## Open local doc website
+
+[http://localhost:1313](http://localhost:1313)
