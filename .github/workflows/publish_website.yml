@@ -20,7 +20,7 @@ jobs:
         run: |
           cd docs/openprivacy.io
           npm install
-          npm run build
+          npx hugo --gc --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
