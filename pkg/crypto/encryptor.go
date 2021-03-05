@@ -78,7 +78,7 @@ func MustNewEncryptor() Encryptor {
 		}
 		encryptor = &SecretboxEncryptor{
 			keys:          keys,
-			base64Enabled: config.ENV.EncryptorSecretboxBase64Enabled,
+			base64Enabled: true,
 		}
 	default:
 		panic(fmt.Sprintf("unknown encryptor name: %s", config.ENV.EncryptorName))

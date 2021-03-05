@@ -1,141 +1,15 @@
-# Open Privacy Vault
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+    <a href="https://openprivacy.io" target="_blank">
+        <img src="docs/openprivacy.io/static/images/landing.png">
+    </a>
+</p>
+<!-- markdownlint-disable MD033 MD041 -->
 
-## 1. Introduction
+## Open Privacy Vault
 
-Open Privacy Vault is an open source solution for managing Personal Identifiable Information (PII).
+Secure, Performant, Open Source PII as a Service.
 
-### 1.1 Get Started
+## Documentation
 
-Start from source code:
-
-```sh
-git clone https://github.com/open-privacy/opv
-cd opv
-make deps
-make vendor
-make run
-```
-
-Start from docker image (TODO):
-
-```sh
-docker run -it -p 27999-28001:27999-28001 open-privacy/opv
-```
-
-Create a new grant token by calling the control plane:
-
-```sh
-curl -X POST 'http://localhost:27999/api/v1/grants' \
---header 'Content-Type: application/json' \
---data-raw '{
-        "allowed_http_methods": ["*"],
-        "domain": "test.com"
-}'
-
-{"token":"v1:test.com:6yBQzIcZUaypri8iysut","domain":"test.com","allowed_http_methods":["*"]}
-```
-
-Store a new fact by calling the data plane:
-
-```sh
-curl -X POST 'http://localhost:28000/api/v1/facts' \
--H 'Content-Type: application/json' \
--H 'x-opv-grant-token: v1:test.com:6yBQzIcZUaypri8iysut' \
---data-raw '{
-        "fact_type_slug": "string",
-        "value": "mysecret"
-}'
-```
-
-### 1.2 Configuration
-
-All the configuration is currently done via the environment variables.
-
-## 2. Architecture
-
-![OPV Architecture](./docs/arch.png)
-
-### 2.1 Planes
-
-#### 2.1.1 Control Plane
-
-Control plane (`default port: 27999`) is a group of controllers that handle the admin related logic.
-
-Control plane currently manages
-
-- `Grant`
-- `Grant Token`
-- `Grant Permissions`
-
-#### 2.1.2 Data Plane
-
-Data plane (`default port: 28000`) is a group of controllers that handle the crud logic related to
-PII information.
-
-Data plane currently manages
-
-- `Scope`
-- `Fact`
-- `Fact Types`
-
-#### 2.1.3 Proxy Plane (TODO)
-
-Proxy plane will handle multiple protocols' (HTTP/SMTP/) requests and responses rewrite on-the-fly with PII tokenization rules.
-
-### 2.2 Encryption
-
-OPV's encryption is designed to work with multiple encryption engine. Currently supported encryption engines are
-
-- Libsodium
-  - Secretbox
-- Hashicorp Vault (TODO)
-  - Transit Secret
-
-### 2.3 Hash
-
-OPV's hash function is designed to generate consistent hash so that we can enable optional search without storing or accessing the plaintext of PII information. Currently supported hash algorithms are
-
-- Scrypt
-- SHA256 (TODO)
-
-### 2.4 Authn & Authz
-
-OPV uses Key-Auth (HTTP Header `X-OPV-GRANT-TOKEN`) for authentication.
-
-OPV uses [casbin](https://github.com/casbin/casbin) for authorization. We leverage the RBAC with multi domain model to have fine-grained access control of the `Grant Token`. See RBAC model definition [here](https://github.com/open-privacy/opv/blob/main/pkg/authz/casbin.go).
-
-### 2.5 Database Adapter
-
-OPV uses an entity framework [ent](https://github.com/ent/ent) to manages the core data model.
-
-```sh
-# Once ./pkg/ent/schema/ changed, regenerate the ent model with auto migration
-make ent
-```
-
-### 3. PII Fact Types
-
-OPV supports a long list of built-in fact types. For example `email`, `ssn`, `ssnstrict`, `phonenumber`, and etc.
-The full list of the current fact types can be found at
-
-```sh
-curl --request GET \
-  --url http://127.0.0.1:28000/api/v1/fact_types \
-  --header 'x-opv-grant-token: v1:example.com:yourtoken'
-```
-
-## 4. Development
-
-Make sure you have `go` and `make` installed.
-
-```sh
-# Prepare dependencies and compile opv
-make deps
-make vendor
-make run
-```
-
-One can open the local swagger UI to test the APIs:
-
-- Default DataPlane Swagger URL: [http://127.0.0.1:28000/swagger/index.html](http://127.0.0.1:28000/swagger/index.html)
-- Default ControlPlane Swagger URL: [http://127.0.0.1:27999/swagger/index.html](http://127.0.0.1:27999/swagger/index.html)
+[https://openprivacy.io](https://openprivacy.io)
