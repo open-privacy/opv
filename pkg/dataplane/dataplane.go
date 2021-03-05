@@ -2,10 +2,6 @@ package dataplane
 
 import (
 	"fmt"
-	"bytes"
-	"encoding/json"
-	"io"
-	"io/ioutil"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -18,6 +14,7 @@ import (
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
 	"github.com/open-privacy/opv/pkg/apimodel"
+	customMiddlewares "github.com/open-privacy/opv/pkg/middleware"
 )
 
 // DataPlane represents the data plane struct
@@ -72,6 +69,7 @@ func (dp *DataPlane) prepareEcho() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Logger.SetLevel(log.INFO)
+	e.Use(customMiddlewares.ValidateJSONPayload)
 	if config.ENV.DataPlaneCORSEnabled {
 		e.Use(middleware.CORS())
 	}
@@ -81,27 +79,6 @@ func (dp *DataPlane) prepareEcho() {
 
 	// Protected by grantValidationMiddleware
 	apiv1.Use(dp.grantValidationMiddleware())
-	apiv1.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			var bodyBytes []byte
-			if c.Request().Body != nil {
-				bodyBytes, _ = ioutil.ReadAll(c.Request().Body)
-				// Restore the io.ReadCloser to its original state
-				c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-				// Use the content
-				if len(bodyBytes) > 0 {
-					jsonBody := make(map[string]interface{})
-					err := json.Unmarshal(bodyBytes, &jsonBody)
-
-					if err != nil && err != io.EOF {
-						return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
-					}
-				}
-			}
-
-			return next(c)
-		}
-	})
 
 	apiv1.POST("/scopes", dp.CreateScope)
 	apiv1.GET("/scopes", dp.QueryScopes)
