@@ -11,14 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+      - name: Setup Node
+        uses: actions/setup-node@v1
         with:
-          hugo-version: "0.81.0"
-          extended: true
+          node-version: "12.x"
 
       - name: Build
-        run: cd docs/openprivacy.io && hugo --gc --minify
+        run: |
+          cd docs/openprivacy.io
+          npm install
+          npm run build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
