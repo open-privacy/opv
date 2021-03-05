@@ -5,7 +5,7 @@ type NotFoundError struct {
 }
 
 func (err NotFoundError) Error() string {
-	return "";
+	return "NotFoundError";
 }
 
 type ValidationError struct {
@@ -24,4 +24,3 @@ func NewNotFoundError(err error) error {
 func NewValidationError(err error, message string) error {
 	return &ValidationError{Err:err, Message:message}
 }
-

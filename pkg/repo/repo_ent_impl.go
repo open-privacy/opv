@@ -141,17 +141,17 @@ func (e *entImpl) HandleError(ctx context.Context, err error) error {
 		return NewNotFoundError(err)
 	}
 	if ent.IsValidationError(err) {
-		return NewValidationError(err, "oops")
+		return NewValidationError(err, "Validation error")
 	}
 	if _, ok := err.(govalidator.Errors); ok {
-		return NewValidationError(err, "oops2")
+		return NewValidationError(err, "Validation error")
 	}
 	if _, ok := err.(validator.ValidationErrors); ok {
-		return NewValidationError(err, "field validation errors")
+		return NewValidationError(err, "Validation error")
 	}
 	if ent.IsConstraintError(err) {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed: facts.hashed_value, facts.scope_facts, facts.fact_type_facts") {
-			return NewValidationError(err, "This fact value already exists for this scope")
+			return NewValidationError(err, "fact_value already exists for this scope")
 		}
 	}
 
