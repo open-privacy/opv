@@ -89,7 +89,7 @@ Source:
         href: "{{ .Permalink | absURL }}",
         title: {{ .Title | jsonify }},
         description: {{ .Params.description | jsonify }},
-        content: {{ .Content | jsonify }}
+        content: `{{ .Content | plainify }}`
       },
     {{ end -}}
   ];
@@ -109,7 +109,6 @@ Source:
     suggestions.classList.remove('d-none');
 
     results.forEach(function(page) {
-
       entry = document.createElement('div');
 
       entry.innerHTML = '<a href><span></span><span></span></a>';
