@@ -15,7 +15,7 @@ type Grant struct {
 func (Grant) Fields() []ent.Field {
 	return []ent.Field{
 		ID("grant"),
-		field.String("hashed_token"),
+		field.String("hashed_grant_token").Sensitive(),
 		field.String("domain"),
 		field.String("version"),
 		field.String("allowed_http_methods"),
@@ -32,7 +32,7 @@ func (Grant) Mixin() []ent.Mixin {
 // Indexes of the Grant
 func (Grant) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("hashed_token"),
+		index.Fields("hashed_grant_token"),
 		index.Fields("domain"),
 	}
 }

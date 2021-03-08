@@ -8,6 +8,78 @@ import (
 )
 
 var (
+	// APIAuditsColumns holds the columns for the "api_audits" table.
+	APIAuditsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 255},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "plane", Type: field.TypeString},
+		{Name: "hashed_grant_token", Type: field.TypeString, Nullable: true},
+		{Name: "domain", Type: field.TypeString, Nullable: true},
+		{Name: "http_path", Type: field.TypeString, Nullable: true},
+		{Name: "http_method", Type: field.TypeString, Nullable: true},
+		{Name: "sent_http_status", Type: field.TypeInt, Nullable: true},
+	}
+	// APIAuditsTable holds the schema information for the "api_audits" table.
+	APIAuditsTable = &schema.Table{
+		Name:        "api_audits",
+		Columns:     APIAuditsColumns,
+		PrimaryKey:  []*schema.Column{APIAuditsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+		Indexes: []*schema.Index{
+			{
+				Name:    "apiaudit_id",
+				Unique:  true,
+				Columns: []*schema.Column{APIAuditsColumns[0]},
+			},
+			{
+				Name:    "apiaudit_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[1]},
+			},
+			{
+				Name:    "apiaudit_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[2]},
+			},
+			{
+				Name:    "apiaudit_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[3]},
+			},
+			{
+				Name:    "apiaudit_plane",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[4]},
+			},
+			{
+				Name:    "apiaudit_hashed_grant_token",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[5]},
+			},
+			{
+				Name:    "apiaudit_domain",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[6]},
+			},
+			{
+				Name:    "apiaudit_http_path",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[7]},
+			},
+			{
+				Name:    "apiaudit_http_method",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[8]},
+			},
+			{
+				Name:    "apiaudit_sent_http_status",
+				Unique:  false,
+				Columns: []*schema.Column{APIAuditsColumns[9]},
+			},
+		},
+	}
 	// FactsColumns holds the columns for the "facts" table.
 	FactsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 255},
@@ -124,7 +196,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "hashed_token", Type: field.TypeString},
+		{Name: "hashed_grant_token", Type: field.TypeString},
 		{Name: "domain", Type: field.TypeString},
 		{Name: "version", Type: field.TypeString},
 		{Name: "allowed_http_methods", Type: field.TypeString},
@@ -157,7 +229,7 @@ var (
 				Columns: []*schema.Column{GrantsColumns[3]},
 			},
 			{
-				Name:    "grant_hashed_token",
+				Name:    "grant_hashed_grant_token",
 				Unique:  false,
 				Columns: []*schema.Column{GrantsColumns[4]},
 			},
@@ -219,6 +291,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		APIAuditsTable,
 		FactsTable,
 		FactTypesTable,
 		GrantsTable,

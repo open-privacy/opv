@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/grant"
@@ -16,6 +17,27 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	apiauditMixin := schema.APIAudit{}.Mixin()
+	apiauditMixinFields0 := apiauditMixin[0].Fields()
+	_ = apiauditMixinFields0
+	apiauditFields := schema.APIAudit{}.Fields()
+	_ = apiauditFields
+	// apiauditDescCreatedAt is the schema descriptor for created_at field.
+	apiauditDescCreatedAt := apiauditMixinFields0[0].Descriptor()
+	// apiaudit.DefaultCreatedAt holds the default value on creation for the created_at field.
+	apiaudit.DefaultCreatedAt = apiauditDescCreatedAt.Default.(func() time.Time)
+	// apiauditDescUpdatedAt is the schema descriptor for updated_at field.
+	apiauditDescUpdatedAt := apiauditMixinFields0[1].Descriptor()
+	// apiaudit.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	apiaudit.DefaultUpdatedAt = apiauditDescUpdatedAt.Default.(func() time.Time)
+	// apiaudit.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	apiaudit.UpdateDefaultUpdatedAt = apiauditDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// apiauditDescID is the schema descriptor for id field.
+	apiauditDescID := apiauditFields[0].Descriptor()
+	// apiaudit.DefaultID holds the default value on creation for the id field.
+	apiaudit.DefaultID = apiauditDescID.Default.(func() string)
+	// apiaudit.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	apiaudit.IDValidator = apiauditDescID.Validators[0].(func(string) error)
 	factMixin := schema.Fact{}.Mixin()
 	factMixinFields0 := factMixin[0].Fields()
 	_ = factMixinFields0

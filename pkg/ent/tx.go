@@ -12,6 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// APIAudit is the client for interacting with the APIAudit builders.
+	APIAudit *APIAuditClient
 	// Fact is the client for interacting with the Fact builders.
 	Fact *FactClient
 	// FactType is the client for interacting with the FactType builders.
@@ -155,6 +157,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.APIAudit = NewAPIAuditClient(tx.config)
 	tx.Fact = NewFactClient(tx.config)
 	tx.FactType = NewFactTypeClient(tx.config)
 	tx.Grant = NewGrantClient(tx.config)
@@ -168,7 +171,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Fact.QueryXXX(), the query will be executed
+// applies a query, for example: APIAudit.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

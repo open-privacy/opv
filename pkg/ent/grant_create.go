@@ -62,9 +62,9 @@ func (gc *GrantCreate) SetNillableDeletedAt(t *time.Time) *GrantCreate {
 	return gc
 }
 
-// SetHashedToken sets the "hashed_token" field.
-func (gc *GrantCreate) SetHashedToken(s string) *GrantCreate {
-	gc.mutation.SetHashedToken(s)
+// SetHashedGrantToken sets the "hashed_grant_token" field.
+func (gc *GrantCreate) SetHashedGrantToken(s string) *GrantCreate {
+	gc.mutation.SetHashedGrantToken(s)
 	return gc
 }
 
@@ -174,8 +174,8 @@ func (gc *GrantCreate) check() error {
 	if _, ok := gc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
 	}
-	if _, ok := gc.mutation.HashedToken(); !ok {
-		return &ValidationError{Name: "hashed_token", err: errors.New("ent: missing required field \"hashed_token\"")}
+	if _, ok := gc.mutation.HashedGrantToken(); !ok {
+		return &ValidationError{Name: "hashed_grant_token", err: errors.New("ent: missing required field \"hashed_grant_token\"")}
 	}
 	if _, ok := gc.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New("ent: missing required field \"domain\"")}
@@ -244,13 +244,13 @@ func (gc *GrantCreate) createSpec() (*Grant, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = value
 	}
-	if value, ok := gc.mutation.HashedToken(); ok {
+	if value, ok := gc.mutation.HashedGrantToken(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: grant.FieldHashedToken,
+			Column: grant.FieldHashedGrantToken,
 		})
-		_node.HashedToken = value
+		_node.HashedGrantToken = value
 	}
 	if value, ok := gc.mutation.Domain(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

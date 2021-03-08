@@ -9,6 +9,12 @@ import (
 	"github.com/open-privacy/opv/pkg/ent"
 )
 
+const (
+	DataplaneName    = "dataplane"
+	ControlplaneName = "controlplane"
+	ProxyplaneName   = "proxyplane"
+)
+
 // Enforcer is an interface that enforces the authz access
 // e.g. Enforce(sub, dom, obj, act)
 type Enforcer interface {
@@ -22,6 +28,7 @@ type Repo interface {
 	FactTypeRepo
 	ScopeRepo
 	GrantRepo
+	APIAuditRepo
 
 	HandleError(ctx context.Context, err error) error
 	Close()
@@ -63,10 +70,30 @@ type GetScopeOption struct {
 
 // CreateGrantOption ...
 type CreateGrantOption struct {
-	HashedToken        string
+	HashedGrantToken   string
 	Domain             string
 	Version            string
 	AllowedHTTPMethods []string
+}
+
+// CreateAPIAuditOption ...
+type CreateAPIAuditOption struct {
+	Plane            string
+	HashedGrantToken *string
+	Domain           *string
+	HTTPMethod       *string
+	HTTPPath         *string
+	SentHTTPStatus   *int
+}
+
+// QueryAPIAuditOption ...
+type QueryAPIAuditOption struct {
+	Plane            *string
+	HashedGrantToken *string
+	Domain           *string
+	HTTPMethod       *string
+	HTTPPath         *string
+	SentHTTPStatus   *int
 }
 
 // FactRepo is a repository for Fact
@@ -90,6 +117,12 @@ type ScopeRepo interface {
 // GrantRepo is a repository for Grant
 type GrantRepo interface {
 	CreateGrant(ctx context.Context, opt *CreateGrantOption) (*ent.Grant, error)
+}
+
+// APIAuditRepo is a repository for APIAudit
+type APIAuditRepo interface {
+	CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption) (*ent.APIAudit, error)
+	QueryAPIAudit(ctx context.Context, opt *QueryAPIAuditOption) ([]*ent.APIAudit, error)
 }
 
 // NewRepoEnforcer creates a new RepoEnforcer

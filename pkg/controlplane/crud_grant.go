@@ -38,7 +38,7 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 	}
 
 	g, err := cp.Repo.CreateGrant(ctx, &repo.CreateGrantOption{
-		HashedToken:        token.Hash(cp.Hasher),
+		HashedGrantToken:   token.Hash(cp.Hasher),
 		Domain:             cg.Domain,
 		Version:            token.Version,
 		AllowedHTTPMethods: cg.AllowedHTTPMethods,

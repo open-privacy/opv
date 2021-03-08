@@ -165,6 +165,30 @@ func DenyMutationOperationRule(op ent.Op) MutationRule {
 	return OnMutationOperation(rule, op)
 }
 
+// The APIAuditQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type APIAuditQueryRuleFunc func(context.Context, *ent.APIAuditQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f APIAuditQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.APIAuditQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.APIAuditQuery", q)
+}
+
+// The APIAuditMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type APIAuditMutationRuleFunc func(context.Context, *ent.APIAuditMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f APIAuditMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.APIAuditMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.APIAuditMutation", m)
+}
+
 // The FactQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type FactQueryRuleFunc func(context.Context, *ent.FactQuery) error
@@ -296,6 +320,8 @@ var _ QueryMutationRule = FilterFunc(nil)
 
 func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
+	case *ent.APIAuditQuery:
+		return q.Filter(), nil
 	case *ent.FactQuery:
 		return q.Filter(), nil
 	case *ent.FactTypeQuery:
@@ -311,6 +337,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
+	case *ent.APIAuditMutation:
+		return m.Filter(), nil
 	case *ent.FactMutation:
 		return m.Filter(), nil
 	case *ent.FactTypeMutation:

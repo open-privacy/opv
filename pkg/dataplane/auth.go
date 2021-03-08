@@ -21,7 +21,7 @@ func (dp *DataPlane) grantValidationMiddleware() echo.MiddlewareFunc {
 	return middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		KeyLookup: fmt.Sprintf("header:%s", headerOPVGrantToken),
 		Validator: func(key string, c echo.Context) (bool, error) {
-			token := &apimodel.Token{}
+			token := &apimodel.GrantToken{}
 			if err := token.ParseFromString(key); err != nil {
 				return false, err
 			}

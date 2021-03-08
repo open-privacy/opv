@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/grant"
@@ -17,8 +18,30 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 5)}
 	graph.Nodes[0] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   apiaudit.Table,
+			Columns: apiaudit.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeString,
+				Column: apiaudit.FieldID,
+			},
+		},
+		Type: "APIAudit",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			apiaudit.FieldCreatedAt:        {Type: field.TypeTime, Column: apiaudit.FieldCreatedAt},
+			apiaudit.FieldUpdatedAt:        {Type: field.TypeTime, Column: apiaudit.FieldUpdatedAt},
+			apiaudit.FieldDeletedAt:        {Type: field.TypeTime, Column: apiaudit.FieldDeletedAt},
+			apiaudit.FieldPlane:            {Type: field.TypeString, Column: apiaudit.FieldPlane},
+			apiaudit.FieldHashedGrantToken: {Type: field.TypeString, Column: apiaudit.FieldHashedGrantToken},
+			apiaudit.FieldDomain:           {Type: field.TypeString, Column: apiaudit.FieldDomain},
+			apiaudit.FieldHTTPPath:         {Type: field.TypeString, Column: apiaudit.FieldHTTPPath},
+			apiaudit.FieldHTTPMethod:       {Type: field.TypeString, Column: apiaudit.FieldHTTPMethod},
+			apiaudit.FieldSentHTTPStatus:   {Type: field.TypeInt, Column: apiaudit.FieldSentHTTPStatus},
+		},
+	}
+	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   fact.Table,
 			Columns: fact.Columns,
@@ -37,7 +60,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			fact.FieldDomain:         {Type: field.TypeString, Column: fact.FieldDomain},
 		},
 	}
-	graph.Nodes[1] = &sqlgraph.Node{
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   facttype.Table,
 			Columns: facttype.Columns,
@@ -56,7 +79,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			facttype.FieldValidation: {Type: field.TypeString, Column: facttype.FieldValidation},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   grant.Table,
 			Columns: grant.Columns,
@@ -70,13 +93,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			grant.FieldCreatedAt:          {Type: field.TypeTime, Column: grant.FieldCreatedAt},
 			grant.FieldUpdatedAt:          {Type: field.TypeTime, Column: grant.FieldUpdatedAt},
 			grant.FieldDeletedAt:          {Type: field.TypeTime, Column: grant.FieldDeletedAt},
-			grant.FieldHashedToken:        {Type: field.TypeString, Column: grant.FieldHashedToken},
+			grant.FieldHashedGrantToken:   {Type: field.TypeString, Column: grant.FieldHashedGrantToken},
 			grant.FieldDomain:             {Type: field.TypeString, Column: grant.FieldDomain},
 			grant.FieldVersion:            {Type: field.TypeString, Column: grant.FieldVersion},
 			grant.FieldAllowedHTTPMethods: {Type: field.TypeString, Column: grant.FieldAllowedHTTPMethods},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   scope.Table,
 			Columns: scope.Columns,
@@ -153,6 +176,90 @@ type predicateAdder interface {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (aaq *APIAuditQuery) addPredicate(pred func(s *sql.Selector)) {
+	aaq.predicates = append(aaq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the APIAuditQuery builder.
+func (aaq *APIAuditQuery) Filter() *APIAuditFilter {
+	return &APIAuditFilter{aaq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *APIAuditMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the APIAuditMutation builder.
+func (m *APIAuditMutation) Filter() *APIAuditFilter {
+	return &APIAuditFilter{m}
+}
+
+// APIAuditFilter provides a generic filtering capability at runtime for APIAuditQuery.
+type APIAuditFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *APIAuditFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql string predicate on the id field.
+func (f *APIAuditFilter) WhereID(p entql.StringP) {
+	f.Where(p.Field(apiaudit.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *APIAuditFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(apiaudit.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *APIAuditFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(apiaudit.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *APIAuditFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(apiaudit.FieldDeletedAt))
+}
+
+// WherePlane applies the entql string predicate on the plane field.
+func (f *APIAuditFilter) WherePlane(p entql.StringP) {
+	f.Where(p.Field(apiaudit.FieldPlane))
+}
+
+// WhereHashedGrantToken applies the entql string predicate on the hashed_grant_token field.
+func (f *APIAuditFilter) WhereHashedGrantToken(p entql.StringP) {
+	f.Where(p.Field(apiaudit.FieldHashedGrantToken))
+}
+
+// WhereDomain applies the entql string predicate on the domain field.
+func (f *APIAuditFilter) WhereDomain(p entql.StringP) {
+	f.Where(p.Field(apiaudit.FieldDomain))
+}
+
+// WhereHTTPPath applies the entql string predicate on the http_path field.
+func (f *APIAuditFilter) WhereHTTPPath(p entql.StringP) {
+	f.Where(p.Field(apiaudit.FieldHTTPPath))
+}
+
+// WhereHTTPMethod applies the entql string predicate on the http_method field.
+func (f *APIAuditFilter) WhereHTTPMethod(p entql.StringP) {
+	f.Where(p.Field(apiaudit.FieldHTTPMethod))
+}
+
+// WhereSentHTTPStatus applies the entql int predicate on the sent_http_status field.
+func (f *APIAuditFilter) WhereSentHTTPStatus(p entql.IntP) {
+	f.Where(p.Field(apiaudit.FieldSentHTTPStatus))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (fq *FactQuery) addPredicate(pred func(s *sql.Selector)) {
 	fq.predicates = append(fq.predicates, pred)
 }
@@ -180,7 +287,7 @@ type FactFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *FactFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -277,7 +384,7 @@ type FactTypeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *FactTypeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -360,7 +467,7 @@ type GrantFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *GrantFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -386,9 +493,9 @@ func (f *GrantFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(grant.FieldDeletedAt))
 }
 
-// WhereHashedToken applies the entql string predicate on the hashed_token field.
-func (f *GrantFilter) WhereHashedToken(p entql.StringP) {
-	f.Where(p.Field(grant.FieldHashedToken))
+// WhereHashedGrantToken applies the entql string predicate on the hashed_grant_token field.
+func (f *GrantFilter) WhereHashedGrantToken(p entql.StringP) {
+	f.Where(p.Field(grant.FieldHashedGrantToken))
 }
 
 // WhereDomain applies the entql string predicate on the domain field.
@@ -434,7 +541,7 @@ type ScopeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ScopeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

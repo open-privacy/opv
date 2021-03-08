@@ -47,9 +47,9 @@ func (gu *GrantUpdate) ClearDeletedAt() *GrantUpdate {
 	return gu
 }
 
-// SetHashedToken sets the "hashed_token" field.
-func (gu *GrantUpdate) SetHashedToken(s string) *GrantUpdate {
-	gu.mutation.SetHashedToken(s)
+// SetHashedGrantToken sets the "hashed_grant_token" field.
+func (gu *GrantUpdate) SetHashedGrantToken(s string) *GrantUpdate {
+	gu.mutation.SetHashedGrantToken(s)
 	return gu
 }
 
@@ -174,11 +174,11 @@ func (gu *GrantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: grant.FieldDeletedAt,
 		})
 	}
-	if value, ok := gu.mutation.HashedToken(); ok {
+	if value, ok := gu.mutation.HashedGrantToken(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: grant.FieldHashedToken,
+			Column: grant.FieldHashedGrantToken,
 		})
 	}
 	if value, ok := gu.mutation.Domain(); ok {
@@ -240,9 +240,9 @@ func (guo *GrantUpdateOne) ClearDeletedAt() *GrantUpdateOne {
 	return guo
 }
 
-// SetHashedToken sets the "hashed_token" field.
-func (guo *GrantUpdateOne) SetHashedToken(s string) *GrantUpdateOne {
-	guo.mutation.SetHashedToken(s)
+// SetHashedGrantToken sets the "hashed_grant_token" field.
+func (guo *GrantUpdateOne) SetHashedGrantToken(s string) *GrantUpdateOne {
+	guo.mutation.SetHashedGrantToken(s)
 	return guo
 }
 
@@ -372,11 +372,11 @@ func (guo *GrantUpdateOne) sqlSave(ctx context.Context) (_node *Grant, err error
 			Column: grant.FieldDeletedAt,
 		})
 	}
-	if value, ok := guo.mutation.HashedToken(); ok {
+	if value, ok := guo.mutation.HashedGrantToken(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: grant.FieldHashedToken,
+			Column: grant.FieldHashedGrantToken,
 		})
 	}
 	if value, ok := guo.mutation.Domain(); ok {

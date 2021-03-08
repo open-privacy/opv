@@ -22,8 +22,8 @@ type Grant struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt time.Time `json:"deleted_at,omitempty"`
-	// HashedToken holds the value of the "hashed_token" field.
-	HashedToken string `json:"hashed_token,omitempty"`
+	// HashedGrantToken holds the value of the "hashed_grant_token" field.
+	HashedGrantToken string `json:"-"`
 	// Domain holds the value of the "domain" field.
 	Domain string `json:"domain,omitempty"`
 	// Version holds the value of the "version" field.
@@ -37,7 +37,7 @@ func (*Grant) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case grant.FieldID, grant.FieldHashedToken, grant.FieldDomain, grant.FieldVersion, grant.FieldAllowedHTTPMethods:
+		case grant.FieldID, grant.FieldHashedGrantToken, grant.FieldDomain, grant.FieldVersion, grant.FieldAllowedHTTPMethods:
 			values[i] = &sql.NullString{}
 		case grant.FieldCreatedAt, grant.FieldUpdatedAt, grant.FieldDeletedAt:
 			values[i] = &sql.NullTime{}
@@ -80,11 +80,11 @@ func (gr *Grant) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				gr.DeletedAt = value.Time
 			}
-		case grant.FieldHashedToken:
+		case grant.FieldHashedGrantToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field hashed_token", values[i])
+				return fmt.Errorf("unexpected type %T for field hashed_grant_token", values[i])
 			} else if value.Valid {
-				gr.HashedToken = value.String
+				gr.HashedGrantToken = value.String
 			}
 		case grant.FieldDomain:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -138,8 +138,7 @@ func (gr *Grant) String() string {
 	builder.WriteString(gr.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", deleted_at=")
 	builder.WriteString(gr.DeletedAt.Format(time.ANSIC))
-	builder.WriteString(", hashed_token=")
-	builder.WriteString(gr.HashedToken)
+	builder.WriteString(", hashed_grant_token=<sensitive>")
 	builder.WriteString(", domain=")
 	builder.WriteString(gr.Domain)
 	builder.WriteString(", version=")

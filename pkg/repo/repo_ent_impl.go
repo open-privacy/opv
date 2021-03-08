@@ -18,9 +18,11 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/migrate"
+	"github.com/open-privacy/opv/pkg/ent/predicate"
 	"github.com/open-privacy/opv/pkg/ent/scope"
 	"github.com/asaskevich/govalidator"
 	"github.com/go-playground/validator/v10"
@@ -274,7 +276,7 @@ func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (*ent
 
 	m := mergeAllowedHTTPMethods(opt.AllowedHTTPMethods)
 	_, err := e.enforcer.AddPolicy(
-		opt.HashedToken,
+		opt.HashedGrantToken,
 		opt.Domain,
 		"*",
 		m,
@@ -286,9 +288,49 @@ func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (*ent
 	}
 
 	return &ent.Grant{
-		HashedToken:        opt.HashedToken,
+		HashedGrantToken:   opt.HashedGrantToken,
 		Domain:             opt.Domain,
 		Version:            opt.Version,
 		AllowedHTTPMethods: m,
 	}, nil
+}
+
+func (e *entImpl) CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption) (*ent.APIAudit, error) {
+	if opt.Plane == DataplaneName || opt.Plane == ControlplaneName || opt.Plane == ProxyplaneName {
+		return e.entClient.APIAudit.Create().
+			SetPlane(opt.Plane).
+			SetNillableDomain(opt.Domain).
+			SetNillableHashedGrantToken(opt.HashedGrantToken).
+			SetNillableHTTPPath(opt.HTTPPath).
+			SetNillableHTTPMethod(opt.HTTPMethod).
+			SetNillableSentHTTPStatus(opt.SentHTTPStatus).
+			Save(ctx)
+	}
+
+	return nil, fmt.Errorf("not supported plane for audit logs, %s", opt.Plane)
+}
+
+func (e *entImpl) QueryAPIAudit(ctx context.Context, opt *QueryAPIAuditOption) ([]*ent.APIAudit, error) {
+	conds := []predicate.APIAudit{}
+
+	if opt.Plane != nil {
+		conds = append(conds, apiaudit.Plane(*opt.Plane))
+	}
+	if opt.Domain != nil {
+		conds = append(conds, apiaudit.Domain(*opt.Domain))
+	}
+	if opt.HashedGrantToken != nil {
+		conds = append(conds, apiaudit.HashedGrantToken(*opt.HashedGrantToken))
+	}
+	if opt.HTTPMethod != nil {
+		conds = append(conds, apiaudit.HTTPMethod(*opt.HTTPMethod))
+	}
+	if opt.HTTPPath != nil {
+		conds = append(conds, apiaudit.HTTPPath(*opt.HTTPPath))
+	}
+	if opt.SentHTTPStatus != nil {
+		conds = append(conds, apiaudit.SentHTTPStatus(*opt.SentHTTPStatus))
+	}
+
+	return e.entClient.APIAudit.Query().Where(conds...).All(ctx)
 }
