@@ -77,6 +77,7 @@ func (dp *DataPlane) prepareEcho() {
 	}
 
 	apiv1 := dp.Echo.Group("/api/v1")
+	apiv1.Use(dp.auditLogMiddleware())
 	apiv1.GET("/healthz", dp.Healthz)
 
 	// Protected by grantValidationMiddleware

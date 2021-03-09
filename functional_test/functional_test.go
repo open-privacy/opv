@@ -1,11 +1,11 @@
 package functional_test
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
-	"fmt"
 
 	. "github.com/Eun/go-hit"
 	"github.com/avast/retry-go"
@@ -71,7 +71,7 @@ var assertCreateFact = func(t *testing.T, token, scopeID string, factValue strin
 		Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
 		Send().Body().JSON(map[string]interface{}{
 			"scope_custom_id": scopeID,
-			"value": factValue,
+			"value":           factValue,
 			"fact_type_slug":  "ascii",
 		}),
 
@@ -344,7 +344,7 @@ func TestCreateFactWithSlugValidation(t *testing.T) {
 }
 
 func TestGetFact(t *testing.T) {
-	token := assertGetToken(t, []string{"POST", "GET"})
+	token := getValidToken(t, []string{"POST", "GET"})
 	factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
 	scopeID := generateScopeID()
 	factID := assertCreateFact(t, token, scopeID, factValue)
@@ -364,7 +364,7 @@ func TestGetFact(t *testing.T) {
 }
 
 func TestMalformattedJSON(t *testing.T) {
-	token := assertGetToken(t, []string{"POST"})
+	token := getValidToken(t, []string{"POST"})
 
 	Test(
 		t,
@@ -376,4 +376,24 @@ func TestMalformattedJSON(t *testing.T) {
 
 		Expect().Status().Equal(http.StatusBadRequest),
 	)
+}
+
+func TestAPIAuditLogs(t *testing.T) {
+	t.Run("it should return the correct API audit logs", func(t *testing.T) {
+		Test(
+			t,
+			Description("send a health check request"),
+			Get(TESTENV.DataplaneHostport+"/api/v1/healthz"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Expect().Status().Equal(http.StatusOK),
+		)
+
+		Test(
+			t,
+			Description("should return the correct audit logs"),
+			Get(TESTENV.ControlplaneHostport+"/api/v1/api_audits?domain="+TESTENV.DefaultDomain),
+			Send().Headers("Content-Type").Add("application/json"),
+			Expect().Status().Equal(http.StatusOK),
+		)
+	})
 }

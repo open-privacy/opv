@@ -1,6 +1,8 @@
 package dataplane
 
 import (
+	"context"
+
 	"github.com/labstack/echo/v4"
 	"github.com/open-privacy/opv/pkg/repo"
 )
@@ -26,8 +28,8 @@ func (a *auditLogContext) mapCreateAPIOption() *repo.CreateAPIAuditOption {
 		Plane:            repo.DataplaneName,
 		HashedGrantToken: a.getContextStringPtr(contextAuthzSub),
 		Domain:           a.getContextStringPtr(contextAuthzDom),
-		HTTPMethod:       a.getContextStringPtr(contextAuthzAct),
-		HTTPPath:         a.getContextStringPtr(contextAuthzObj),
+		HTTPMethod:       &a.Request().Method,
+		HTTPPath:         &a.Request().URL.Path,
 		SentHTTPStatus:   &a.Response().Status,
 	}
 }
@@ -39,7 +41,10 @@ func (dp *DataPlane) auditLogMiddleware() echo.MiddlewareFunc {
 
 			go func() {
 				ac := &auditLogContext{c}
-				dp.Repo.CreateAPIAudit(ac.Request().Context(), ac.mapCreateAPIOption())
+				_, err := dp.Repo.CreateAPIAudit(context.Background(), ac.mapCreateAPIOption())
+				if err != nil {
+					dp.Logger.Error(err)
+				}
 			}()
 
 			return res

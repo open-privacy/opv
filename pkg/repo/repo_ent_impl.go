@@ -16,6 +16,8 @@ import (
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+	"github.com/asaskevich/govalidator"
+	"github.com/go-playground/validator/v10"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/ent"
 	"github.com/open-privacy/opv/pkg/ent/apiaudit"
@@ -24,8 +26,6 @@ import (
 	"github.com/open-privacy/opv/pkg/ent/migrate"
 	"github.com/open-privacy/opv/pkg/ent/predicate"
 	"github.com/open-privacy/opv/pkg/ent/scope"
-	"github.com/asaskevich/govalidator"
-	"github.com/go-playground/validator/v10"
 )
 
 const defaultCasbinModel = `
@@ -158,7 +158,7 @@ func (e *entImpl) HandleError(ctx context.Context, err error) error {
 		}
 	}
 
-	return err;
+	return err
 }
 
 func (e *entImpl) Enforce(rvals ...interface{}) (bool, error) {
@@ -196,7 +196,8 @@ func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (*ent.F
 		return nil, err
 	}
 	if exists {
-		return nil, fmt.Errorf("hashed_value already exists")
+		err = fmt.Errorf("hashed_value already exists")
+		return nil, NewValidationError(err, err.Error())
 	}
 
 	return e.entClient.Fact.Create().
@@ -310,7 +311,7 @@ func (e *entImpl) CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption)
 	return nil, fmt.Errorf("not supported plane for audit logs, %s", opt.Plane)
 }
 
-func (e *entImpl) QueryAPIAudit(ctx context.Context, opt *QueryAPIAuditOption) ([]*ent.APIAudit, error) {
+func (e *entImpl) QueryAPIAudits(ctx context.Context, opt *QueryAPIAuditOption) ([]*ent.APIAudit, error) {
 	conds := []predicate.APIAudit{}
 
 	if opt.Plane != nil {

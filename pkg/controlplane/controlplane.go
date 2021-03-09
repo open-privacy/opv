@@ -81,6 +81,7 @@ func (cp *ControlPlane) prepareEcho() {
 	apiv1 := cp.Echo.Group("/api/v1")
 	apiv1.GET("/healthz", cp.Healthz)
 	apiv1.POST("/grants", cp.CreateGrant)
+	apiv1.GET("/api_audits", cp.QueryAPIAudits)
 
 	controlplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.ControlPlanePort)
 	cp.Echo.GET("/swagger/*", echoSwagger.WrapHandler)

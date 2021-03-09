@@ -10,9 +10,14 @@ import (
 )
 
 const (
-	DataplaneName    = "dataplane"
+	// DataplaneName ...
+	DataplaneName = "dataplane"
+
+	// ControlplaneName ...
 	ControlplaneName = "controlplane"
-	ProxyplaneName   = "proxyplane"
+
+	// ProxyplaneName ...
+	ProxyplaneName = "proxyplane"
 )
 
 // Enforcer is an interface that enforces the authz access
@@ -122,7 +127,7 @@ type GrantRepo interface {
 // APIAuditRepo is a repository for APIAudit
 type APIAuditRepo interface {
 	CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption) (*ent.APIAudit, error)
-	QueryAPIAudit(ctx context.Context, opt *QueryAPIAuditOption) ([]*ent.APIAudit, error)
+	QueryAPIAudits(ctx context.Context, opt *QueryAPIAuditOption) ([]*ent.APIAudit, error)
 }
 
 // NewRepoEnforcer creates a new RepoEnforcer
