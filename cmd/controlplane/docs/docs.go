@@ -24,6 +24,77 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api_audits": {
+            "get": {
+                "description": "Query API Audits",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "Query API Audits",
+                "operationId": "query-api-audits",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Domain",
+                        "name": "domain",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Plane",
+                        "name": "plane",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "HTTP Path",
+                        "name": "http_path",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "HTTP Method",
+                        "name": "http_method",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Sent HTTP Status",
+                        "name": "sent_http_status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/apimodel.APIAudit"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/grants": {
             "post": {
                 "description": "Create a grant",
@@ -100,6 +171,35 @@ var doc = `{
         }
     },
     "definitions": {
+        "apimodel.APIAudit": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "http_method": {
+                    "type": "string"
+                },
+                "http_path": {
+                    "type": "string"
+                },
+                "plane": {
+                    "type": "string"
+                },
+                "sent_http_status": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "apimodel.CreateGrant": {
             "type": "object",
             "properties": {
