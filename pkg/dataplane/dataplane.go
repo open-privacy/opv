@@ -77,12 +77,11 @@ func (dp *DataPlane) prepareEcho() {
 	}
 
 	apiv1 := dp.Echo.Group("/api/v1")
-	apiv1.Use(dp.auditLogMiddleware())
+	apiv1.Use(dp.middlewareAPIAudit())
 	apiv1.GET("/healthz", dp.Healthz)
 
 	// Protected by grantValidationMiddleware
-	apiv1.Use(dp.grantValidationMiddleware())
-
+	apiv1.Use(dp.middlewareGrantValidation())
 	apiv1.POST("/scopes", dp.CreateScope)
 	apiv1.GET("/scopes", dp.QueryScopes)
 	apiv1.POST("/facts", dp.CreateFact)
