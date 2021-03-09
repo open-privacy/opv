@@ -54,7 +54,7 @@ func (dp *DataPlane) CreateScope(c echo.Context) error {
 	cs := &apimodel.CreateScope{}
 	err := c.Bind(cs)
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
 	}
 
 	s, err := dp.Repo.CreateScope(c.Request().Context(), &repo.CreateScopeOption{

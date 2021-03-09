@@ -25,7 +25,7 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 	cg := &apimodel.CreateGrant{}
 	err := c.Bind(cg)
 	if err != nil {
-		return cp.Repo.HandleError(ctx, err)
+		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
 	}
 
 	if err := cp.Validator.Struct(cg); err != nil {

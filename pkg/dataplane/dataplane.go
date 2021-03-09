@@ -14,7 +14,6 @@ import (
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
 	"github.com/open-privacy/opv/pkg/apimodel"
-	customMiddlewares "github.com/open-privacy/opv/pkg/middleware"
 )
 
 // DataPlane represents the data plane struct
@@ -69,7 +68,6 @@ func (dp *DataPlane) prepareEcho() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Logger.SetLevel(log.INFO)
-	e.Use(customMiddlewares.ValidateJSONPayload)
 	if config.ENV.DataPlaneCORSEnabled {
 		e.Use(middleware.CORS())
 	}

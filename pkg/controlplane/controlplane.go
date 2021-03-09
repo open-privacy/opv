@@ -16,7 +16,6 @@ import (
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
 	"github.com/open-privacy/opv/pkg/apimodel"
-	customMiddlewares "github.com/open-privacy/opv/pkg/middleware"
 )
 
 // ControlPlane is the control plane for OPV
@@ -71,7 +70,6 @@ func (cp *ControlPlane) prepareEcho() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Logger.SetLevel(log.INFO)
-	e.Use(customMiddlewares.ValidateJSONPayload)
 	if config.ENV.ControlPlaneCORSEnabled {
 		e.Use(middleware.CORS())
 	}

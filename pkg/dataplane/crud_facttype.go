@@ -75,7 +75,7 @@ func (dp *DataPlane) CreateFactType(c echo.Context) error {
 	ctx := c.Request().Context()
 	var cft apimodel.CreateFactType
 	if err := c.Bind(&cft); err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
 	}
 
 	ft, err := dp.Repo.CreateFactType(c.Request().Context(), &repo.CreateFactTypeOption{

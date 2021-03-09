@@ -64,7 +64,7 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 	cf := &apimodel.CreateFact{}
 	err := c.Bind(cf)
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
 	}
 
 	domain := currentDomain(c)
