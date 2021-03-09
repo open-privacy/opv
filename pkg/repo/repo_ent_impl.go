@@ -138,7 +138,7 @@ func (e *entImpl) Close() {
 	e.entClient.Close()
 }
 
-func (e *entImpl) HandleError(ctx context.Context, err error) error {
+func (e *entImpl) HandleError(err error) error {
 	if err == nil {
 		return nil
 	}
@@ -149,17 +149,18 @@ func (e *entImpl) HandleError(ctx context.Context, err error) error {
 	if ent.IsValidationError(err) {
 		return ValidationError{Err: err, Message: "Validation error"}
 	}
-	if _, ok := err.(govalidator.Errors); ok {
-		return ValidationError{Err: err, Message: "Validation error"}
-	}
-	if _, ok := err.(validator.ValidationErrors); ok {
-		return ValidationError{Err: err, Message: "Validation error"}
-	}
 	if ent.IsConstraintError(err) {
 		var errorMessage = strings.ToLower(err.Error())
 		if strings.Contains(errorMessage, "unique constraint") && strings.Contains(errorMessage, "insert node to table \"facts\"") {
 			return ValidationError{Err: err, Message: "fact_value already exists for this scope"}
 		}
+	}
+
+	switch err.(type) {
+	case govalidator.Errors, govalidator.Error, validator.ValidationErrors:
+		return ValidationError{Err: err, Message: "Validation error"}
+	case NotFoundError, ValidationError, UnauthorizedError:
+		return err
 	}
 
 	return err
@@ -184,7 +185,7 @@ func (e *entImpl) AddPolicy(params ...interface{}) (bool, error) {
 }
 
 func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (f *ent.Fact, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	// If scope is empty (nil or custom_id is empty) then just create the fact anyway
 	if opt.Scope == nil || opt.Scope.CustomID == "" {
@@ -226,7 +227,7 @@ func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (f *ent
 }
 
 func (e *entImpl) GetFact(ctx context.Context, opt *GetFactOption) (f *ent.Fact, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	return e.entClient.Fact.Query().WithScope().WithFactType().Where(
 		fact.DeletedAtIsNil(),
@@ -236,7 +237,7 @@ func (e *entImpl) GetFact(ctx context.Context, opt *GetFactOption) (f *ent.Fact,
 }
 
 func (e *entImpl) CreateFactType(ctx context.Context, opt *CreateFactTypeOption) (ft *ent.FactType, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	ft, err = e.entClient.FactType.Query().Where(
 		facttype.DeletedAtIsNil(),
@@ -259,7 +260,7 @@ func (e *entImpl) CreateFactType(ctx context.Context, opt *CreateFactTypeOption)
 }
 
 func (e *entImpl) GetFactTypeBySlug(ctx context.Context, slug string) (ft *ent.FactType, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	return e.entClient.FactType.Query().Where(
 		facttype.DeletedAtIsNil(),
@@ -268,7 +269,7 @@ func (e *entImpl) GetFactTypeBySlug(ctx context.Context, slug string) (ft *ent.F
 }
 
 func (e *entImpl) CreateScope(ctx context.Context, opt *CreateScopeOption) (s *ent.Scope, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	s, err = e.entClient.Scope.Query().Where(
 		scope.DeletedAtIsNil(),
@@ -286,7 +287,7 @@ func (e *entImpl) CreateScope(ctx context.Context, opt *CreateScopeOption) (s *e
 }
 
 func (e *entImpl) GetScope(ctx context.Context, opt *GetScopeOption) (s *ent.Scope, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	return e.entClient.Scope.Query().Where(
 		scope.DeletedAtIsNil(),
@@ -302,7 +303,7 @@ func (e *entImpl) GetScope(ctx context.Context, opt *GetScopeOption) (s *ent.Sco
 //
 // default domain admin token =>  p, hash(token1234), domain, *, *, allow
 func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (g *ent.Grant, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	m := mergeAllowedHTTPMethods(opt.AllowedHTTPMethods)
 	_, err = e.enforcer.AddPolicy(
@@ -326,7 +327,7 @@ func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (g *e
 }
 
 func (e *entImpl) CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption) (a *ent.APIAudit, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	if opt.Plane == DataplaneName || opt.Plane == ControlplaneName || opt.Plane == ProxyplaneName {
 		return e.entClient.APIAudit.Create().
@@ -343,7 +344,7 @@ func (e *entImpl) CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption)
 }
 
 func (e *entImpl) QueryAPIAudits(ctx context.Context, opt *QueryAPIAuditOption) (a []*ent.APIAudit, err error) {
-	defer func() { err = e.HandleError(ctx, err) }()
+	defer func() { err = e.HandleError(err) }()
 
 	conds := []predicate.APIAudit{}
 

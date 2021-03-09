@@ -35,7 +35,7 @@ type Repo interface {
 	GrantRepo
 	APIAuditRepo
 
-	HandleError(ctx context.Context, err error) error
+	HandleError(err error) error
 	Close()
 }
 
