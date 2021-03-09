@@ -2,6 +2,7 @@ package controlplane
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/open-privacy/opv/pkg/apimodel"
@@ -18,25 +19,48 @@ import (
 // @produce json
 // @param domain query string false "Domain"
 // @param plane query string false "Plane"
+// @param http_path query string false "HTTP Path"
+// @param http_method query string false "HTTP Method"
+// @param sent_http_status query int false "Sent HTTP Status"
 // @success 200 {object} []apimodel.APIAudit
 // @failure 400 {object} apimodel.HTTPError
 // @failure 500 {object} apimodel.HTTPError
 // @router /api_audits [get]
 func (cp *ControlPlane) QueryAPIAudits(c echo.Context) error {
 	var (
-		domain *string
-		plane  *string
+		domain         *string
+		plane          *string
+		httpPath       *string
+		httpMethod     *string
+		sentHTTPStatus *int
 	)
-	if d := c.QueryParam("domain"); d != "" {
-		domain = &d
+
+	if p := c.QueryParam("domain"); p != "" {
+		domain = &p
 	}
 	if p := c.QueryParam("plane"); p != "" {
 		plane = &p
 	}
+	if p := c.QueryParam("http_path"); p != "" {
+		httpPath = &p
+	}
+	if p := c.QueryParam("http_method"); p != "" {
+		httpMethod = &p
+	}
+	if p := c.QueryParam("http_method"); p != "" {
+		s, err := strconv.Atoi(p)
+		if err != nil {
+			return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+		}
+		sentHTTPStatus = &s
+	}
 
 	apiAudits, err := cp.Repo.QueryAPIAudits(c.Request().Context(), &repo.QueryAPIAuditOption{
-		Domain: domain,
-		Plane:  plane,
+		Domain:         domain,
+		Plane:          plane,
+		HTTPPath:       httpPath,
+		HTTPMethod:     httpMethod,
+		SentHTTPStatus: sentHTTPStatus,
 	})
 	if err != nil {
 		return cp.Repo.HandleError(c.Request().Context(), err)

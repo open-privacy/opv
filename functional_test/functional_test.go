@@ -3,6 +3,7 @@ package functional_test
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -391,9 +392,17 @@ func TestAPIAuditLogs(t *testing.T) {
 		Test(
 			t,
 			Description("should return the correct audit logs"),
-			Get(TESTENV.ControlplaneHostport+"/api/v1/api_audits?domain="+TESTENV.DefaultDomain),
+			Get(
+				fmt.Sprintf(
+					"%s/api/v1/api_audits?domain=%s&path=%s",
+					TESTENV.ControlplaneHostport,
+					TESTENV.DefaultDomain,
+					url.PathEscape("/api/v1/healthz"),
+				),
+			),
 			Send().Headers("Content-Type").Add("application/json"),
 			Expect().Status().Equal(http.StatusOK),
+			Expect().Body().JSON().Len().GreaterThan(0),
 		)
 	})
 }
