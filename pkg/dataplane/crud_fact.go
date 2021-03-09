@@ -22,19 +22,19 @@ import (
 // @security ApiKeyAuth
 // @param id path string true "Fact ID"
 // @success 200 {object} apimodel.Fact
-// @failure 400 {object} apimodel.HTTPError
-// @failure 500 {object} apimodel.HTTPError
+// @failure 400 {object} echo.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /facts/{id} [get]
 func (dp *DataPlane) ShowFact(c echo.Context) error {
 	ctx := c.Request().Context()
 	f, err := dp.Repo.GetFact(ctx, &repo.GetFactOption{FactID: c.Param("id"), Domain: currentDomain(c)})
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	value, err := dp.Encryptor.Decrypt(f.Edges.Scope.Nonce, f.EncryptedValue)
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	return c.JSON(http.StatusOK, apimodel.Fact{
@@ -56,15 +56,15 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 // @security ApiKeyAuth
 // @param createFact body apimodel.CreateFact true "Create Fact Parameters"
 // @success 200 {object} apimodel.Fact
-// @failure 400 {object} apimodel.HTTPError
-// @failure 500 {object} apimodel.HTTPError
+// @failure 400 {object} echo.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /facts [post]
 func (dp *DataPlane) CreateFact(c echo.Context) error {
 	ctx := c.Request().Context()
 	cf := &apimodel.CreateFact{}
 	err := c.Bind(cf)
 	if err != nil {
-		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
+		return apimodel.NewHTTPError(err)
 	}
 
 	domain := currentDomain(c)
@@ -74,7 +74,7 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		Domain:        domain,
 	})
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	ft, err := dp.Repo.CreateFactType(ctx, &repo.CreateFactTypeOption{
@@ -83,16 +83,16 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 		BuiltIn:            true,
 	})
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	if err := dp.validateFactType(ctx, ft.Slug, cf.Value); err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	encryptedValue, err := dp.Encryptor.Encrypt(s.Nonce, cf.Value)
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 	hashedValue := dp.Hasher.Hash(cf.Value, domain)
 
@@ -105,7 +105,7 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 	})
 
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	return c.JSON(http.StatusOK, apimodel.Fact{

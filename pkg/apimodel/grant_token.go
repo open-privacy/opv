@@ -2,9 +2,11 @@ package apimodel
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/dchest/uniuri"
+	"github.com/labstack/echo/v4"
 	"github.com/open-privacy/opv/pkg/crypto"
 )
 
@@ -39,7 +41,7 @@ func NewToken(version string, domain string) (*GrantToken, error) {
 			secret:  secret,
 		}
 	default:
-		return nil, fmt.Errorf("failed to run NewToken, invalid version %s", version)
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "invalid version in the grant token")
 	}
 
 	return t, nil

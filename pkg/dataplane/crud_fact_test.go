@@ -3,8 +3,13 @@ package dataplane
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
+	"github.com/dchest/uniuri"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -87,4 +92,36 @@ func TestValidateFactType(t *testing.T) {
 		err := dp.validateFactType(ctx, test.factTypeSlug, test.factValue)
 		assert.Equal(t, test.valid, err == nil, fmt.Sprintf("err:%s, test:%+v", err, test))
 	}
+}
+
+func TestCreateFact(t *testing.T) {
+	dp := MustNewDataPlane()
+
+	t.Run("happy code path", func(t *testing.T) {
+		scopeID := uniuri.NewLen(uniuri.UUIDLen)
+		factTypeSlug := "ssn"
+		value := "123-45-6789"
+
+		e := echo.New()
+		req := httptest.NewRequest(
+			http.MethodPost,
+			"/api/v1/facts",
+			strings.NewReader(
+				fmt.Sprintf(
+					`{"scope_custom_id": "%v", "fact_type_slug": "%v", "value": "%v"}`,
+					scopeID,
+					factTypeSlug,
+					value,
+				),
+			),
+		)
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+		c.Set(contextAuthzDom, "example.com")
+		err := dp.CreateFact(c)
+
+		assert.NoError(t, err)
+		assert.Equal(t, 200, rec.Result().StatusCode)
+	})
 }

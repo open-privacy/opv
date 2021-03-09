@@ -139,37 +139,53 @@ func (e *entImpl) Close() {
 }
 
 func (e *entImpl) HandleError(ctx context.Context, err error) error {
+	if err == nil {
+		return nil
+	}
+
 	if ent.IsNotFound(err) {
-		return NewNotFoundError(err)
+		return NotFoundError{Err: err}
 	}
 	if ent.IsValidationError(err) {
-		return NewValidationError(err, "Validation error")
+		return ValidationError{Err: err, Message: "Validation error"}
 	}
 	if _, ok := err.(govalidator.Errors); ok {
-		return NewValidationError(err, "Validation error")
+		return ValidationError{Err: err, Message: "Validation error"}
 	}
 	if _, ok := err.(validator.ValidationErrors); ok {
-		return NewValidationError(err, "Validation error")
+		return ValidationError{Err: err, Message: "Validation error"}
 	}
 	if ent.IsConstraintError(err) {
 		var errorMessage = strings.ToLower(err.Error())
 		if strings.Contains(errorMessage, "unique constraint") && strings.Contains(errorMessage, "insert node to table \"facts\"") {
-			return NewValidationError(err, "fact_value already exists for this scope")
+			return ValidationError{Err: err, Message: "fact_value already exists for this scope"}
 		}
 	}
 
 	return err
 }
 
-func (e *entImpl) Enforce(rvals ...interface{}) (bool, error) {
-	return e.enforcer.Enforce(rvals...)
+func (e *entImpl) Enforce(rvals ...interface{}) (result bool, err error) {
+	result, err = e.enforcer.Enforce(rvals...)
+	if err != nil {
+		return false, UnauthorizedError{Err: err}
+	}
+
+	return result, nil
 }
 
 func (e *entImpl) AddPolicy(params ...interface{}) (bool, error) {
-	return e.enforcer.AddPolicy(params...)
+	added, err := e.enforcer.AddPolicy(params...)
+
+	if err != nil {
+		return false, ValidationError{Err: err}
+	}
+	return added, nil
 }
 
-func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (*ent.Fact, error) {
+func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (f *ent.Fact, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
 	// If scope is empty (nil or custom_id is empty) then just create the fact anyway
 	if opt.Scope == nil || opt.Scope.CustomID == "" {
 		return e.entClient.Fact.Create().
@@ -197,7 +213,7 @@ func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (*ent.F
 	}
 	if exists {
 		err = fmt.Errorf("hashed_value already exists")
-		return nil, NewValidationError(err, err.Error())
+		return nil, ValidationError{Err: err, Message: err.Error()}
 	}
 
 	return e.entClient.Fact.Create().
@@ -209,7 +225,9 @@ func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (*ent.F
 		Save(ctx)
 }
 
-func (e *entImpl) GetFact(ctx context.Context, opt *GetFactOption) (*ent.Fact, error) {
+func (e *entImpl) GetFact(ctx context.Context, opt *GetFactOption) (f *ent.Fact, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
 	return e.entClient.Fact.Query().WithScope().WithFactType().Where(
 		fact.DeletedAtIsNil(),
 		fact.ID(opt.FactID),
@@ -217,8 +235,14 @@ func (e *entImpl) GetFact(ctx context.Context, opt *GetFactOption) (*ent.Fact, e
 	).Only(ctx)
 }
 
-func (e *entImpl) CreateFactType(ctx context.Context, opt *CreateFactTypeOption) (*ent.FactType, error) {
-	ft, err := e.GetFactTypeBySlug(ctx, opt.FactTypeSlug)
+func (e *entImpl) CreateFactType(ctx context.Context, opt *CreateFactTypeOption) (ft *ent.FactType, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
+	ft, err = e.entClient.FactType.Query().Where(
+		facttype.DeletedAtIsNil(),
+		facttype.Slug(opt.FactTypeSlug),
+	).Only(ctx)
+
 	if ent.IsNotFound(err) {
 		ft, err = e.entClient.FactType.Create().
 			SetBuiltIn(opt.BuiltIn).
@@ -234,34 +258,36 @@ func (e *entImpl) CreateFactType(ctx context.Context, opt *CreateFactTypeOption)
 	return ft, err
 }
 
-func (e *entImpl) GetFactTypeBySlug(ctx context.Context, slug string) (*ent.FactType, error) {
+func (e *entImpl) GetFactTypeBySlug(ctx context.Context, slug string) (ft *ent.FactType, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
 	return e.entClient.FactType.Query().Where(
 		facttype.DeletedAtIsNil(),
 		facttype.Slug(slug),
 	).Only(ctx)
 }
 
-func (e *entImpl) CreateScope(ctx context.Context, opt *CreateScopeOption) (*ent.Scope, error) {
-	s, err := e.GetScope(ctx, &GetScopeOption{
-		ScopeCustomID: opt.ScopeCustomID,
-		Domain:        opt.Domain,
-	})
+func (e *entImpl) CreateScope(ctx context.Context, opt *CreateScopeOption) (s *ent.Scope, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
+	s, err = e.entClient.Scope.Query().Where(
+		scope.DeletedAtIsNil(),
+		scope.CustomID(opt.ScopeCustomID),
+		scope.Domain(opt.Domain),
+	).Only(ctx)
 
 	if ent.IsNotFound(err) {
-		s, err = e.entClient.Scope.Create().
+		return e.entClient.Scope.Create().
 			SetCustomID(opt.ScopeCustomID).
 			SetDomain(opt.Domain).
 			Save(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return s, nil
 	}
-
 	return s, err
 }
 
-func (e *entImpl) GetScope(ctx context.Context, opt *GetScopeOption) (*ent.Scope, error) {
+func (e *entImpl) GetScope(ctx context.Context, opt *GetScopeOption) (s *ent.Scope, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
 	return e.entClient.Scope.Query().Where(
 		scope.DeletedAtIsNil(),
 		scope.CustomID(opt.ScopeCustomID),
@@ -269,14 +295,17 @@ func (e *entImpl) GetScope(ctx context.Context, opt *GetScopeOption) (*ent.Scope
 	).Only(ctx)
 }
 
-func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (*ent.Grant, error) {
-	// grouping policy for RBAC with domain pattern
-	// example: https://github.com/casbin/casbin/blob/master/examples/rbac_with_domain_pattern_policy.csv
-	//
-	// default domain admin token =>  p, hash(token1234), domain, *, *, allow
+// CreateGrant creats a new grant in the policy database
+//
+// grouping policy for RBAC with domain pattern
+// example: https://github.com/casbin/casbin/blob/master/examples/rbac_with_domain_pattern_policy.csv
+//
+// default domain admin token =>  p, hash(token1234), domain, *, *, allow
+func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (g *ent.Grant, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
 
 	m := mergeAllowedHTTPMethods(opt.AllowedHTTPMethods)
-	_, err := e.enforcer.AddPolicy(
+	_, err = e.enforcer.AddPolicy(
 		opt.HashedGrantToken,
 		opt.Domain,
 		"*",
@@ -296,7 +325,9 @@ func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (*ent
 	}, nil
 }
 
-func (e *entImpl) CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption) (*ent.APIAudit, error) {
+func (e *entImpl) CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption) (a *ent.APIAudit, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
 	if opt.Plane == DataplaneName || opt.Plane == ControlplaneName || opt.Plane == ProxyplaneName {
 		return e.entClient.APIAudit.Create().
 			SetPlane(opt.Plane).
@@ -311,7 +342,9 @@ func (e *entImpl) CreateAPIAudit(ctx context.Context, opt *CreateAPIAuditOption)
 	return nil, fmt.Errorf("not supported plane for audit logs, %s", opt.Plane)
 }
 
-func (e *entImpl) QueryAPIAudits(ctx context.Context, opt *QueryAPIAuditOption) ([]*ent.APIAudit, error) {
+func (e *entImpl) QueryAPIAudits(ctx context.Context, opt *QueryAPIAuditOption) (a []*ent.APIAudit, err error) {
+	defer func() { err = e.HandleError(ctx, err) }()
+
 	conds := []predicate.APIAudit{}
 
 	if opt.Plane != nil {

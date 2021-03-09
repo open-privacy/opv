@@ -67,13 +67,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     }
                 }
@@ -117,13 +117,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     }
                 }
@@ -169,13 +169,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     }
                 }
@@ -219,13 +219,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     }
                 }
@@ -252,7 +252,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     }
                 }
@@ -295,19 +295,19 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     }
                 }
@@ -351,13 +351,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apimodel.HTTPError"
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     }
                 }
@@ -440,17 +440,6 @@ var doc = `{
                 }
             }
         },
-        "apimodel.HTTPError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "apimodel.Healthz": {
             "type": "object",
             "properties": {
@@ -467,6 +456,14 @@ var doc = `{
                 },
                 "id": {
                     "type": "string"
+                }
+            }
+        },
+        "echo.HTTPError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "object"
                 }
             }
         }

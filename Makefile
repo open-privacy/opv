@@ -25,7 +25,7 @@ local_functional_test:
 	go test ./functional_test/...
 
 run: build
-	$(MAKE) -j _run_controlplane _run_dataplane
+	OPV_DB_CONNECTION_STR="_opv.sqlite?cache=shared&_fk=1" $(MAKE) -j _run_controlplane _run_dataplane
 
 _run_dataplane:
 	./build/dataplane

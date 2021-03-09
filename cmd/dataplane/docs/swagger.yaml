@@ -49,13 +49,6 @@ definitions:
       validation:
         type: string
     type: object
-  apimodel.HTTPError:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-    type: object
   apimodel.Healthz:
     properties:
       status:
@@ -67,6 +60,11 @@ definitions:
         type: string
       id:
         type: string
+    type: object
+  echo.HTTPError:
+    properties:
+      message:
+        type: object
     type: object
 host: localhost
 info:
@@ -100,11 +98,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       security:
       - ApiKeyAuth: []
       summary: Query fact types
@@ -132,11 +130,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       security:
       - ApiKeyAuth: []
       summary: Create a fact type
@@ -165,11 +163,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       security:
       - ApiKeyAuth: []
       summary: Create a fact
@@ -197,11 +195,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       security:
       - ApiKeyAuth: []
       summary: Show a fact
@@ -221,7 +219,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       summary: Show the health of the dataplane
       tags:
       - Healthz
@@ -246,15 +244,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       security:
       - ApiKeyAuth: []
       summary: Query scopes
@@ -282,11 +280,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       security:
       - ApiKeyAuth: []
       summary: Create a scope

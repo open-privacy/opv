@@ -63,6 +63,7 @@ func (cp *ControlPlane) Stop() {
 func (cp *ControlPlane) prepareEcho() {
 	cp.Echo = echo.New()
 	cp.Logger = cp.Echo.Logger
+	cp.Logger.SetLevel(log.INFO)
 	cp.Echo.HideBanner = true
 	cp.Echo.HidePort = true
 	cp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler

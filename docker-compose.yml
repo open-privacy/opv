@@ -12,8 +12,8 @@ services:
       - /bin/bash
       - -c
       - |
-        swag init --parseDependency -d ./cmd/controlplane -o ./cmd/controlplane/docs
-        swag init --parseDependency -d ./cmd/dataplane    -o ./cmd/dataplane/docs
+        swag init --parseDependency --parseVendor -d ./cmd/controlplane -o ./cmd/controlplane/docs
+        swag init --parseDependency --parseVendor -d ./cmd/dataplane    -o ./cmd/dataplane/docs
   ent:
     build:
       context: .

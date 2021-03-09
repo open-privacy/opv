@@ -2,7 +2,16 @@ package apimodel
 
 import "time"
 
-// APIAudit ...
+// QueryAPIAudit is the query struct
+type QueryAPIAudit struct {
+	Domain         *string `query:"domain"`
+	Plane          *string `query:"plane"`
+	HTTPPath       *string `query:"http_path"`
+	HTTPMethod     *string `query:"http_method"`
+	SentHTTPStatus *int    `query:"sent_http_status"`
+}
+
+// APIAudit is the response apimodel
 type APIAudit struct {
 	CreatedAt        time.Time `json:"created_at,omitempty"`
 	UpdatedAt        time.Time `json:"updated_at,omitempty"`

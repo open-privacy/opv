@@ -39,17 +39,15 @@ definitions:
       token:
         type: string
     type: object
-  apimodel.HTTPError:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-    type: object
   apimodel.Healthz:
     properties:
       status:
         type: string
+    type: object
+  echo.HTTPError:
+    properties:
+      message:
+        type: object
     type: object
 host: localhost
 info:
@@ -97,11 +95,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       summary: Query API Audits
       tags:
       - Audit
@@ -128,11 +126,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       summary: Create a grant
       tags:
       - Grant
@@ -150,7 +148,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       summary: Show the health of the controlplane
       tags:
       - Healthz

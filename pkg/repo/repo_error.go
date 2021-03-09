@@ -19,12 +19,11 @@ func (err ValidationError) Error() string {
 	return err.Message
 }
 
-// NewNotFoundError ...
-func NewNotFoundError(err error) error {
-	return &NotFoundError{Err: err}
+// UnauthorizedError ...
+type UnauthorizedError struct {
+	Err error
 }
 
-// NewValidationError ...
-func NewValidationError(err error, message string) error {
-	return &ValidationError{Err: err, Message: message}
+func (err UnauthorizedError) Error() string {
+	return "Unauthorized"
 }

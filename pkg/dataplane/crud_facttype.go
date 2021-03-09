@@ -19,15 +19,14 @@ import (
 // @param slug query string false "Fact Type Slug"
 // @param builtin query boolean false "Builtin Fact Type Slug"
 // @success 200 {object} []apimodel.FactType
-// @failure 400 {object} apimodel.HTTPError
-// @failure 500 {object} apimodel.HTTPError
+// @failure 400 {object} echo.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /fact_types [get]
 func (dp *DataPlane) QueryFactTypes(c echo.Context) error {
 	if c.QueryParam("slug") != "" {
-		ctx := c.Request().Context()
 		ft, err := dp.Repo.GetFactTypeBySlug(c.Request().Context(), c.QueryParam("slug"))
 		if err != nil {
-			return dp.Repo.HandleError(ctx, err)
+			return apimodel.NewHTTPError(err)
 		}
 		return c.JSON(http.StatusOK, []apimodel.FactType{
 			{
@@ -68,14 +67,13 @@ func (dp *DataPlane) queryBuiltInFactTypes() []apimodel.FactType {
 // @security ApiKeyAuth
 // @param createFact body apimodel.CreateFactType true "Create Fact Type Parameters"
 // @success 200 {object} apimodel.CreateFactType
-// @failure 400 {object} apimodel.HTTPError
-// @failure 500 {object} apimodel.HTTPError
+// @failure 400 {object} echo.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /fact_types [post]
 func (dp *DataPlane) CreateFactType(c echo.Context) error {
-	ctx := c.Request().Context()
 	var cft apimodel.CreateFactType
 	if err := c.Bind(&cft); err != nil {
-		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
+		return apimodel.NewHTTPError(err)
 	}
 
 	ft, err := dp.Repo.CreateFactType(c.Request().Context(), &repo.CreateFactTypeOption{
@@ -84,7 +82,7 @@ func (dp *DataPlane) CreateFactType(c echo.Context) error {
 		BuiltIn:            true,
 	})
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	return c.JSON(http.StatusOK, apimodel.FactType{

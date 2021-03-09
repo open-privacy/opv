@@ -9,7 +9,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
-	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
@@ -62,6 +61,7 @@ func (dp *DataPlane) Stop() {
 func (dp *DataPlane) prepareEcho() {
 	dp.Echo = echo.New()
 	dp.Logger = dp.Echo.Logger
+	dp.Logger.SetLevel(log.INFO)
 	dp.Echo.HideBanner = true
 	dp.Echo.HidePort = true
 	dp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler
