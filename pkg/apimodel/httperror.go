@@ -4,39 +4,53 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/repo"
 )
 
-// NewHTTPError creates a new HTTPError
-func NewHTTPError(c echo.Context, err error, status int) error {
-	er := HTTPError{
-		Code:    status,
-		Message: err.Error(),
-	}
-	return c.JSON(status, er)
-}
-
-// NewEntError creates an error directly from entgo framework
-// The status code is based on the ent error type
-func NewEntError(c echo.Context, err error) error {
-	if err == nil {
-		return nil
-	}
-	if ent.IsNotFound(err) {
-		return NewHTTPError(c, err, http.StatusNotFound)
-	}
-	if ent.IsValidationError(err) {
-		return NewHTTPError(c, err, http.StatusBadRequest)
-	}
-	if ent.IsConstraintError(err) {
-		return NewHTTPError(c, err, http.StatusBadRequest)
-	}
-
-	return NewHTTPError(c, err, http.StatusInternalServerError)
-}
+var (
+	ErrInternalServerError = HTTPError{Message: "Internal server error", Code: http.StatusInternalServerError}
+	ErrNotFound            = HTTPError{Message: "Resource not found", Code: http.StatusInternalServerError}
+	ErrUnauthorized        = HTTPError{Message: "Unnauthorized", Code: http.StatusUnauthorized}
+	ErrBadRequest          = func(message string) HTTPError { return HTTPError{Message: message, Code: http.StatusBadRequest} }
+	ErrJSONMalformatted    = ErrBadRequest("JSON Malformatted")
+)
 
 // HTTPError struct
 type HTTPError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+func (he *HTTPError) Error() string {
+	return he.Message
+}
+
+type HTTPErrorResponse struct {
+	Error    HTTPError    `json:"error"`
+}
+
+func HTTPErrorHandler(err error, c echo.Context) {
+	FormatHTTPError(c, HTTPErrorFactory(err))
+}
+
+func FormatHTTPError(c echo.Context, err HTTPError) error {
+	er := HTTPErrorResponse{Error: err}
+	return c.JSON(err.Code, er)
+}
+
+func HTTPErrorFactory(err error) HTTPError {
+	switch err.(type) {
+	default:
+		return ErrInternalServerError
+	case *echo.HTTPError:
+		if (err == echo.ErrUnauthorized) {
+			return ErrUnauthorized
+		} else {
+			return ErrInternalServerError
+		}
+	case *repo.NotFoundError:
+		return ErrNotFound
+	case *repo.ValidationError:
+		return ErrBadRequest(err.Error())
+	}
 }

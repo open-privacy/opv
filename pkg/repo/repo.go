@@ -23,6 +23,7 @@ type Repo interface {
 	ScopeRepo
 	GrantRepo
 
+	HandleError(ctx context.Context, err error) error
 	Close()
 }
 

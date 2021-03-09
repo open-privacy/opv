@@ -22,6 +22,8 @@ import (
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/migrate"
 	"github.com/open-privacy/opv/pkg/ent/scope"
+	"github.com/asaskevich/govalidator"
+	"github.com/go-playground/validator/v10"
 )
 
 const defaultCasbinModel = `
@@ -132,6 +134,28 @@ func newEntImpl() (*entImpl, error) {
 
 func (e *entImpl) Close() {
 	e.entClient.Close()
+}
+
+func (e *entImpl) HandleError(ctx context.Context, err error) error {
+	if ent.IsNotFound(err) {
+		return NewNotFoundError(err)
+	}
+	if ent.IsValidationError(err) {
+		return NewValidationError(err, "Validation error")
+	}
+	if _, ok := err.(govalidator.Errors); ok {
+		return NewValidationError(err, "Validation error")
+	}
+	if _, ok := err.(validator.ValidationErrors); ok {
+		return NewValidationError(err, "Validation error")
+	}
+	if ent.IsConstraintError(err) {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: facts.hashed_value, facts.scope_facts, facts.fact_type_facts") {
+			return NewValidationError(err, "fact_value already exists for this scope")
+		}
+	}
+
+	return err;
 }
 
 func (e *entImpl) Enforce(rvals ...interface{}) (bool, error) {

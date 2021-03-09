@@ -13,6 +13,7 @@ import (
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
+	"github.com/open-privacy/opv/pkg/apimodel"
 )
 
 // DataPlane represents the data plane struct
@@ -62,6 +63,7 @@ func (dp *DataPlane) prepareEcho() {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+	e.HTTPErrorHandler = apimodel.HTTPErrorHandler
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
@@ -75,6 +77,7 @@ func (dp *DataPlane) prepareEcho() {
 
 	// Protected by grantValidationMiddleware
 	apiv1.Use(dp.grantValidationMiddleware())
+
 	apiv1.POST("/scopes", dp.CreateScope)
 	apiv1.GET("/scopes", dp.QueryScopes)
 	apiv1.POST("/facts", dp.CreateFact)

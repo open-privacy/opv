@@ -22,12 +22,13 @@ import (
 // @failure 500 {object} apimodel.HTTPError
 // @router /scopes [get]
 func (dp *DataPlane) QueryScopes(c echo.Context) error {
+	ctx := c.Request().Context()
 	s, err := dp.Repo.GetScope(c.Request().Context(), &repo.GetScopeOption{
 		ScopeCustomID: c.QueryParam("custom_id"),
 		Domain:        currentDomain(c),
 	})
 	if err != nil {
-		return apimodel.NewEntError(c, err)
+		return dp.Repo.HandleError(ctx, err)
 	}
 	return c.JSON(http.StatusOK, apimodel.Scope{
 		ID:       s.ID,
@@ -49,16 +50,21 @@ func (dp *DataPlane) QueryScopes(c echo.Context) error {
 // @failure 500 {object} apimodel.HTTPError
 // @router /scopes [post]
 func (dp *DataPlane) CreateScope(c echo.Context) error {
+	ctx := c.Request().Context()
 	cs := &apimodel.CreateScope{}
 	err := c.Bind(cs)
 	if err != nil {
-		return apimodel.NewHTTPError(c, err, http.StatusBadRequest)
+		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
 	}
 
 	s, err := dp.Repo.CreateScope(c.Request().Context(), &repo.CreateScopeOption{
 		ScopeCustomID: cs.CustomID,
 		Domain:        currentDomain(c),
 	})
+
+	if err != nil {
+		return dp.Repo.HandleError(ctx, err)
+	}
 
 	return c.JSON(http.StatusOK, apimodel.Scope{
 		ID:       s.ID,
