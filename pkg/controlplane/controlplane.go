@@ -90,9 +90,6 @@ func (cp *ControlPlane) preparePrometheus() {
 	if !config.ENV.PrometheusEnabled {
 		return
 	}
-	if !config.ENV.PrometheusEnabled {
-		return
-	}
 
 	p := prometheus.NewPrometheus("opv_controlplane", nil)
 	p.Use(cp.Echo)
