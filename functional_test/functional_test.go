@@ -27,6 +27,10 @@ var TESTENV = struct {
 	DefaultDomain        string `env:"TESTENV_DEFAULT_DOMAIN" envDefault:"example.com"`
 }{}
 
+func generateScopeID() string {
+	return uniuri.NewLen(uniuri.UUIDLen)
+}
+
 var assertGetToken = func(t *testing.T, allowedHttpMethods []string) string {
 	var token string
 	Test(
@@ -47,9 +51,8 @@ var assertGetToken = func(t *testing.T, allowedHttpMethods []string) string {
 	return token
 }
 
-var assertCreateFact = func(t *testing.T, token, factValue string) string {
+var assertCreateFact = func(t *testing.T, token, scopeID string, factValue string) string {
 	var factID string
-	scopeID := uniuri.NewLen(uniuri.UUIDLen)
 
 	Test(
 		t,
@@ -142,7 +145,7 @@ func TestCreateFact(t *testing.T) {
 	token := assertGetToken(t, []string{"POST"})
 
 	t.Run("happy code path", func(t *testing.T) {
-		scopeID := uniuri.NewLen(uniuri.UUIDLen)
+		scopeID := generateScopeID()
 		factTypeSlug := "ssn"
 
 		Test(
@@ -164,9 +167,30 @@ func TestCreateFact(t *testing.T) {
 		)
 	})
 
+	t.Run("fact uniqueness", func(t *testing.T) {
+		factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
+		scopeID := generateScopeID()
+
+		assertCreateFact(t, token, scopeID, factValue)
+		Test(
+			t,
+			Description("Post to dataplane to create a fact"),
+			Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id":         scopeID,
+				"fact_type_slug":  "ascii",
+				"value":           factValue,
+			}),
+
+			Expect().Status().Equal(http.StatusBadRequest),
+		)
+	})
+
 	t.Run("ssn fact type slug", func(t *testing.T) {
 		t.Run("valid ssns", func(t *testing.T) {
-			scopeID := uniuri.NewLen(uniuri.UUIDLen)
+			scopeID := generateScopeID()
 			factTypeSlug := "ssn"
 			validSSNs := []string{
 				"123-45-6789",
@@ -194,7 +218,7 @@ func TestCreateFact(t *testing.T) {
 		})
 
 		t.Run("error with invalid ssn", func(t *testing.T) {
-			scopeID := uniuri.NewLen(uniuri.UUIDLen)
+			scopeID := generateScopeID()
 			factTypeSlug := "ssn"
 			invalidSSNs := []string{
 				"invalid",
@@ -224,7 +248,8 @@ func TestCreateFact(t *testing.T) {
 func TestGetFact(t *testing.T) {
 	token := assertGetToken(t, []string{"POST", "GET"})
 	factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
-	factID := assertCreateFact(t, token, factValue)
+	scopeID := generateScopeID()
+	factID := assertCreateFact(t, token, scopeID, factValue)
 
 	t.Run("happy code path", func(t *testing.T) {
 		Test(
