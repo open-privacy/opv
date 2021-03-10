@@ -15,6 +15,7 @@ VOLUME ["/data"]
 
 
 ENV OPV_DB_DRIVER=sqlite3
+ENV OPV_HOST=0.0.0.0
 ENV OPV_DB_CONNECTION_STR=/data/_opv.sqlite?cache=shared&_fk=1
 
 COPY --from=go_builder /go/src/github.com/open-privacy/opv/build/dataplane /usr/local/bin/dataplane

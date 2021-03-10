@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 3s
+  scrape_timeout: 1s
+
+scrape_configs:
+  - job_name: opv-metrics
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "opv_dataplane:28000"
+          - "opv_controlplane:27999"

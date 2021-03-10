@@ -4,18 +4,17 @@ import (
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
-	_ "github.com/mattn/go-sqlite3" // sqlite3 driver
-
+	"github.com/labstack/echo-contrib/pprof"
+	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	echoSwagger "github.com/swaggo/echo-swagger"
-
 	controlplanedocs "github.com/open-privacy/opv/cmd/controlplane/docs"
+	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
-	"github.com/open-privacy/opv/pkg/apimodel"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // ControlPlane is the control plane for OPV
@@ -62,25 +61,36 @@ func (cp *ControlPlane) Stop() {
 }
 
 func (cp *ControlPlane) prepareEcho() {
-	e := echo.New()
-	e.HideBanner = true
-	e.HidePort = true
-	e.HTTPErrorHandler = apimodel.HTTPErrorHandler
-	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
-	e.Logger.SetLevel(log.INFO)
+	cp.Echo = echo.New()
+	cp.Logger = cp.Echo.Logger
+	cp.Echo.HideBanner = true
+	cp.Echo.HidePort = true
+	cp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler
+	cp.Echo.Logger.SetLevel(log.INFO)
+
+	pprof.Register(cp.Echo)
+	cp.Echo.Pre(middleware.RemoveTrailingSlash())
+	cp.Echo.Use(middleware.Recover())
+	cp.Echo.Use(middleware.Logger())
+	cp.preparePrometheus()
+
 	if config.ENV.ControlPlaneCORSEnabled {
-		e.Use(middleware.CORS())
+		cp.Echo.Use(middleware.CORS())
 	}
 
-	apiv1 := e.Group("/api/v1")
+	apiv1 := cp.Echo.Group("/api/v1")
 	apiv1.GET("/healthz", cp.Healthz)
 	apiv1.POST("/grants", cp.CreateGrant)
 
 	controlplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.ControlPlanePort)
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	cp.Echo.GET("/swagger/*", echoSwagger.WrapHandler)
+}
 
-	cp.Echo = e
-	cp.Logger = e.Logger
+func (cp *ControlPlane) preparePrometheus() {
+	if !config.ENV.PrometheusEnabled {
+		return
+	}
+
+	p := prometheus.NewPrometheus("opv_controlplane", nil)
+	p.Use(cp.Echo)
 }

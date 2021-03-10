@@ -14,11 +14,15 @@ func init() {
 
 // ENV is the whole configuration of the app
 var ENV = struct {
-	Host                      string        `env:"OPV_HOST" envDefault:"localhost"`
-	DBDriver                  string        `env:"OPV_DB_DRIVER" envDefault:"sqlite3"`
-	DBSetupRetryAttempts      uint          `env:"OPV_DB_SETUP_RETRY_ATTEMPTS" envDefault:"9"`
-	DBSetupRetryDelay         time.Duration `env:"OPV_DB_SETUP_RETRY_DELAY" envDefault:"100ms"`
-	DBConnectionStr           string        `env:"OPV_DB_CONNECTION_STR" envDefault:"_opv.sqlite?cache=shared&_fk=1"`
+	Host string `env:"OPV_HOST" envDefault:"localhost"`
+
+	DBDriver             string        `env:"OPV_DB_DRIVER" envDefault:"sqlite3"`
+	DBSetupRetryAttempts uint          `env:"OPV_DB_SETUP_RETRY_ATTEMPTS" envDefault:"9"`
+	DBSetupRetryDelay    time.Duration `env:"OPV_DB_SETUP_RETRY_DELAY" envDefault:"100ms"`
+	DBConnectionStr      string        `env:"OPV_DB_CONNECTION_STR" envDefault:"_opv.sqlite?cache=shared&_fk=1"`
+
+	PrometheusEnabled bool `env:"OPV_PROMETHEUS_ENABLED" envDefault:"true"`
+
 	GracefullyShutdownTimeout time.Duration `env:"OPV_GRACEFULLY_SHUTDOWN_TIMEOUT" envDefault:"3s"`
 
 	EncryptorName          string   `env:"OPV_ENCRYPTOR_NAME" envDefault:"secretbox"`
