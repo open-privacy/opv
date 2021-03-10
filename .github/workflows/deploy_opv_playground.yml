@@ -1,0 +1,17 @@
+name: Deploy OPV Playground
+on:
+  workflow_run:
+    workflows: ["Publish Docker image"]
+    branches: [main]
+    types:
+      - completed
+jobs:
+  deploy_opv_playground:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy OPV Playground
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PLAYGROUND_REPO_DISPATCH_TOKEN }}
+          repository: open-privacy/opv-heroku-playground
+          event-type: deploy_opv_playground
