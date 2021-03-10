@@ -23,7 +23,7 @@ type Fact struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// HashedValue holds the value of the "hashed_value" field.
 	HashedValue string `json:"-"`
 	// EncryptedValue holds the value of the "encrypted_value" field.
@@ -126,7 +126,8 @@ func (f *Fact) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				f.DeletedAt = value.Time
+				f.DeletedAt = new(time.Time)
+				*f.DeletedAt = value.Time
 			}
 		case fact.FieldHashedValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -202,8 +203,10 @@ func (f *Fact) String() string {
 	builder.WriteString(f.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(f.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(f.DeletedAt.Format(time.ANSIC))
+	if v := f.DeletedAt; v != nil {
+		builder.WriteString(", deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", hashed_value=<sensitive>")
 	builder.WriteString(", encrypted_value=<sensitive>")
 	builder.WriteString(", domain=")

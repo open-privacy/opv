@@ -66,7 +66,6 @@ func mapAPIAudits(r []*ent.APIAudit) []apimodel.APIAudit {
 		ret = append(ret, apimodel.APIAudit{
 			CreatedAt:        item.CreatedAt,
 			UpdatedAt:        item.UpdatedAt,
-			DeletedAt:        item.DeletedAt,
 			Plane:            item.Plane,
 			HashedGrantToken: item.HashedGrantToken,
 			Domain:           item.Domain,

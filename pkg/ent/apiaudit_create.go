@@ -285,7 +285,7 @@ func (aac *APIAuditCreate) createSpec() (*APIAudit, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: apiaudit.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := aac.mutation.Plane(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

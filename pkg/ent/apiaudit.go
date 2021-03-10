@@ -21,7 +21,7 @@ type APIAudit struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Plane holds the value of the "plane" field.
 	Plane string `json:"plane,omitempty"`
 	// HashedGrantToken holds the value of the "hashed_grant_token" field.
@@ -84,7 +84,8 @@ func (aa *APIAudit) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				aa.DeletedAt = value.Time
+				aa.DeletedAt = new(time.Time)
+				*aa.DeletedAt = value.Time
 			}
 		case apiaudit.FieldPlane:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -154,8 +155,10 @@ func (aa *APIAudit) String() string {
 	builder.WriteString(aa.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(aa.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(aa.DeletedAt.Format(time.ANSIC))
+	if v := aa.DeletedAt; v != nil {
+		builder.WriteString(", deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", plane=")
 	builder.WriteString(aa.Plane)
 	builder.WriteString(", hashed_grant_token=<sensitive>")

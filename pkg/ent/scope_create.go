@@ -261,7 +261,7 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: scope.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := sc.mutation.CustomID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

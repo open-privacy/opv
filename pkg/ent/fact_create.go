@@ -273,7 +273,7 @@ func (fc *FactCreate) createSpec() (*Fact, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: fact.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := fc.mutation.HashedValue(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
