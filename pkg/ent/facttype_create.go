@@ -49,6 +49,20 @@ func (ftc *FactTypeCreate) SetNillableUpdatedAt(t *time.Time) *FactTypeCreate {
 	return ftc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (ftc *FactTypeCreate) SetDeletedAt(t time.Time) *FactTypeCreate {
+	ftc.mutation.SetDeletedAt(t)
+	return ftc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ftc *FactTypeCreate) SetNillableDeletedAt(t *time.Time) *FactTypeCreate {
+	if t != nil {
+		ftc.SetDeletedAt(*t)
+	}
+	return ftc
+}
+
 // SetSlug sets the "slug" field.
 func (ftc *FactTypeCreate) SetSlug(s string) *FactTypeCreate {
 	ftc.mutation.SetSlug(s)
@@ -196,6 +210,11 @@ func (ftc *FactTypeCreate) check() error {
 	if _, ok := ftc.mutation.BuiltIn(); !ok {
 		return &ValidationError{Name: "built_in", err: errors.New("ent: missing required field \"built_in\"")}
 	}
+	if v, ok := ftc.mutation.ID(); ok {
+		if err := facttype.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf("ent: validator failed for field \"id\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -240,6 +259,14 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 			Column: facttype.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := ftc.mutation.DeletedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: facttype.FieldDeletedAt,
+		})
+		_node.DeletedAt = value
 	}
 	if value, ok := ftc.mutation.Slug(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

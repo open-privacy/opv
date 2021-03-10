@@ -49,6 +49,20 @@ func (sc *ScopeCreate) SetNillableUpdatedAt(t *time.Time) *ScopeCreate {
 	return sc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (sc *ScopeCreate) SetDeletedAt(t time.Time) *ScopeCreate {
+	sc.mutation.SetDeletedAt(t)
+	return sc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (sc *ScopeCreate) SetNillableDeletedAt(t *time.Time) *ScopeCreate {
+	if t != nil {
+		sc.SetDeletedAt(*t)
+	}
+	return sc
+}
+
 // SetCustomID sets the "custom_id" field.
 func (sc *ScopeCreate) SetCustomID(s string) *ScopeCreate {
 	sc.mutation.SetCustomID(s)
@@ -191,6 +205,11 @@ func (sc *ScopeCreate) check() error {
 	if _, ok := sc.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New("ent: missing required field \"domain\"")}
 	}
+	if v, ok := sc.mutation.ID(); ok {
+		if err := scope.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf("ent: validator failed for field \"id\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -235,6 +254,14 @@ func (sc *ScopeCreate) createSpec() (*Scope, *sqlgraph.CreateSpec) {
 			Column: scope.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := sc.mutation.DeletedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: scope.FieldDeletedAt,
+		})
+		_node.DeletedAt = value
 	}
 	if value, ok := sc.mutation.CustomID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

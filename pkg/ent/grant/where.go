@@ -106,10 +106,17 @@ func UpdatedAt(v time.Time) predicate.Grant {
 	})
 }
 
-// HashedToken applies equality check predicate on the "hashed_token" field. It's identical to HashedTokenEQ.
-func HashedToken(v string) predicate.Grant {
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v time.Time) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHashedToken), v))
+		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
+	})
+}
+
+// HashedGrantToken applies equality check predicate on the "hashed_grant_token" field. It's identical to HashedGrantTokenEQ.
+func HashedGrantToken(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHashedGrantToken), v))
 	})
 }
 
@@ -286,22 +293,22 @@ func UpdatedAtLTE(v time.Time) predicate.Grant {
 	})
 }
 
-// HashedTokenEQ applies the EQ predicate on the "hashed_token" field.
-func HashedTokenEQ(v string) predicate.Grant {
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v time.Time) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHashedToken), v))
+		s.Where(sql.EQ(s.C(FieldDeletedAt), v))
 	})
 }
 
-// HashedTokenNEQ applies the NEQ predicate on the "hashed_token" field.
-func HashedTokenNEQ(v string) predicate.Grant {
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v time.Time) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldHashedToken), v))
+		s.Where(sql.NEQ(s.C(FieldDeletedAt), v))
 	})
 }
 
-// HashedTokenIn applies the In predicate on the "hashed_token" field.
-func HashedTokenIn(vs ...string) predicate.Grant {
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...time.Time) predicate.Grant {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -313,12 +320,12 @@ func HashedTokenIn(vs ...string) predicate.Grant {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldHashedToken), v...))
+		s.Where(sql.In(s.C(FieldDeletedAt), v...))
 	})
 }
 
-// HashedTokenNotIn applies the NotIn predicate on the "hashed_token" field.
-func HashedTokenNotIn(vs ...string) predicate.Grant {
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...time.Time) predicate.Grant {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -330,70 +337,160 @@ func HashedTokenNotIn(vs ...string) predicate.Grant {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldHashedToken), v...))
+		s.Where(sql.NotIn(s.C(FieldDeletedAt), v...))
 	})
 }
 
-// HashedTokenGT applies the GT predicate on the "hashed_token" field.
-func HashedTokenGT(v string) predicate.Grant {
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v time.Time) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldHashedToken), v))
+		s.Where(sql.GT(s.C(FieldDeletedAt), v))
 	})
 }
 
-// HashedTokenGTE applies the GTE predicate on the "hashed_token" field.
-func HashedTokenGTE(v string) predicate.Grant {
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v time.Time) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldHashedToken), v))
+		s.Where(sql.GTE(s.C(FieldDeletedAt), v))
 	})
 }
 
-// HashedTokenLT applies the LT predicate on the "hashed_token" field.
-func HashedTokenLT(v string) predicate.Grant {
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v time.Time) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldHashedToken), v))
+		s.Where(sql.LT(s.C(FieldDeletedAt), v))
 	})
 }
 
-// HashedTokenLTE applies the LTE predicate on the "hashed_token" field.
-func HashedTokenLTE(v string) predicate.Grant {
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v time.Time) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldHashedToken), v))
+		s.Where(sql.LTE(s.C(FieldDeletedAt), v))
 	})
 }
 
-// HashedTokenContains applies the Contains predicate on the "hashed_token" field.
-func HashedTokenContains(v string) predicate.Grant {
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldHashedToken), v))
+		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
 	})
 }
 
-// HashedTokenHasPrefix applies the HasPrefix predicate on the "hashed_token" field.
-func HashedTokenHasPrefix(v string) predicate.Grant {
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldHashedToken), v))
+		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
 	})
 }
 
-// HashedTokenHasSuffix applies the HasSuffix predicate on the "hashed_token" field.
-func HashedTokenHasSuffix(v string) predicate.Grant {
+// HashedGrantTokenEQ applies the EQ predicate on the "hashed_grant_token" field.
+func HashedGrantTokenEQ(v string) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldHashedToken), v))
+		s.Where(sql.EQ(s.C(FieldHashedGrantToken), v))
 	})
 }
 
-// HashedTokenEqualFold applies the EqualFold predicate on the "hashed_token" field.
-func HashedTokenEqualFold(v string) predicate.Grant {
+// HashedGrantTokenNEQ applies the NEQ predicate on the "hashed_grant_token" field.
+func HashedGrantTokenNEQ(v string) predicate.Grant {
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldHashedToken), v))
+		s.Where(sql.NEQ(s.C(FieldHashedGrantToken), v))
 	})
 }
 
-// HashedTokenContainsFold applies the ContainsFold predicate on the "hashed_token" field.
-func HashedTokenContainsFold(v string) predicate.Grant {
+// HashedGrantTokenIn applies the In predicate on the "hashed_grant_token" field.
+func HashedGrantTokenIn(vs ...string) predicate.Grant {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
 	return predicate.Grant(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldHashedToken), v))
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldHashedGrantToken), v...))
+	})
+}
+
+// HashedGrantTokenNotIn applies the NotIn predicate on the "hashed_grant_token" field.
+func HashedGrantTokenNotIn(vs ...string) predicate.Grant {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Grant(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldHashedGrantToken), v...))
+	})
+}
+
+// HashedGrantTokenGT applies the GT predicate on the "hashed_grant_token" field.
+func HashedGrantTokenGT(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenGTE applies the GTE predicate on the "hashed_grant_token" field.
+func HashedGrantTokenGTE(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenLT applies the LT predicate on the "hashed_grant_token" field.
+func HashedGrantTokenLT(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenLTE applies the LTE predicate on the "hashed_grant_token" field.
+func HashedGrantTokenLTE(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenContains applies the Contains predicate on the "hashed_grant_token" field.
+func HashedGrantTokenContains(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenHasPrefix applies the HasPrefix predicate on the "hashed_grant_token" field.
+func HashedGrantTokenHasPrefix(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenHasSuffix applies the HasSuffix predicate on the "hashed_grant_token" field.
+func HashedGrantTokenHasSuffix(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenEqualFold applies the EqualFold predicate on the "hashed_grant_token" field.
+func HashedGrantTokenEqualFold(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldHashedGrantToken), v))
+	})
+}
+
+// HashedGrantTokenContainsFold applies the ContainsFold predicate on the "hashed_grant_token" field.
+func HashedGrantTokenContainsFold(v string) predicate.Grant {
+	return predicate.Grant(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldHashedGrantToken), v))
 	})
 }
 

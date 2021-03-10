@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// APIAudit is the predicate function for apiaudit builders.
+type APIAudit func(*sql.Selector)
+
 // Fact is the predicate function for fact builders.
 type Fact func(*sql.Selector)
 

@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  swag:
+    build:
+      context: .
+      dockerfile: Dockerfile.deps
+    volumes:
+      - .:/data/opv
+    working_dir: /data/opv
+    command:
+      - /bin/bash
+      - -c
+      - |
+        swag init --parseDependency --parseVendor -d ./cmd/controlplane -o ./cmd/controlplane/docs
+        swag init --parseDependency --parseVendor -d ./cmd/dataplane    -o ./cmd/dataplane/docs
+  ent:
+    build:
+      context: .
+      dockerfile: Dockerfile.deps
+    volumes:
+      - .:/data/opv
+    working_dir: /data/opv
+    command:
+      - /bin/bash
+      - -c
+      - |
+        ent generate --feature privacy,entql,schema/snapshot ./pkg/ent/schema

@@ -20,7 +20,6 @@ Start from source code:
 ```sh
 git clone https://github.com/open-privacy/opv
 cd opv
-make deps
 make vendor
 make run
 ```

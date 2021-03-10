@@ -17,18 +17,17 @@ import (
 // @security ApiKeyAuth
 // @param custom_id query string false "get scopes by custom_id"
 // @success 200 {object} []apimodel.Scope
-// @failure 400 {object} apimodel.HTTPError
-// @failure 404 {object} apimodel.HTTPError
-// @failure 500 {object} apimodel.HTTPError
+// @failure 400 {object} echo.HTTPError
+// @failure 404 {object} echo.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /scopes [get]
 func (dp *DataPlane) QueryScopes(c echo.Context) error {
-	ctx := c.Request().Context()
 	s, err := dp.Repo.GetScope(c.Request().Context(), &repo.GetScopeOption{
 		ScopeCustomID: c.QueryParam("custom_id"),
 		Domain:        currentDomain(c),
 	})
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 	return c.JSON(http.StatusOK, apimodel.Scope{
 		ID:       s.ID,
@@ -46,15 +45,14 @@ func (dp *DataPlane) QueryScopes(c echo.Context) error {
 // @security ApiKeyAuth
 // @param createScope body apimodel.CreateScope	true "Create Scope parameters"
 // @success 200 {object} apimodel.Scope
-// @failure 400 {object} apimodel.HTTPError
-// @failure 500 {object} apimodel.HTTPError
+// @failure 400 {object} echo.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /scopes [post]
 func (dp *DataPlane) CreateScope(c echo.Context) error {
-	ctx := c.Request().Context()
 	cs := &apimodel.CreateScope{}
 	err := c.Bind(cs)
 	if err != nil {
-		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
+		return apimodel.NewHTTPError(err)
 	}
 
 	s, err := dp.Repo.CreateScope(c.Request().Context(), &repo.CreateScopeOption{
@@ -63,7 +61,7 @@ func (dp *DataPlane) CreateScope(c echo.Context) error {
 	})
 
 	if err != nil {
-		return dp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	return c.JSON(http.StatusOK, apimodel.Scope{

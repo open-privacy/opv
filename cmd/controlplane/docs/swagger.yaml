@@ -1,5 +1,24 @@
 basePath: /api/v1
 definitions:
+  apimodel.APIAudit:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      domain:
+        type: string
+      http_method:
+        type: string
+      http_path:
+        type: string
+      plane:
+        type: string
+      sent_http_status:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   apimodel.CreateGrant:
     properties:
       allowed_http_methods:
@@ -20,17 +39,15 @@ definitions:
       token:
         type: string
     type: object
-  apimodel.HTTPError:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-    type: object
   apimodel.Healthz:
     properties:
       status:
         type: string
+    type: object
+  echo.HTTPError:
+    properties:
+      message:
+        type: object
     type: object
 host: localhost
 info:
@@ -39,6 +56,53 @@ info:
   title: Open Privacy Vault Control Plane API
   version: "1.0"
 paths:
+  /api_audits:
+    get:
+      consumes:
+      - application/json
+      description: Query API Audits
+      operationId: query-api-audits
+      parameters:
+      - description: Domain
+        in: query
+        name: domain
+        type: string
+      - description: Plane
+        in: query
+        name: plane
+        type: string
+      - description: HTTP Path
+        in: query
+        name: http_path
+        type: string
+      - description: HTTP Method
+        in: query
+        name: http_method
+        type: string
+      - description: Sent HTTP Status
+        in: query
+        name: sent_http_status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/apimodel.APIAudit'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Query API Audits
+      tags:
+      - Audit
   /grants:
     post:
       consumes:
@@ -62,11 +126,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       summary: Create a grant
       tags:
       - Grant
@@ -84,7 +148,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apimodel.HTTPError'
+            $ref: '#/definitions/echo.HTTPError'
       summary: Show the health of the controlplane
       tags:
       - Healthz

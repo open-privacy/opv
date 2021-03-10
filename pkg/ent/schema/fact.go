@@ -15,6 +15,7 @@ type Fact struct {
 // Fields of the Fact.
 func (Fact) Fields() []ent.Field {
 	return []ent.Field{
+		ID("fact"),
 		field.String("hashed_value").Sensitive(),
 		field.String("encrypted_value").Sensitive(),
 		field.String("domain"),
@@ -40,7 +41,7 @@ func (Fact) Mixin() []ent.Mixin {
 func (Fact) Indexes() []ent.Index {
 	return []ent.Index{
 		// unique hashed_value constraint on same scope and fact_type
-		index.Fields("hashed_value").Edges("scope", "fact_type").Unique(),
+		index.Fields("hashed_value"),
 		index.Fields("domain"),
 	}
 }

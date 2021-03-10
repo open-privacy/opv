@@ -8,8 +8,8 @@ import (
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
-	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
@@ -62,9 +62,9 @@ func (dp *DataPlane) Stop() {
 func (dp *DataPlane) prepareEcho() {
 	dp.Echo = echo.New()
 	dp.Logger = dp.Echo.Logger
+	dp.Logger.SetLevel(log.INFO)
 	dp.Echo.HideBanner = true
 	dp.Echo.HidePort = true
-	dp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler
 
 	pprof.Register(dp.Echo)
 	dp.Echo.Pre(middleware.RemoveTrailingSlash())
@@ -77,11 +77,11 @@ func (dp *DataPlane) prepareEcho() {
 	}
 
 	apiv1 := dp.Echo.Group("/api/v1")
+	apiv1.Use(dp.middlewareAPIAudit())
 	apiv1.GET("/healthz", dp.Healthz)
 
 	// Protected by grantValidationMiddleware
-	apiv1.Use(dp.grantValidationMiddleware())
-
+	apiv1.Use(dp.middlewareGrantValidation())
 	apiv1.POST("/scopes", dp.CreateScope)
 	apiv1.GET("/scopes", dp.QueryScopes)
 	apiv1.POST("/facts", dp.CreateFact)

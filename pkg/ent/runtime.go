@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/grant"
@@ -16,88 +17,117 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	apiauditMixin := schema.APIAudit{}.Mixin()
+	apiauditMixinFields0 := apiauditMixin[0].Fields()
+	_ = apiauditMixinFields0
+	apiauditFields := schema.APIAudit{}.Fields()
+	_ = apiauditFields
+	// apiauditDescCreatedAt is the schema descriptor for created_at field.
+	apiauditDescCreatedAt := apiauditMixinFields0[0].Descriptor()
+	// apiaudit.DefaultCreatedAt holds the default value on creation for the created_at field.
+	apiaudit.DefaultCreatedAt = apiauditDescCreatedAt.Default.(func() time.Time)
+	// apiauditDescUpdatedAt is the schema descriptor for updated_at field.
+	apiauditDescUpdatedAt := apiauditMixinFields0[1].Descriptor()
+	// apiaudit.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	apiaudit.DefaultUpdatedAt = apiauditDescUpdatedAt.Default.(func() time.Time)
+	// apiaudit.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	apiaudit.UpdateDefaultUpdatedAt = apiauditDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// apiauditDescID is the schema descriptor for id field.
+	apiauditDescID := apiauditFields[0].Descriptor()
+	// apiaudit.DefaultID holds the default value on creation for the id field.
+	apiaudit.DefaultID = apiauditDescID.Default.(func() string)
+	// apiaudit.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	apiaudit.IDValidator = apiauditDescID.Validators[0].(func(string) error)
 	factMixin := schema.Fact{}.Mixin()
 	factMixinFields0 := factMixin[0].Fields()
 	_ = factMixinFields0
 	factFields := schema.Fact{}.Fields()
 	_ = factFields
 	// factDescCreatedAt is the schema descriptor for created_at field.
-	factDescCreatedAt := factMixinFields0[1].Descriptor()
+	factDescCreatedAt := factMixinFields0[0].Descriptor()
 	// fact.DefaultCreatedAt holds the default value on creation for the created_at field.
 	fact.DefaultCreatedAt = factDescCreatedAt.Default.(func() time.Time)
 	// factDescUpdatedAt is the schema descriptor for updated_at field.
-	factDescUpdatedAt := factMixinFields0[2].Descriptor()
+	factDescUpdatedAt := factMixinFields0[1].Descriptor()
 	// fact.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	fact.DefaultUpdatedAt = factDescUpdatedAt.Default.(func() time.Time)
 	// fact.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	fact.UpdateDefaultUpdatedAt = factDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// factDescID is the schema descriptor for id field.
-	factDescID := factMixinFields0[0].Descriptor()
+	factDescID := factFields[0].Descriptor()
 	// fact.DefaultID holds the default value on creation for the id field.
 	fact.DefaultID = factDescID.Default.(func() string)
+	// fact.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	fact.IDValidator = factDescID.Validators[0].(func(string) error)
 	facttypeMixin := schema.FactType{}.Mixin()
 	facttypeMixinFields0 := facttypeMixin[0].Fields()
 	_ = facttypeMixinFields0
 	facttypeFields := schema.FactType{}.Fields()
 	_ = facttypeFields
 	// facttypeDescCreatedAt is the schema descriptor for created_at field.
-	facttypeDescCreatedAt := facttypeMixinFields0[1].Descriptor()
+	facttypeDescCreatedAt := facttypeMixinFields0[0].Descriptor()
 	// facttype.DefaultCreatedAt holds the default value on creation for the created_at field.
 	facttype.DefaultCreatedAt = facttypeDescCreatedAt.Default.(func() time.Time)
 	// facttypeDescUpdatedAt is the schema descriptor for updated_at field.
-	facttypeDescUpdatedAt := facttypeMixinFields0[2].Descriptor()
+	facttypeDescUpdatedAt := facttypeMixinFields0[1].Descriptor()
 	// facttype.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	facttype.DefaultUpdatedAt = facttypeDescUpdatedAt.Default.(func() time.Time)
 	// facttype.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	facttype.UpdateDefaultUpdatedAt = facttypeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// facttypeDescBuiltIn is the schema descriptor for built_in field.
-	facttypeDescBuiltIn := facttypeFields[1].Descriptor()
+	facttypeDescBuiltIn := facttypeFields[2].Descriptor()
 	// facttype.DefaultBuiltIn holds the default value on creation for the built_in field.
 	facttype.DefaultBuiltIn = facttypeDescBuiltIn.Default.(bool)
 	// facttypeDescID is the schema descriptor for id field.
-	facttypeDescID := facttypeMixinFields0[0].Descriptor()
+	facttypeDescID := facttypeFields[0].Descriptor()
 	// facttype.DefaultID holds the default value on creation for the id field.
 	facttype.DefaultID = facttypeDescID.Default.(func() string)
+	// facttype.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	facttype.IDValidator = facttypeDescID.Validators[0].(func(string) error)
 	grantMixin := schema.Grant{}.Mixin()
 	grantMixinFields0 := grantMixin[0].Fields()
 	_ = grantMixinFields0
 	grantFields := schema.Grant{}.Fields()
 	_ = grantFields
 	// grantDescCreatedAt is the schema descriptor for created_at field.
-	grantDescCreatedAt := grantMixinFields0[1].Descriptor()
+	grantDescCreatedAt := grantMixinFields0[0].Descriptor()
 	// grant.DefaultCreatedAt holds the default value on creation for the created_at field.
 	grant.DefaultCreatedAt = grantDescCreatedAt.Default.(func() time.Time)
 	// grantDescUpdatedAt is the schema descriptor for updated_at field.
-	grantDescUpdatedAt := grantMixinFields0[2].Descriptor()
+	grantDescUpdatedAt := grantMixinFields0[1].Descriptor()
 	// grant.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	grant.DefaultUpdatedAt = grantDescUpdatedAt.Default.(func() time.Time)
 	// grant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	grant.UpdateDefaultUpdatedAt = grantDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// grantDescID is the schema descriptor for id field.
-	grantDescID := grantMixinFields0[0].Descriptor()
+	grantDescID := grantFields[0].Descriptor()
 	// grant.DefaultID holds the default value on creation for the id field.
 	grant.DefaultID = grantDescID.Default.(func() string)
+	// grant.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	grant.IDValidator = grantDescID.Validators[0].(func(string) error)
 	scopeMixin := schema.Scope{}.Mixin()
 	scopeMixinFields0 := scopeMixin[0].Fields()
 	_ = scopeMixinFields0
 	scopeFields := schema.Scope{}.Fields()
 	_ = scopeFields
 	// scopeDescCreatedAt is the schema descriptor for created_at field.
-	scopeDescCreatedAt := scopeMixinFields0[1].Descriptor()
+	scopeDescCreatedAt := scopeMixinFields0[0].Descriptor()
 	// scope.DefaultCreatedAt holds the default value on creation for the created_at field.
 	scope.DefaultCreatedAt = scopeDescCreatedAt.Default.(func() time.Time)
 	// scopeDescUpdatedAt is the schema descriptor for updated_at field.
-	scopeDescUpdatedAt := scopeMixinFields0[2].Descriptor()
+	scopeDescUpdatedAt := scopeMixinFields0[1].Descriptor()
 	// scope.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	scope.DefaultUpdatedAt = scopeDescUpdatedAt.Default.(func() time.Time)
 	// scope.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	scope.UpdateDefaultUpdatedAt = scopeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// scopeDescNonce is the schema descriptor for nonce field.
-	scopeDescNonce := scopeFields[1].Descriptor()
+	scopeDescNonce := scopeFields[2].Descriptor()
 	// scope.DefaultNonce holds the default value on creation for the nonce field.
 	scope.DefaultNonce = scopeDescNonce.Default.(func() string)
 	// scopeDescID is the schema descriptor for id field.
-	scopeDescID := scopeMixinFields0[0].Descriptor()
+	scopeDescID := scopeFields[0].Descriptor()
 	// scope.DefaultID holds the default value on creation for the id field.
 	scope.DefaultID = scopeDescID.Default.(func() string)
+	// scope.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	scope.IDValidator = scopeDescID.Validators[0].(func(string) error)
 }

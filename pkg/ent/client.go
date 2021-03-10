@@ -9,6 +9,7 @@ import (
 
 	"github.com/open-privacy/opv/pkg/ent/migrate"
 
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/grant"
@@ -24,6 +25,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// APIAudit is the client for interacting with the APIAudit builders.
+	APIAudit *APIAuditClient
 	// Fact is the client for interacting with the Fact builders.
 	Fact *FactClient
 	// FactType is the client for interacting with the FactType builders.
@@ -45,6 +48,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.APIAudit = NewAPIAuditClient(c.config)
 	c.Fact = NewFactClient(c.config)
 	c.FactType = NewFactTypeClient(c.config)
 	c.Grant = NewGrantClient(c.config)
@@ -82,6 +86,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		APIAudit: NewAPIAuditClient(cfg),
 		Fact:     NewFactClient(cfg),
 		FactType: NewFactTypeClient(cfg),
 		Grant:    NewGrantClient(cfg),
@@ -104,6 +109,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:   cfg,
+		APIAudit: NewAPIAuditClient(cfg),
 		Fact:     NewFactClient(cfg),
 		FactType: NewFactTypeClient(cfg),
 		Grant:    NewGrantClient(cfg),
@@ -114,7 +120,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Fact.
+//		APIAudit.
 //		Query().
 //		Count(ctx)
 //
@@ -137,10 +143,99 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.APIAudit.Use(hooks...)
 	c.Fact.Use(hooks...)
 	c.FactType.Use(hooks...)
 	c.Grant.Use(hooks...)
 	c.Scope.Use(hooks...)
+}
+
+// APIAuditClient is a client for the APIAudit schema.
+type APIAuditClient struct {
+	config
+}
+
+// NewAPIAuditClient returns a client for the APIAudit from the given config.
+func NewAPIAuditClient(c config) *APIAuditClient {
+	return &APIAuditClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `apiaudit.Hooks(f(g(h())))`.
+func (c *APIAuditClient) Use(hooks ...Hook) {
+	c.hooks.APIAudit = append(c.hooks.APIAudit, hooks...)
+}
+
+// Create returns a create builder for APIAudit.
+func (c *APIAuditClient) Create() *APIAuditCreate {
+	mutation := newAPIAuditMutation(c.config, OpCreate)
+	return &APIAuditCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of APIAudit entities.
+func (c *APIAuditClient) CreateBulk(builders ...*APIAuditCreate) *APIAuditCreateBulk {
+	return &APIAuditCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for APIAudit.
+func (c *APIAuditClient) Update() *APIAuditUpdate {
+	mutation := newAPIAuditMutation(c.config, OpUpdate)
+	return &APIAuditUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *APIAuditClient) UpdateOne(aa *APIAudit) *APIAuditUpdateOne {
+	mutation := newAPIAuditMutation(c.config, OpUpdateOne, withAPIAudit(aa))
+	return &APIAuditUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *APIAuditClient) UpdateOneID(id string) *APIAuditUpdateOne {
+	mutation := newAPIAuditMutation(c.config, OpUpdateOne, withAPIAuditID(id))
+	return &APIAuditUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for APIAudit.
+func (c *APIAuditClient) Delete() *APIAuditDelete {
+	mutation := newAPIAuditMutation(c.config, OpDelete)
+	return &APIAuditDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *APIAuditClient) DeleteOne(aa *APIAudit) *APIAuditDeleteOne {
+	return c.DeleteOneID(aa.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *APIAuditClient) DeleteOneID(id string) *APIAuditDeleteOne {
+	builder := c.Delete().Where(apiaudit.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &APIAuditDeleteOne{builder}
+}
+
+// Query returns a query builder for APIAudit.
+func (c *APIAuditClient) Query() *APIAuditQuery {
+	return &APIAuditQuery{config: c.config}
+}
+
+// Get returns a APIAudit entity by its id.
+func (c *APIAuditClient) Get(ctx context.Context, id string) (*APIAudit, error) {
+	return c.Query().Where(apiaudit.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *APIAuditClient) GetX(ctx context.Context, id string) *APIAudit {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *APIAuditClient) Hooks() []Hook {
+	return c.hooks.APIAudit
 }
 
 // FactClient is a client for the Fact schema.

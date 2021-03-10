@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
 	"github.com/open-privacy/opv/pkg/ent/fact"
 	"github.com/open-privacy/opv/pkg/ent/facttype"
 	"github.com/open-privacy/opv/pkg/ent/grant"
@@ -26,11 +27,891 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeAPIAudit = "APIAudit"
 	TypeFact     = "Fact"
 	TypeFactType = "FactType"
 	TypeGrant    = "Grant"
 	TypeScope    = "Scope"
 )
+
+// APIAuditMutation represents an operation that mutates the APIAudit nodes in the graph.
+type APIAuditMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *string
+	created_at          *time.Time
+	updated_at          *time.Time
+	deleted_at          *time.Time
+	plane               *string
+	hashed_grant_token  *string
+	domain              *string
+	http_path           *string
+	http_method         *string
+	sent_http_status    *int
+	addsent_http_status *int
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*APIAudit, error)
+	predicates          []predicate.APIAudit
+}
+
+var _ ent.Mutation = (*APIAuditMutation)(nil)
+
+// apiauditOption allows management of the mutation configuration using functional options.
+type apiauditOption func(*APIAuditMutation)
+
+// newAPIAuditMutation creates new mutation for the APIAudit entity.
+func newAPIAuditMutation(c config, op Op, opts ...apiauditOption) *APIAuditMutation {
+	m := &APIAuditMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAPIAudit,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAPIAuditID sets the ID field of the mutation.
+func withAPIAuditID(id string) apiauditOption {
+	return func(m *APIAuditMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *APIAudit
+		)
+		m.oldValue = func(ctx context.Context) (*APIAudit, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().APIAudit.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAPIAudit sets the old APIAudit of the mutation.
+func withAPIAudit(node *APIAudit) apiauditOption {
+	return func(m *APIAuditMutation) {
+		m.oldValue = func(context.Context) (*APIAudit, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m APIAuditMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m APIAuditMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of APIAudit entities.
+func (m *APIAuditMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID
+// is only available if it was provided to the builder.
+func (m *APIAuditMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *APIAuditMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *APIAuditMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *APIAuditMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *APIAuditMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *APIAuditMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *APIAuditMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *APIAuditMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *APIAuditMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *APIAuditMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[apiaudit.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *APIAuditMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[apiaudit.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *APIAuditMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, apiaudit.FieldDeletedAt)
+}
+
+// SetPlane sets the "plane" field.
+func (m *APIAuditMutation) SetPlane(s string) {
+	m.plane = &s
+}
+
+// Plane returns the value of the "plane" field in the mutation.
+func (m *APIAuditMutation) Plane() (r string, exists bool) {
+	v := m.plane
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlane returns the old "plane" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldPlane(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPlane is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPlane requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlane: %w", err)
+	}
+	return oldValue.Plane, nil
+}
+
+// ResetPlane resets all changes to the "plane" field.
+func (m *APIAuditMutation) ResetPlane() {
+	m.plane = nil
+}
+
+// SetHashedGrantToken sets the "hashed_grant_token" field.
+func (m *APIAuditMutation) SetHashedGrantToken(s string) {
+	m.hashed_grant_token = &s
+}
+
+// HashedGrantToken returns the value of the "hashed_grant_token" field in the mutation.
+func (m *APIAuditMutation) HashedGrantToken() (r string, exists bool) {
+	v := m.hashed_grant_token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHashedGrantToken returns the old "hashed_grant_token" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldHashedGrantToken(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHashedGrantToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHashedGrantToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHashedGrantToken: %w", err)
+	}
+	return oldValue.HashedGrantToken, nil
+}
+
+// ClearHashedGrantToken clears the value of the "hashed_grant_token" field.
+func (m *APIAuditMutation) ClearHashedGrantToken() {
+	m.hashed_grant_token = nil
+	m.clearedFields[apiaudit.FieldHashedGrantToken] = struct{}{}
+}
+
+// HashedGrantTokenCleared returns if the "hashed_grant_token" field was cleared in this mutation.
+func (m *APIAuditMutation) HashedGrantTokenCleared() bool {
+	_, ok := m.clearedFields[apiaudit.FieldHashedGrantToken]
+	return ok
+}
+
+// ResetHashedGrantToken resets all changes to the "hashed_grant_token" field.
+func (m *APIAuditMutation) ResetHashedGrantToken() {
+	m.hashed_grant_token = nil
+	delete(m.clearedFields, apiaudit.FieldHashedGrantToken)
+}
+
+// SetDomain sets the "domain" field.
+func (m *APIAuditMutation) SetDomain(s string) {
+	m.domain = &s
+}
+
+// Domain returns the value of the "domain" field in the mutation.
+func (m *APIAuditMutation) Domain() (r string, exists bool) {
+	v := m.domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomain returns the old "domain" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+	}
+	return oldValue.Domain, nil
+}
+
+// ClearDomain clears the value of the "domain" field.
+func (m *APIAuditMutation) ClearDomain() {
+	m.domain = nil
+	m.clearedFields[apiaudit.FieldDomain] = struct{}{}
+}
+
+// DomainCleared returns if the "domain" field was cleared in this mutation.
+func (m *APIAuditMutation) DomainCleared() bool {
+	_, ok := m.clearedFields[apiaudit.FieldDomain]
+	return ok
+}
+
+// ResetDomain resets all changes to the "domain" field.
+func (m *APIAuditMutation) ResetDomain() {
+	m.domain = nil
+	delete(m.clearedFields, apiaudit.FieldDomain)
+}
+
+// SetHTTPPath sets the "http_path" field.
+func (m *APIAuditMutation) SetHTTPPath(s string) {
+	m.http_path = &s
+}
+
+// HTTPPath returns the value of the "http_path" field in the mutation.
+func (m *APIAuditMutation) HTTPPath() (r string, exists bool) {
+	v := m.http_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHTTPPath returns the old "http_path" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldHTTPPath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHTTPPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHTTPPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHTTPPath: %w", err)
+	}
+	return oldValue.HTTPPath, nil
+}
+
+// ClearHTTPPath clears the value of the "http_path" field.
+func (m *APIAuditMutation) ClearHTTPPath() {
+	m.http_path = nil
+	m.clearedFields[apiaudit.FieldHTTPPath] = struct{}{}
+}
+
+// HTTPPathCleared returns if the "http_path" field was cleared in this mutation.
+func (m *APIAuditMutation) HTTPPathCleared() bool {
+	_, ok := m.clearedFields[apiaudit.FieldHTTPPath]
+	return ok
+}
+
+// ResetHTTPPath resets all changes to the "http_path" field.
+func (m *APIAuditMutation) ResetHTTPPath() {
+	m.http_path = nil
+	delete(m.clearedFields, apiaudit.FieldHTTPPath)
+}
+
+// SetHTTPMethod sets the "http_method" field.
+func (m *APIAuditMutation) SetHTTPMethod(s string) {
+	m.http_method = &s
+}
+
+// HTTPMethod returns the value of the "http_method" field in the mutation.
+func (m *APIAuditMutation) HTTPMethod() (r string, exists bool) {
+	v := m.http_method
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHTTPMethod returns the old "http_method" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldHTTPMethod(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHTTPMethod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHTTPMethod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHTTPMethod: %w", err)
+	}
+	return oldValue.HTTPMethod, nil
+}
+
+// ClearHTTPMethod clears the value of the "http_method" field.
+func (m *APIAuditMutation) ClearHTTPMethod() {
+	m.http_method = nil
+	m.clearedFields[apiaudit.FieldHTTPMethod] = struct{}{}
+}
+
+// HTTPMethodCleared returns if the "http_method" field was cleared in this mutation.
+func (m *APIAuditMutation) HTTPMethodCleared() bool {
+	_, ok := m.clearedFields[apiaudit.FieldHTTPMethod]
+	return ok
+}
+
+// ResetHTTPMethod resets all changes to the "http_method" field.
+func (m *APIAuditMutation) ResetHTTPMethod() {
+	m.http_method = nil
+	delete(m.clearedFields, apiaudit.FieldHTTPMethod)
+}
+
+// SetSentHTTPStatus sets the "sent_http_status" field.
+func (m *APIAuditMutation) SetSentHTTPStatus(i int) {
+	m.sent_http_status = &i
+	m.addsent_http_status = nil
+}
+
+// SentHTTPStatus returns the value of the "sent_http_status" field in the mutation.
+func (m *APIAuditMutation) SentHTTPStatus() (r int, exists bool) {
+	v := m.sent_http_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSentHTTPStatus returns the old "sent_http_status" field's value of the APIAudit entity.
+// If the APIAudit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIAuditMutation) OldSentHTTPStatus(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldSentHTTPStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldSentHTTPStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSentHTTPStatus: %w", err)
+	}
+	return oldValue.SentHTTPStatus, nil
+}
+
+// AddSentHTTPStatus adds i to the "sent_http_status" field.
+func (m *APIAuditMutation) AddSentHTTPStatus(i int) {
+	if m.addsent_http_status != nil {
+		*m.addsent_http_status += i
+	} else {
+		m.addsent_http_status = &i
+	}
+}
+
+// AddedSentHTTPStatus returns the value that was added to the "sent_http_status" field in this mutation.
+func (m *APIAuditMutation) AddedSentHTTPStatus() (r int, exists bool) {
+	v := m.addsent_http_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSentHTTPStatus clears the value of the "sent_http_status" field.
+func (m *APIAuditMutation) ClearSentHTTPStatus() {
+	m.sent_http_status = nil
+	m.addsent_http_status = nil
+	m.clearedFields[apiaudit.FieldSentHTTPStatus] = struct{}{}
+}
+
+// SentHTTPStatusCleared returns if the "sent_http_status" field was cleared in this mutation.
+func (m *APIAuditMutation) SentHTTPStatusCleared() bool {
+	_, ok := m.clearedFields[apiaudit.FieldSentHTTPStatus]
+	return ok
+}
+
+// ResetSentHTTPStatus resets all changes to the "sent_http_status" field.
+func (m *APIAuditMutation) ResetSentHTTPStatus() {
+	m.sent_http_status = nil
+	m.addsent_http_status = nil
+	delete(m.clearedFields, apiaudit.FieldSentHTTPStatus)
+}
+
+// Op returns the operation name.
+func (m *APIAuditMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (APIAudit).
+func (m *APIAuditMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *APIAuditMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.created_at != nil {
+		fields = append(fields, apiaudit.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, apiaudit.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, apiaudit.FieldDeletedAt)
+	}
+	if m.plane != nil {
+		fields = append(fields, apiaudit.FieldPlane)
+	}
+	if m.hashed_grant_token != nil {
+		fields = append(fields, apiaudit.FieldHashedGrantToken)
+	}
+	if m.domain != nil {
+		fields = append(fields, apiaudit.FieldDomain)
+	}
+	if m.http_path != nil {
+		fields = append(fields, apiaudit.FieldHTTPPath)
+	}
+	if m.http_method != nil {
+		fields = append(fields, apiaudit.FieldHTTPMethod)
+	}
+	if m.sent_http_status != nil {
+		fields = append(fields, apiaudit.FieldSentHTTPStatus)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *APIAuditMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case apiaudit.FieldCreatedAt:
+		return m.CreatedAt()
+	case apiaudit.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case apiaudit.FieldDeletedAt:
+		return m.DeletedAt()
+	case apiaudit.FieldPlane:
+		return m.Plane()
+	case apiaudit.FieldHashedGrantToken:
+		return m.HashedGrantToken()
+	case apiaudit.FieldDomain:
+		return m.Domain()
+	case apiaudit.FieldHTTPPath:
+		return m.HTTPPath()
+	case apiaudit.FieldHTTPMethod:
+		return m.HTTPMethod()
+	case apiaudit.FieldSentHTTPStatus:
+		return m.SentHTTPStatus()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *APIAuditMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case apiaudit.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case apiaudit.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case apiaudit.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case apiaudit.FieldPlane:
+		return m.OldPlane(ctx)
+	case apiaudit.FieldHashedGrantToken:
+		return m.OldHashedGrantToken(ctx)
+	case apiaudit.FieldDomain:
+		return m.OldDomain(ctx)
+	case apiaudit.FieldHTTPPath:
+		return m.OldHTTPPath(ctx)
+	case apiaudit.FieldHTTPMethod:
+		return m.OldHTTPMethod(ctx)
+	case apiaudit.FieldSentHTTPStatus:
+		return m.OldSentHTTPStatus(ctx)
+	}
+	return nil, fmt.Errorf("unknown APIAudit field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *APIAuditMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case apiaudit.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case apiaudit.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case apiaudit.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case apiaudit.FieldPlane:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlane(v)
+		return nil
+	case apiaudit.FieldHashedGrantToken:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHashedGrantToken(v)
+		return nil
+	case apiaudit.FieldDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomain(v)
+		return nil
+	case apiaudit.FieldHTTPPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHTTPPath(v)
+		return nil
+	case apiaudit.FieldHTTPMethod:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHTTPMethod(v)
+		return nil
+	case apiaudit.FieldSentHTTPStatus:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSentHTTPStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown APIAudit field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *APIAuditMutation) AddedFields() []string {
+	var fields []string
+	if m.addsent_http_status != nil {
+		fields = append(fields, apiaudit.FieldSentHTTPStatus)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *APIAuditMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case apiaudit.FieldSentHTTPStatus:
+		return m.AddedSentHTTPStatus()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *APIAuditMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case apiaudit.FieldSentHTTPStatus:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSentHTTPStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown APIAudit numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *APIAuditMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(apiaudit.FieldDeletedAt) {
+		fields = append(fields, apiaudit.FieldDeletedAt)
+	}
+	if m.FieldCleared(apiaudit.FieldHashedGrantToken) {
+		fields = append(fields, apiaudit.FieldHashedGrantToken)
+	}
+	if m.FieldCleared(apiaudit.FieldDomain) {
+		fields = append(fields, apiaudit.FieldDomain)
+	}
+	if m.FieldCleared(apiaudit.FieldHTTPPath) {
+		fields = append(fields, apiaudit.FieldHTTPPath)
+	}
+	if m.FieldCleared(apiaudit.FieldHTTPMethod) {
+		fields = append(fields, apiaudit.FieldHTTPMethod)
+	}
+	if m.FieldCleared(apiaudit.FieldSentHTTPStatus) {
+		fields = append(fields, apiaudit.FieldSentHTTPStatus)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *APIAuditMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *APIAuditMutation) ClearField(name string) error {
+	switch name {
+	case apiaudit.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case apiaudit.FieldHashedGrantToken:
+		m.ClearHashedGrantToken()
+		return nil
+	case apiaudit.FieldDomain:
+		m.ClearDomain()
+		return nil
+	case apiaudit.FieldHTTPPath:
+		m.ClearHTTPPath()
+		return nil
+	case apiaudit.FieldHTTPMethod:
+		m.ClearHTTPMethod()
+		return nil
+	case apiaudit.FieldSentHTTPStatus:
+		m.ClearSentHTTPStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown APIAudit nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *APIAuditMutation) ResetField(name string) error {
+	switch name {
+	case apiaudit.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case apiaudit.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case apiaudit.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case apiaudit.FieldPlane:
+		m.ResetPlane()
+		return nil
+	case apiaudit.FieldHashedGrantToken:
+		m.ResetHashedGrantToken()
+		return nil
+	case apiaudit.FieldDomain:
+		m.ResetDomain()
+		return nil
+	case apiaudit.FieldHTTPPath:
+		m.ResetHTTPPath()
+		return nil
+	case apiaudit.FieldHTTPMethod:
+		m.ResetHTTPMethod()
+		return nil
+	case apiaudit.FieldSentHTTPStatus:
+		m.ResetSentHTTPStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown APIAudit field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *APIAuditMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *APIAuditMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *APIAuditMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *APIAuditMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *APIAuditMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *APIAuditMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *APIAuditMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown APIAudit unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *APIAuditMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown APIAudit edge %s", name)
+}
 
 // FactMutation represents an operation that mutates the Fact nodes in the graph.
 type FactMutation struct {
@@ -40,6 +921,7 @@ type FactMutation struct {
 	id               *string
 	created_at       *time.Time
 	updated_at       *time.Time
+	deleted_at       *time.Time
 	hashed_value     *string
 	encrypted_value  *string
 	domain           *string
@@ -208,6 +1090,55 @@ func (m *FactMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *FactMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *FactMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *FactMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Fact entity.
+// If the Fact object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *FactMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[fact.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *FactMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[fact.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *FactMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, fact.FieldDeletedAt)
 }
 
 // SetHashedValue sets the "hashed_value" field.
@@ -410,12 +1341,15 @@ func (m *FactMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FactMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, fact.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, fact.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, fact.FieldDeletedAt)
 	}
 	if m.hashed_value != nil {
 		fields = append(fields, fact.FieldHashedValue)
@@ -438,6 +1372,8 @@ func (m *FactMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case fact.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case fact.FieldDeletedAt:
+		return m.DeletedAt()
 	case fact.FieldHashedValue:
 		return m.HashedValue()
 	case fact.FieldEncryptedValue:
@@ -457,6 +1393,8 @@ func (m *FactMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreatedAt(ctx)
 	case fact.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case fact.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
 	case fact.FieldHashedValue:
 		return m.OldHashedValue(ctx)
 	case fact.FieldEncryptedValue:
@@ -485,6 +1423,13 @@ func (m *FactMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case fact.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
 		return nil
 	case fact.FieldHashedValue:
 		v, ok := value.(string)
@@ -536,7 +1481,11 @@ func (m *FactMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *FactMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(fact.FieldDeletedAt) {
+		fields = append(fields, fact.FieldDeletedAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -549,6 +1498,11 @@ func (m *FactMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *FactMutation) ClearField(name string) error {
+	switch name {
+	case fact.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown Fact nullable field %s", name)
 }
 
@@ -561,6 +1515,9 @@ func (m *FactMutation) ResetField(name string) error {
 		return nil
 	case fact.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case fact.FieldDeletedAt:
+		m.ResetDeletedAt()
 		return nil
 	case fact.FieldHashedValue:
 		m.ResetHashedValue()
@@ -677,6 +1634,7 @@ type FactTypeMutation struct {
 	id            *string
 	created_at    *time.Time
 	updated_at    *time.Time
+	deleted_at    *time.Time
 	slug          *string
 	built_in      *bool
 	validation    *string
@@ -844,6 +1802,55 @@ func (m *FactTypeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err e
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *FactTypeMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *FactTypeMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *FactTypeMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the FactType entity.
+// If the FactType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FactTypeMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *FactTypeMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[facttype.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *FactTypeMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[facttype.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *FactTypeMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, facttype.FieldDeletedAt)
 }
 
 // SetSlug sets the "slug" field.
@@ -1034,12 +2041,15 @@ func (m *FactTypeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FactTypeMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, facttype.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, facttype.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, facttype.FieldDeletedAt)
 	}
 	if m.slug != nil {
 		fields = append(fields, facttype.FieldSlug)
@@ -1062,6 +2072,8 @@ func (m *FactTypeMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case facttype.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case facttype.FieldDeletedAt:
+		return m.DeletedAt()
 	case facttype.FieldSlug:
 		return m.Slug()
 	case facttype.FieldBuiltIn:
@@ -1081,6 +2093,8 @@ func (m *FactTypeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCreatedAt(ctx)
 	case facttype.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case facttype.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
 	case facttype.FieldSlug:
 		return m.OldSlug(ctx)
 	case facttype.FieldBuiltIn:
@@ -1109,6 +2123,13 @@ func (m *FactTypeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case facttype.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
 		return nil
 	case facttype.FieldSlug:
 		v, ok := value.(string)
@@ -1161,6 +2182,9 @@ func (m *FactTypeMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *FactTypeMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(facttype.FieldDeletedAt) {
+		fields = append(fields, facttype.FieldDeletedAt)
+	}
 	if m.FieldCleared(facttype.FieldValidation) {
 		fields = append(fields, facttype.FieldValidation)
 	}
@@ -1178,6 +2202,9 @@ func (m *FactTypeMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *FactTypeMutation) ClearField(name string) error {
 	switch name {
+	case facttype.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case facttype.FieldValidation:
 		m.ClearValidation()
 		return nil
@@ -1194,6 +2221,9 @@ func (m *FactTypeMutation) ResetField(name string) error {
 		return nil
 	case facttype.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case facttype.FieldDeletedAt:
+		m.ResetDeletedAt()
 		return nil
 	case facttype.FieldSlug:
 		m.ResetSlug()
@@ -1300,7 +2330,8 @@ type GrantMutation struct {
 	id                   *string
 	created_at           *time.Time
 	updated_at           *time.Time
-	hashed_token         *string
+	deleted_at           *time.Time
+	hashed_grant_token   *string
 	domain               *string
 	version              *string
 	allowed_http_methods *string
@@ -1467,40 +2498,89 @@ func (m *GrantMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetHashedToken sets the "hashed_token" field.
-func (m *GrantMutation) SetHashedToken(s string) {
-	m.hashed_token = &s
+// SetDeletedAt sets the "deleted_at" field.
+func (m *GrantMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
 }
 
-// HashedToken returns the value of the "hashed_token" field in the mutation.
-func (m *GrantMutation) HashedToken() (r string, exists bool) {
-	v := m.hashed_token
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *GrantMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldHashedToken returns the old "hashed_token" field's value of the Grant entity.
+// OldDeletedAt returns the old "deleted_at" field's value of the Grant entity.
 // If the Grant object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GrantMutation) OldHashedToken(ctx context.Context) (v string, err error) {
+func (m *GrantMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldHashedToken is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldHashedToken requires an ID field in the mutation")
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHashedToken: %w", err)
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
 	}
-	return oldValue.HashedToken, nil
+	return oldValue.DeletedAt, nil
 }
 
-// ResetHashedToken resets all changes to the "hashed_token" field.
-func (m *GrantMutation) ResetHashedToken() {
-	m.hashed_token = nil
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *GrantMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[grant.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *GrantMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[grant.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *GrantMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, grant.FieldDeletedAt)
+}
+
+// SetHashedGrantToken sets the "hashed_grant_token" field.
+func (m *GrantMutation) SetHashedGrantToken(s string) {
+	m.hashed_grant_token = &s
+}
+
+// HashedGrantToken returns the value of the "hashed_grant_token" field in the mutation.
+func (m *GrantMutation) HashedGrantToken() (r string, exists bool) {
+	v := m.hashed_grant_token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHashedGrantToken returns the old "hashed_grant_token" field's value of the Grant entity.
+// If the Grant object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GrantMutation) OldHashedGrantToken(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHashedGrantToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHashedGrantToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHashedGrantToken: %w", err)
+	}
+	return oldValue.HashedGrantToken, nil
+}
+
+// ResetHashedGrantToken resets all changes to the "hashed_grant_token" field.
+func (m *GrantMutation) ResetHashedGrantToken() {
+	m.hashed_grant_token = nil
 }
 
 // SetDomain sets the "domain" field.
@@ -1625,15 +2705,18 @@ func (m *GrantMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GrantMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, grant.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, grant.FieldUpdatedAt)
 	}
-	if m.hashed_token != nil {
-		fields = append(fields, grant.FieldHashedToken)
+	if m.deleted_at != nil {
+		fields = append(fields, grant.FieldDeletedAt)
+	}
+	if m.hashed_grant_token != nil {
+		fields = append(fields, grant.FieldHashedGrantToken)
 	}
 	if m.domain != nil {
 		fields = append(fields, grant.FieldDomain)
@@ -1656,8 +2739,10 @@ func (m *GrantMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case grant.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case grant.FieldHashedToken:
-		return m.HashedToken()
+	case grant.FieldDeletedAt:
+		return m.DeletedAt()
+	case grant.FieldHashedGrantToken:
+		return m.HashedGrantToken()
 	case grant.FieldDomain:
 		return m.Domain()
 	case grant.FieldVersion:
@@ -1677,8 +2762,10 @@ func (m *GrantMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case grant.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case grant.FieldHashedToken:
-		return m.OldHashedToken(ctx)
+	case grant.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case grant.FieldHashedGrantToken:
+		return m.OldHashedGrantToken(ctx)
 	case grant.FieldDomain:
 		return m.OldDomain(ctx)
 	case grant.FieldVersion:
@@ -1708,12 +2795,19 @@ func (m *GrantMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case grant.FieldHashedToken:
+	case grant.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case grant.FieldHashedGrantToken:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetHashedToken(v)
+		m.SetHashedGrantToken(v)
 		return nil
 	case grant.FieldDomain:
 		v, ok := value.(string)
@@ -1765,7 +2859,11 @@ func (m *GrantMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *GrantMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(grant.FieldDeletedAt) {
+		fields = append(fields, grant.FieldDeletedAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1778,6 +2876,11 @@ func (m *GrantMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *GrantMutation) ClearField(name string) error {
+	switch name {
+	case grant.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown Grant nullable field %s", name)
 }
 
@@ -1791,8 +2894,11 @@ func (m *GrantMutation) ResetField(name string) error {
 	case grant.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case grant.FieldHashedToken:
-		m.ResetHashedToken()
+	case grant.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case grant.FieldHashedGrantToken:
+		m.ResetHashedGrantToken()
 		return nil
 	case grant.FieldDomain:
 		m.ResetDomain()
@@ -1863,6 +2969,7 @@ type ScopeMutation struct {
 	id            *string
 	created_at    *time.Time
 	updated_at    *time.Time
+	deleted_at    *time.Time
 	custom_id     *string
 	nonce         *string
 	domain        *string
@@ -2030,6 +3137,55 @@ func (m *ScopeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err erro
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *ScopeMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *ScopeMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *ScopeMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Scope entity.
+// If the Scope object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ScopeMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *ScopeMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[scope.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *ScopeMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[scope.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *ScopeMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, scope.FieldDeletedAt)
 }
 
 // SetCustomID sets the "custom_id" field.
@@ -2207,12 +3363,15 @@ func (m *ScopeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ScopeMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, scope.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, scope.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, scope.FieldDeletedAt)
 	}
 	if m.custom_id != nil {
 		fields = append(fields, scope.FieldCustomID)
@@ -2235,6 +3394,8 @@ func (m *ScopeMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case scope.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case scope.FieldDeletedAt:
+		return m.DeletedAt()
 	case scope.FieldCustomID:
 		return m.CustomID()
 	case scope.FieldNonce:
@@ -2254,6 +3415,8 @@ func (m *ScopeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case scope.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case scope.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
 	case scope.FieldCustomID:
 		return m.OldCustomID(ctx)
 	case scope.FieldNonce:
@@ -2282,6 +3445,13 @@ func (m *ScopeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case scope.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
 		return nil
 	case scope.FieldCustomID:
 		v, ok := value.(string)
@@ -2333,7 +3503,11 @@ func (m *ScopeMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ScopeMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(scope.FieldDeletedAt) {
+		fields = append(fields, scope.FieldDeletedAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -2346,6 +3520,11 @@ func (m *ScopeMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ScopeMutation) ClearField(name string) error {
+	switch name {
+	case scope.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown Scope nullable field %s", name)
 }
 
@@ -2358,6 +3537,9 @@ func (m *ScopeMutation) ResetField(name string) error {
 		return nil
 	case scope.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case scope.FieldDeletedAt:
+		m.ResetDeletedAt()
 		return nil
 	case scope.FieldCustomID:
 		m.ResetCustomID()

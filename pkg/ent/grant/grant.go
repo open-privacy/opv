@@ -15,8 +15,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldHashedToken holds the string denoting the hashed_token field in the database.
-	FieldHashedToken = "hashed_token"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
+	// FieldHashedGrantToken holds the string denoting the hashed_grant_token field in the database.
+	FieldHashedGrantToken = "hashed_grant_token"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
 	// FieldVersion holds the string denoting the version field in the database.
@@ -33,7 +35,8 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldHashedToken,
+	FieldDeletedAt,
+	FieldHashedGrantToken,
 	FieldDomain,
 	FieldVersion,
 	FieldAllowedHTTPMethods,
@@ -58,4 +61,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() string
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(string) error
 )

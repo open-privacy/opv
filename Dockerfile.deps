@@ -1,0 +1,5 @@
+FROM golang:1.16
+WORKDIR /data/opv
+RUN curl -sf https://gobinaries.com/myitcv/gobin | sh
+RUN gobin entgo.io/ent/cmd/ent@v0.6.0
+RUN gobin github.com/swaggo/swag/cmd/swag@v1.7.0

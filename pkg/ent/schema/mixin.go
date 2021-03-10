@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent"
@@ -15,17 +16,23 @@ type BaseMixin struct {
 	mixin.Schema
 }
 
-// DefaultID generates BaseMixin's default ID
-func DefaultID() string {
-	return uniuri.NewLen(uniuri.UUIDLen)
+// ID generates the id field with a given prefix
+func ID(prefix string) ent.Field {
+	return field.
+		String("id").
+		MaxLen(255).
+		Immutable().
+		DefaultFunc(func() string {
+			return fmt.Sprintf("%s_%s", prefix, uniuri.NewLen(uniuri.UUIDLen))
+		})
 }
 
 // Fields of the BaseMixin.
 func (BaseMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").Immutable().DefaultFunc(DefaultID),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Immutable(),
+		field.Time("deleted_at").Optional(),
 	}
 }
 
@@ -35,5 +42,6 @@ func (BaseMixin) Indexes() []ent.Index {
 		index.Fields("id").Unique(),
 		index.Fields("created_at"),
 		index.Fields("updated_at"),
+		index.Fields("deleted_at"),
 	}
 }

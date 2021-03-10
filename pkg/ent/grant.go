@@ -20,8 +20,10 @@ type Grant struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// HashedToken holds the value of the "hashed_token" field.
-	HashedToken string `json:"hashed_token,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	// HashedGrantToken holds the value of the "hashed_grant_token" field.
+	HashedGrantToken string `json:"-"`
 	// Domain holds the value of the "domain" field.
 	Domain string `json:"domain,omitempty"`
 	// Version holds the value of the "version" field.
@@ -35,9 +37,9 @@ func (*Grant) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case grant.FieldID, grant.FieldHashedToken, grant.FieldDomain, grant.FieldVersion, grant.FieldAllowedHTTPMethods:
+		case grant.FieldID, grant.FieldHashedGrantToken, grant.FieldDomain, grant.FieldVersion, grant.FieldAllowedHTTPMethods:
 			values[i] = &sql.NullString{}
-		case grant.FieldCreatedAt, grant.FieldUpdatedAt:
+		case grant.FieldCreatedAt, grant.FieldUpdatedAt, grant.FieldDeletedAt:
 			values[i] = &sql.NullTime{}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Grant", columns[i])
@@ -72,11 +74,17 @@ func (gr *Grant) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				gr.UpdatedAt = value.Time
 			}
-		case grant.FieldHashedToken:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field hashed_token", values[i])
+		case grant.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				gr.HashedToken = value.String
+				gr.DeletedAt = value.Time
+			}
+		case grant.FieldHashedGrantToken:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field hashed_grant_token", values[i])
+			} else if value.Valid {
+				gr.HashedGrantToken = value.String
 			}
 		case grant.FieldDomain:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -128,8 +136,9 @@ func (gr *Grant) String() string {
 	builder.WriteString(gr.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(gr.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", hashed_token=")
-	builder.WriteString(gr.HashedToken)
+	builder.WriteString(", deleted_at=")
+	builder.WriteString(gr.DeletedAt.Format(time.ANSIC))
+	builder.WriteString(", hashed_grant_token=<sensitive>")
 	builder.WriteString(", domain=")
 	builder.WriteString(gr.Domain)
 	builder.WriteString(", version=")

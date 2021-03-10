@@ -1,6 +1,6 @@
 module github.com/open-privacy/opv
 
-go 1.15
+go 1.16
 
 require (
 	entgo.io/ent v0.6.0

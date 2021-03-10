@@ -1,20 +1,14 @@
-.PHONY: deps ent vendor swag test build gen run
-
-deps:
-	curl -sf https://gobinaries.com/myitcv/gobin | sh
-	gobin entgo.io/ent/cmd/ent@v0.6.0
-	gobin github.com/swaggo/swag/cmd/swag@v1.7.0
+.PHONY: ent vendor swag test build gen run
 
 ent:
-	ent generate --feature privacy,entql,schema/snapshot ./pkg/ent/schema
+	docker-compose run ent
+
+swag:
+	docker-compose run swag
 
 vendor:
 	go mod tidy
 	go mod vendor
-
-swag:
-	swag init --parseDependency -d ./cmd/dataplane    -o ./cmd/dataplane/docs
-	swag init --parseDependency -d ./cmd/controlplane -o ./cmd/controlplane/docs
 
 test:
 	go test -race -covermode=atomic -coverprofile=coverage.txt ./pkg/...
@@ -31,7 +25,7 @@ local_functional_test:
 	go test ./functional_test/...
 
 run: build
-	$(MAKE) -j _run_controlplane _run_dataplane
+	OPV_DB_CONNECTION_STR="_opv.sqlite?cache=shared&_fk=1" $(MAKE) -j _run_controlplane _run_dataplane
 
 _run_dataplane:
 	./build/dataplane

@@ -1,26 +1,29 @@
 package repo
 
+// NotFoundError ...
 type NotFoundError struct {
 	Err error
 }
 
 func (err NotFoundError) Error() string {
-	return "NotFoundError";
+	return "NotFoundError"
 }
 
+// ValidationError ...
 type ValidationError struct {
-	Err error
+	Err     error
 	Message string
 }
 
 func (err ValidationError) Error() string {
-	return err.Message;
+	return err.Message
 }
 
-func NewNotFoundError(err error) error {
-	return &NotFoundError{Err:err}
+// UnauthorizedError ...
+type UnauthorizedError struct {
+	Err error
 }
 
-func NewValidationError(err error, message string) error {
-	return &ValidationError{Err:err, Message:message}
+func (err UnauthorizedError) Error() string {
+	return "Unauthorized"
 }

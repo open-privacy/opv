@@ -17,34 +17,34 @@ import (
 // @produce json
 // @param createGrant body apimodel.CreateGrant true "Create Grant parameters"
 // @success 200 {object} apimodel.Grant
-// @failure 400 {object} apimodel.HTTPError
-// @failure 500 {object} apimodel.HTTPError
+// @failure 400 {object} echo.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /grants [post]
 func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 	ctx := c.Request().Context()
 	cg := &apimodel.CreateGrant{}
 	err := c.Bind(cg)
 	if err != nil {
-		return apimodel.FormatHTTPError(c, apimodel.ErrJSONMalformatted)
+		return apimodel.NewHTTPError(err)
 	}
 
 	if err := cp.Validator.Struct(cg); err != nil {
-		return cp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	token, err := apimodel.NewToken("v1", cg.Domain)
 	if err != nil {
-		return cp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	g, err := cp.Repo.CreateGrant(ctx, &repo.CreateGrantOption{
-		HashedToken:        token.Hash(cp.Hasher),
+		HashedGrantToken:   token.Hash(cp.Hasher),
 		Domain:             cg.Domain,
 		Version:            token.Version,
 		AllowedHTTPMethods: cg.AllowedHTTPMethods,
 	})
 	if err != nil {
-		return cp.Repo.HandleError(ctx, err)
+		return apimodel.NewHTTPError(err)
 	}
 
 	return c.JSON(http.StatusOK, &apimodel.Grant{

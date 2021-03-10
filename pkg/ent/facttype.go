@@ -20,6 +20,8 @@ type FactType struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt time.Time `json:"deleted_at,omitempty"`
 	// Slug holds the value of the "slug" field.
 	Slug string `json:"slug,omitempty"`
 	// BuiltIn holds the value of the "built_in" field.
@@ -58,7 +60,7 @@ func (*FactType) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = &sql.NullBool{}
 		case facttype.FieldID, facttype.FieldSlug, facttype.FieldValidation:
 			values[i] = &sql.NullString{}
-		case facttype.FieldCreatedAt, facttype.FieldUpdatedAt:
+		case facttype.FieldCreatedAt, facttype.FieldUpdatedAt, facttype.FieldDeletedAt:
 			values[i] = &sql.NullTime{}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type FactType", columns[i])
@@ -92,6 +94,12 @@ func (ft *FactType) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				ft.UpdatedAt = value.Time
+			}
+		case facttype.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				ft.DeletedAt = value.Time
 			}
 		case facttype.FieldSlug:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -148,6 +156,8 @@ func (ft *FactType) String() string {
 	builder.WriteString(ft.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(ft.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", deleted_at=")
+	builder.WriteString(ft.DeletedAt.Format(time.ANSIC))
 	builder.WriteString(", slug=")
 	builder.WriteString(ft.Slug)
 	builder.WriteString(", built_in=")

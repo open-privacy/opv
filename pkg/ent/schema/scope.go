@@ -21,6 +21,7 @@ func DefaultNonce() string {
 // Fields of the Scope.
 func (Scope) Fields() []ent.Field {
 	return []ent.Field{
+		ID("scope"),
 		field.String("custom_id"),
 		field.String("nonce").Sensitive().DefaultFunc(DefaultNonce),
 		field.String("domain"),

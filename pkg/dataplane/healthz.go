@@ -14,7 +14,7 @@ import (
 // @id healthz
 // @produce json
 // @success 200 {object} apimodel.Healthz
-// @failure 500 {object} apimodel.HTTPError
+// @failure 500 {object} echo.HTTPError
 // @router /healthz [get]
 func (dp *DataPlane) Healthz(c echo.Context) error {
 	return c.JSON(http.StatusOK, apimodel.Healthz{Status: "OK"})

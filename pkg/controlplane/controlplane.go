@@ -10,7 +10,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	controlplanedocs "github.com/open-privacy/opv/cmd/controlplane/docs"
-	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
@@ -63,10 +62,9 @@ func (cp *ControlPlane) Stop() {
 func (cp *ControlPlane) prepareEcho() {
 	cp.Echo = echo.New()
 	cp.Logger = cp.Echo.Logger
+	cp.Logger.SetLevel(log.INFO)
 	cp.Echo.HideBanner = true
 	cp.Echo.HidePort = true
-	cp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler
-	cp.Echo.Logger.SetLevel(log.INFO)
 
 	pprof.Register(cp.Echo)
 	cp.Echo.Pre(middleware.RemoveTrailingSlash())
@@ -81,6 +79,7 @@ func (cp *ControlPlane) prepareEcho() {
 	apiv1 := cp.Echo.Group("/api/v1")
 	apiv1.GET("/healthz", cp.Healthz)
 	apiv1.POST("/grants", cp.CreateGrant)
+	apiv1.GET("/api_audits", cp.QueryAPIAudits)
 
 	controlplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.ControlPlanePort)
 	cp.Echo.GET("/swagger/*", echoSwagger.WrapHandler)

@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +26,26 @@ type FactUpdate struct {
 // Where adds a new predicate for the FactUpdate builder.
 func (fu *FactUpdate) Where(ps ...predicate.Fact) *FactUpdate {
 	fu.mutation.predicates = append(fu.mutation.predicates, ps...)
+	return fu
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (fu *FactUpdate) SetDeletedAt(t time.Time) *FactUpdate {
+	fu.mutation.SetDeletedAt(t)
+	return fu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (fu *FactUpdate) SetNillableDeletedAt(t *time.Time) *FactUpdate {
+	if t != nil {
+		fu.SetDeletedAt(*t)
+	}
+	return fu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (fu *FactUpdate) ClearDeletedAt() *FactUpdate {
+	fu.mutation.ClearDeletedAt()
 	return fu
 }
 
@@ -186,6 +207,19 @@ func (fu *FactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: fact.FieldUpdatedAt,
 		})
 	}
+	if value, ok := fu.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: fact.FieldDeletedAt,
+		})
+	}
+	if fu.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: fact.FieldDeletedAt,
+		})
+	}
 	if value, ok := fu.mutation.HashedValue(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -293,6 +327,26 @@ type FactUpdateOne struct {
 	config
 	hooks    []Hook
 	mutation *FactMutation
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (fuo *FactUpdateOne) SetDeletedAt(t time.Time) *FactUpdateOne {
+	fuo.mutation.SetDeletedAt(t)
+	return fuo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (fuo *FactUpdateOne) SetNillableDeletedAt(t *time.Time) *FactUpdateOne {
+	if t != nil {
+		fuo.SetDeletedAt(*t)
+	}
+	return fuo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (fuo *FactUpdateOne) ClearDeletedAt() *FactUpdateOne {
+	fuo.mutation.ClearDeletedAt()
+	return fuo
 }
 
 // SetHashedValue sets the "hashed_value" field.
@@ -456,6 +510,19 @@ func (fuo *FactUpdateOne) sqlSave(ctx context.Context) (_node *Fact, err error) 
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: fact.FieldUpdatedAt,
+		})
+	}
+	if value, ok := fuo.mutation.DeletedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: fact.FieldDeletedAt,
+		})
+	}
+	if fuo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: fact.FieldDeletedAt,
 		})
 	}
 	if value, ok := fuo.mutation.HashedValue(); ok {

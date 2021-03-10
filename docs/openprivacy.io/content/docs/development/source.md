@@ -14,12 +14,11 @@ Development related commands can be found in the [Makefile](https://github.com/o
 
 ## Compile from the source
 
-Make sure you have `go` and `make` installed.
+Make sure you have `go`, `make`, `docker`, and `docker-compose` installed.
 
 ```sh
 # Prepare dependencies and compile opv
 
-make deps
 make vendor
 make run
 ```
