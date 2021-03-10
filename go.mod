@@ -14,13 +14,18 @@ require (
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.1-0.20200311113236-681ffa848bae
-	github.com/labstack/echo/v4 v4.2.0
+	github.com/labstack/echo-contrib v0.9.1-0.20210210084017-7944b61cc275
+	github.com/labstack/echo/v4 v4.2.1
 	github.com/labstack/gommon v0.3.0
 	github.com/lib/pq v1.9.0
+	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/echo-swagger v1.1.0
 	github.com/swaggo/swag v1.7.0
 	github.com/tj/go-gracefully v0.0.0-20141227061038-005c1d102f1b
-	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
+	golang.org/x/sys v0.0.0-20210309074719-68d13333faf2 // indirect
+	golang.org/x/text v0.3.5 // indirect
 )

@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo-contrib/pprof"
+	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
-	echoSwagger "github.com/swaggo/echo-swagger"
-
 	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
+	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
-	"github.com/open-privacy/opv/pkg/apimodel"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // DataPlane represents the data plane struct
@@ -60,19 +60,23 @@ func (dp *DataPlane) Stop() {
 }
 
 func (dp *DataPlane) prepareEcho() {
-	e := echo.New()
-	e.HideBanner = true
-	e.HidePort = true
-	e.HTTPErrorHandler = apimodel.HTTPErrorHandler
-	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
-	e.Logger.SetLevel(log.INFO)
+	dp.Echo = echo.New()
+	dp.Logger = dp.Echo.Logger
+	dp.Echo.HideBanner = true
+	dp.Echo.HidePort = true
+	dp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler
+
+	pprof.Register(dp.Echo)
+	dp.Echo.Pre(middleware.RemoveTrailingSlash())
+	dp.Echo.Use(middleware.Recover())
+	dp.Echo.Use(middleware.Logger())
+	dp.preparePrometheus()
+
 	if config.ENV.DataPlaneCORSEnabled {
-		e.Use(middleware.CORS())
+		dp.Echo.Use(middleware.CORS())
 	}
 
-	apiv1 := e.Group("/api/v1")
+	apiv1 := dp.Echo.Group("/api/v1")
 	apiv1.GET("/healthz", dp.Healthz)
 
 	// Protected by grantValidationMiddleware
@@ -86,8 +90,14 @@ func (dp *DataPlane) prepareEcho() {
 	apiv1.GET("/fact_types", dp.QueryFactTypes)
 
 	dataplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.DataPlanePort)
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	dp.Echo.GET("/swagger/*", echoSwagger.WrapHandler)
+}
 
-	dp.Echo = e
-	dp.Logger = e.Logger
+func (dp *DataPlane) preparePrometheus() {
+	if !config.ENV.PrometheusEnabled {
+		return
+	}
+
+	p := prometheus.NewPrometheus("opv_dataplane", nil)
+	p.Use(dp.Echo)
 }

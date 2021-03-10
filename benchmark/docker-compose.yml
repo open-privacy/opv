@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  opv_dataplane:
+    build: ../
+    volumes:
+      - ../_opv.sqlite:/data/_opv.sqlite
+    ports:
+      - "28000:28000"
+    command: dataplane
+
+  opv_controlplane:
+    build: ../
+    volumes:
+      - ../_opv.sqlite:/data/_opv.sqlite
+    ports:
+      - "27999:27999"
+    command: controlplane
+
+  prometheus:
+    image: prom/prometheus:v2.25.0
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9000:9090
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    user: "472"
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
