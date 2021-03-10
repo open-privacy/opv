@@ -385,5 +385,21 @@ func TestAPIAuditLogs(t *testing.T) {
 			Expect().Status().Equal(http.StatusOK),
 			Expect().Body().JSON().Len().GreaterThan(0),
 		)
+
+		Test(
+			t,
+			Description("should return the correct audit logs with limit and offset"),
+			Get(
+				fmt.Sprintf(
+					"%s/api/v1/api_audits?domain=%s&path=%s&limit=2&offset=1&order_by=created_at&order_desc=true",
+					TESTENV.ControlplaneHostport,
+					TESTENV.DefaultDomain,
+					url.PathEscape("/api/v1/healthz"),
+				),
+			),
+			Send().Headers("Content-Type").Add("application/json"),
+			Expect().Status().Equal(http.StatusOK),
+			Expect().Body().JSON().Len().Equal(2),
+		)
 	})
 }

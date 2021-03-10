@@ -83,6 +83,22 @@ paths:
         in: query
         name: sent_http_status
         type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Order By
+        in: query
+        name: order_by
+        type: string
+      - description: Order Desc
+        in: query
+        name: order_desc
+        type: boolean
       produces:
       - application/json
       responses:

@@ -99,6 +99,11 @@ type QueryAPIAuditOption struct {
 	HTTPMethod       *string
 	HTTPPath         *string
 	SentHTTPStatus   *int
+
+	Limit     *int
+	Offset    *int
+	OrderBy   *string
+	OrderDesc bool // default is false, which means Asc
 }
 
 // FactRepo is a repository for Fact

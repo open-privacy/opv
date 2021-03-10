@@ -68,6 +68,30 @@ var doc = `{
                         "description": "Sent HTTP Status",
                         "name": "sent_http_status",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Order By",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Order Desc",
+                        "name": "order_desc",
+                        "in": "query"
                     }
                 ],
                 "responses": {

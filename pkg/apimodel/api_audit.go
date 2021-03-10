@@ -9,6 +9,11 @@ type QueryAPIAudit struct {
 	HTTPPath       *string `query:"http_path"`
 	HTTPMethod     *string `query:"http_method"`
 	SentHTTPStatus *int    `query:"sent_http_status"`
+
+	Limit     *int    `query:"limit"`
+	Offset    *int    `query:"offset"`
+	OrderBy   *string `query:"order_by"`
+	OrderDesc bool    `query:"order_desc"`
 }
 
 // APIAudit is the response apimodel

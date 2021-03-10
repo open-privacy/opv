@@ -21,6 +21,10 @@ import (
 // @param http_path query string false "HTTP Path"
 // @param http_method query string false "HTTP Method"
 // @param sent_http_status query int false "Sent HTTP Status"
+// @param limit query int false "Limit"
+// @param offset query int false "Offset"
+// @param order_by query string false "Order By"
+// @param order_desc query bool false "Order Desc"
 // @success 200 {object} []apimodel.APIAudit
 // @failure 400 {object} echo.HTTPError
 // @failure 500 {object} echo.HTTPError
@@ -38,6 +42,11 @@ func (cp *ControlPlane) QueryAPIAudits(c echo.Context) error {
 		HTTPPath:       q.HTTPPath,
 		HTTPMethod:     q.HTTPMethod,
 		SentHTTPStatus: q.SentHTTPStatus,
+
+		Limit:     q.Limit,
+		Offset:    q.Offset,
+		OrderBy:   q.OrderBy,
+		OrderDesc: q.OrderDesc,
 	})
 
 	if err != nil {

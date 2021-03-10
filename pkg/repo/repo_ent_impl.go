@@ -367,5 +367,21 @@ func (e *entImpl) QueryAPIAudits(ctx context.Context, opt *QueryAPIAuditOption) 
 		conds = append(conds, apiaudit.SentHTTPStatus(*opt.SentHTTPStatus))
 	}
 
-	return e.entClient.APIAudit.Query().Where(conds...).All(ctx)
+	query := e.entClient.APIAudit.Query().Where(conds...)
+
+	if opt.Limit != nil {
+		query = query.Limit(*opt.Limit)
+	}
+	if opt.Offset != nil {
+		query = query.Offset(*opt.Offset)
+	}
+	if opt.OrderBy != nil {
+		if opt.OrderDesc {
+			query = query.Order(ent.Desc(*opt.OrderBy))
+		} else {
+			query = query.Order(ent.Asc(*opt.OrderBy))
+		}
+	}
+
+	return query.All(ctx)
 }

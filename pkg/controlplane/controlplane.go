@@ -77,6 +77,7 @@ func (cp *ControlPlane) prepareEcho() {
 	}
 
 	apiv1 := cp.Echo.Group("/api/v1")
+	apiv1.Use(cp.middlewareAPIAudit())
 	apiv1.GET("/healthz", cp.Healthz)
 	apiv1.POST("/grants", cp.CreateGrant)
 	apiv1.GET("/api_audits", cp.QueryAPIAudits)
