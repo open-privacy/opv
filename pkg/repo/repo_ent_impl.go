@@ -150,7 +150,8 @@ func (e *entImpl) HandleError(ctx context.Context, err error) error {
 		return NewValidationError(err, "Validation error")
 	}
 	if ent.IsConstraintError(err) {
-		if strings.Contains(err.Error(), "UNIQUE constraint failed: facts.hashed_value, facts.scope_facts, facts.fact_type_facts") {
+		var errorMessage = strings.ToLower(err.Error())
+		if strings.Contains(errorMessage, "unique constraint") && strings.Contains(errorMessage, "insert node to table \"facts\"") {
 			return NewValidationError(err, "fact_value already exists for this scope")
 		}
 	}

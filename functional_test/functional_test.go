@@ -47,9 +47,8 @@ var assertGetToken = func(t *testing.T, allowedHttpMethods []string) string {
 	return token
 }
 
-var assertCreateFact = func(t *testing.T, token, factValue string) string {
+var assertCreateFact = func(t *testing.T, token, scopeID string, factValue string) string {
 	var factID string
-	scopeID := uniuri.NewLen(uniuri.UUIDLen)
 
 	Test(
 		t,
@@ -164,6 +163,27 @@ func TestCreateFact(t *testing.T) {
 		)
 	})
 
+	t.Run("fact uniqueness", func(t *testing.T) {
+		factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
+		scopeID := uniuri.NewLen(uniuri.UUIDLen)
+
+		assertCreateFact(t, token, scopeID, factValue)
+		Test(
+			t,
+			Description("Post to dataplane to create a fact"),
+			Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id":         scopeID,
+				"fact_type_slug":  "ascii",
+				"value":           factValue,
+			}),
+
+			Expect().Status().Equal(http.StatusBadRequest),
+		)
+	})
+
 	t.Run("ssn fact type slug", func(t *testing.T) {
 		t.Run("valid ssns", func(t *testing.T) {
 			scopeID := uniuri.NewLen(uniuri.UUIDLen)
@@ -224,7 +244,8 @@ func TestCreateFact(t *testing.T) {
 func TestGetFact(t *testing.T) {
 	token := assertGetToken(t, []string{"POST", "GET"})
 	factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
-	factID := assertCreateFact(t, token, factValue)
+	scopeID := uniuri.NewLen(uniuri.UUIDLen)
+	factID := assertCreateFact(t, token, scopeID, factValue)
 
 	t.Run("happy code path", func(t *testing.T) {
 		Test(
