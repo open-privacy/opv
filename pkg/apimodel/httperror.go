@@ -1,7 +1,6 @@
 package apimodel
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
@@ -13,8 +12,6 @@ import (
 // NewHTTPError creates a new echo.HTTPError from the given error
 // We make sure the messages in the response body is sanitized without leaking sensitive information
 func NewHTTPError(err error) *echo.HTTPError {
-	fmt.Printf("%T\n", err)
-	fmt.Println(err)
 	switch e := err.(type) {
 	case *echo.HTTPError:
 		return e

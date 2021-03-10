@@ -204,13 +204,6 @@ func TestCreateFactUniqueScopeConstraint(t *testing.T) {
 		)
 	})
 
-<<<<<<< HEAD
-	t.Run("fact uniqueness", func(t *testing.T) {
-		factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
-		scopeID := generateScopeID()
-
-		assertCreateFact(t, token, scopeID, factValue)
-=======
 	t.Run("happy code path: create facts with empty scope with the same value multiple times", func(t *testing.T) {
 		n := 2
 
@@ -255,7 +248,6 @@ func TestCreateFactUniqueScopeConstraint(t *testing.T) {
 		)
 
 		// second time should fail
->>>>>>> b7cb55d... Add unique scope-fact constraint on non-empty scope
 		Test(
 			t,
 			Description("Post to dataplane to create a fact"),
@@ -263,16 +255,6 @@ func TestCreateFactUniqueScopeConstraint(t *testing.T) {
 			Send().Headers("Content-Type").Add("application/json"),
 			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
 			Send().Body().JSON(map[string]interface{}{
-<<<<<<< HEAD
-				"scope_custom_id":         scopeID,
-				"fact_type_slug":  "ascii",
-				"value":           factValue,
-			}),
-
-			Expect().Status().Equal(http.StatusBadRequest),
-		)
-	})
-=======
 				"scope_custom_id": scopeCustomID,
 				"fact_type_slug":  "ssn",
 				"value":           "123-45-6789",
@@ -285,7 +267,6 @@ func TestCreateFactUniqueScopeConstraint(t *testing.T) {
 
 func TestCreateFactWithSlugValidation(t *testing.T) {
 	token := getValidToken(t, []string{"POST"})
->>>>>>> b7cb55d... Add unique scope-fact constraint on non-empty scope
 
 	t.Run("ssn fact type slug", func(t *testing.T) {
 		t.Run("valid ssns", func(t *testing.T) {
