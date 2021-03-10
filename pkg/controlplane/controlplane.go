@@ -10,7 +10,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	controlplanedocs "github.com/open-privacy/opv/cmd/controlplane/docs"
-	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
@@ -66,8 +65,6 @@ func (cp *ControlPlane) prepareEcho() {
 	cp.Logger.SetLevel(log.INFO)
 	cp.Echo.HideBanner = true
 	cp.Echo.HidePort = true
-	cp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler
-	cp.Echo.Logger.SetLevel(log.INFO)
 
 	pprof.Register(cp.Echo)
 	cp.Echo.Pre(middleware.RemoveTrailingSlash())

@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
@@ -64,7 +65,6 @@ func (dp *DataPlane) prepareEcho() {
 	dp.Logger.SetLevel(log.INFO)
 	dp.Echo.HideBanner = true
 	dp.Echo.HidePort = true
-	dp.Echo.HTTPErrorHandler = apimodel.HTTPErrorHandler
 
 	pprof.Register(dp.Echo)
 	dp.Echo.Pre(middleware.RemoveTrailingSlash())
