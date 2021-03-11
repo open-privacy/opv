@@ -25,7 +25,6 @@ const (
 	FieldVersion = "version"
 	// FieldAllowedHTTPMethods holds the string denoting the allowed_http_methods field in the database.
 	FieldAllowedHTTPMethods = "allowed_http_methods"
-
 	// Table holds the table name of the grant in the database.
 	Table = "grants"
 )

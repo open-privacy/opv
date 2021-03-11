@@ -23,12 +23,10 @@ const (
 	FieldEncryptedValue = "encrypted_value"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
-
 	// EdgeScope holds the string denoting the scope edge name in mutations.
 	EdgeScope = "scope"
 	// EdgeFactType holds the string denoting the fact_type edge name in mutations.
 	EdgeFactType = "fact_type"
-
 	// Table holds the table name of the fact in the database.
 	Table = "facts"
 	// ScopeTable is the table the holds the scope relation/edge.
@@ -58,7 +56,8 @@ var Columns = []string{
 	FieldDomain,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the Fact type.
+// ForeignKeys holds the SQL foreign-keys that are owned by the "facts"
+// table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"fact_type_facts",
 	"scope_facts",

@@ -3,7 +3,7 @@ module github.com/open-privacy/opv
 go 1.16
 
 require (
-	entgo.io/ent v0.6.0
+	entgo.io/ent v0.7.0
 	github.com/Blank-Xu/sql-adapter v0.0.0-20201228072413-5276c89fa383
 	github.com/Eun/go-hit v0.5.20
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
@@ -17,7 +17,7 @@ require (
 	github.com/labstack/echo-contrib v0.9.1-0.20210210084017-7944b61cc275
 	github.com/labstack/echo/v4 v4.2.1
 	github.com/labstack/gommon v0.3.0
-	github.com/lib/pq v1.9.0
+	github.com/lib/pq v1.10.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6
 	github.com/stretchr/testify v1.7.0
