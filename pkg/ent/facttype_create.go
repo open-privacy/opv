@@ -266,7 +266,7 @@ func (ftc *FactTypeCreate) createSpec() (*FactType, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: facttype.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := ftc.mutation.Slug(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

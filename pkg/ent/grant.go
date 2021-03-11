@@ -21,7 +21,7 @@ type Grant struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// HashedGrantToken holds the value of the "hashed_grant_token" field.
 	HashedGrantToken string `json:"-"`
 	// Domain holds the value of the "domain" field.
@@ -78,7 +78,8 @@ func (gr *Grant) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				gr.DeletedAt = value.Time
+				gr.DeletedAt = new(time.Time)
+				*gr.DeletedAt = value.Time
 			}
 		case grant.FieldHashedGrantToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -136,8 +137,10 @@ func (gr *Grant) String() string {
 	builder.WriteString(gr.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(gr.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(gr.DeletedAt.Format(time.ANSIC))
+	if v := gr.DeletedAt; v != nil {
+		builder.WriteString(", deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", hashed_grant_token=<sensitive>")
 	builder.WriteString(", domain=")
 	builder.WriteString(gr.Domain)

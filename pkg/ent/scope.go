@@ -21,7 +21,7 @@ type Scope struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// CustomID holds the value of the "custom_id" field.
 	CustomID string `json:"custom_id,omitempty"`
 	// Nonce holds the value of the "nonce" field.
@@ -97,7 +97,8 @@ func (s *Scope) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				s.DeletedAt = value.Time
+				s.DeletedAt = new(time.Time)
+				*s.DeletedAt = value.Time
 			}
 		case scope.FieldCustomID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -154,8 +155,10 @@ func (s *Scope) String() string {
 	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(s.DeletedAt.Format(time.ANSIC))
+	if v := s.DeletedAt; v != nil {
+		builder.WriteString(", deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", custom_id=")
 	builder.WriteString(s.CustomID)
 	builder.WriteString(", nonce=<sensitive>")

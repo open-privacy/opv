@@ -242,7 +242,7 @@ func (gc *GrantCreate) createSpec() (*Grant, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: grant.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := gc.mutation.HashedGrantToken(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
