@@ -99,16 +99,14 @@ var (
 		PrimaryKey: []*schema.Column{FactsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:  "facts_fact_types_facts",
-				Columns: []*schema.Column{FactsColumns[7]},
-
+				Symbol:     "facts_fact_types_facts",
+				Columns:    []*schema.Column{FactsColumns[7]},
 				RefColumns: []*schema.Column{FactTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:  "facts_scopes_facts",
-				Columns: []*schema.Column{FactsColumns[8]},
-
+				Symbol:     "facts_scopes_facts",
+				Columns:    []*schema.Column{FactsColumns[8]},
 				RefColumns: []*schema.Column{ScopesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -153,7 +151,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "slug", Type: field.TypeString},
-		{Name: "built_in", Type: field.TypeBool},
+		{Name: "built_in", Type: field.TypeBool, Default: false},
 		{Name: "validation", Type: field.TypeString, Nullable: true},
 	}
 	// FactTypesTable holds the schema information for the "fact_types" table.

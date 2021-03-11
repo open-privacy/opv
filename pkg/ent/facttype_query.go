@@ -406,7 +406,7 @@ func (ftq *FactTypeQuery) sqlCount(ctx context.Context) (int, error) {
 func (ftq *FactTypeQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := ftq.sqlCount(ctx)
 	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %v", err)
+		return false, fmt.Errorf("ent: check existence: %w", err)
 	}
 	return n > 0, nil
 }

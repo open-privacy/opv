@@ -334,7 +334,7 @@ func (aaq *APIAuditQuery) sqlCount(ctx context.Context) (int, error) {
 func (aaq *APIAuditQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := aaq.sqlCount(ctx)
 	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %v", err)
+		return false, fmt.Errorf("ent: check existence: %w", err)
 	}
 	return n > 0, nil
 }

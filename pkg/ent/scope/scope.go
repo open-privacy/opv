@@ -23,10 +23,8 @@ const (
 	FieldNonce = "nonce"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
-
 	// EdgeFacts holds the string denoting the facts edge name in mutations.
 	EdgeFacts = "facts"
-
 	// Table holds the table name of the scope in the database.
 	Table = "scopes"
 	// FactsTable is the table the holds the facts relation/edge.

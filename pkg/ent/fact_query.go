@@ -414,7 +414,8 @@ func (fq *FactQuery) sqlAll(ctx context.Context) ([]*Fact, error) {
 		ids := make([]string, 0, len(nodes))
 		nodeids := make(map[string][]*Fact)
 		for i := range nodes {
-			if fk := nodes[i].scope_facts; fk != nil {
+			fk := nodes[i].scope_facts
+			if fk != nil {
 				ids = append(ids, *fk)
 				nodeids[*fk] = append(nodeids[*fk], nodes[i])
 			}
@@ -439,7 +440,8 @@ func (fq *FactQuery) sqlAll(ctx context.Context) ([]*Fact, error) {
 		ids := make([]string, 0, len(nodes))
 		nodeids := make(map[string][]*Fact)
 		for i := range nodes {
-			if fk := nodes[i].fact_type_facts; fk != nil {
+			fk := nodes[i].fact_type_facts
+			if fk != nil {
 				ids = append(ids, *fk)
 				nodeids[*fk] = append(nodeids[*fk], nodes[i])
 			}
@@ -471,7 +473,7 @@ func (fq *FactQuery) sqlCount(ctx context.Context) (int, error) {
 func (fq *FactQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := fq.sqlCount(ctx)
 	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %v", err)
+		return false, fmt.Errorf("ent: check existence: %w", err)
 	}
 	return n > 0, nil
 }

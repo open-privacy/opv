@@ -23,10 +23,8 @@ const (
 	FieldBuiltIn = "built_in"
 	// FieldValidation holds the string denoting the validation field in the database.
 	FieldValidation = "validation"
-
 	// EdgeFacts holds the string denoting the facts edge name in mutations.
 	EdgeFacts = "facts"
-
 	// Table holds the table name of the facttype in the database.
 	Table = "fact_types"
 	// FactsTable is the table the holds the facts relation/edge.

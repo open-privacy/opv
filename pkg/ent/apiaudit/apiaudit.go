@@ -29,7 +29,6 @@ const (
 	FieldHTTPMethod = "http_method"
 	// FieldSentHTTPStatus holds the string denoting the sent_http_status field in the database.
 	FieldSentHTTPStatus = "sent_http_status"
-
 	// Table holds the table name of the apiaudit in the database.
 	Table = "api_audits"
 )
