@@ -65,14 +65,15 @@ func mapAPIAudits(r []*ent.APIAudit) []apimodel.APIAudit {
 
 	for _, item := range r {
 		ret = append(ret, apimodel.APIAudit{
-			CreatedAt:        iso8601ms.Time(item.CreatedAt),
-			UpdatedAt:        iso8601ms.Time(item.UpdatedAt),
-			Plane:            item.Plane,
-			HashedGrantToken: item.HashedGrantToken,
-			Domain:           item.Domain,
-			HTTPPath:         item.HTTPPath,
-			HTTPMethod:       item.HTTPMethod,
-			SentHTTPStatus:   item.SentHTTPStatus,
+			// Standardize the time to UTC before JSON serialization
+			CreatedAt: iso8601ms.Time(item.CreatedAt.UTC()),
+			UpdatedAt: iso8601ms.Time(item.UpdatedAt.UTC()),
+
+			Plane:          item.Plane,
+			Domain:         item.Domain,
+			HTTPPath:       item.HTTPPath,
+			HTTPMethod:     item.HTTPMethod,
+			SentHTTPStatus: item.SentHTTPStatus,
 		})
 	}
 	return ret

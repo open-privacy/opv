@@ -204,9 +204,6 @@ var doc = `{
                 "domain": {
                     "type": "string"
                 },
-                "hashed_grant_token": {
-                    "type": "string"
-                },
                 "http_method": {
                     "type": "string"
                 },
