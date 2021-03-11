@@ -7,6 +7,7 @@ import (
 	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/ent"
 	"github.com/open-privacy/opv/pkg/repo"
+	"github.com/zhouzhuojie/iso8601ms"
 )
 
 // QueryAPIAudits is the endpoint for querying a list of api audit logs
@@ -64,8 +65,8 @@ func mapAPIAudits(r []*ent.APIAudit) []apimodel.APIAudit {
 
 	for _, item := range r {
 		ret = append(ret, apimodel.APIAudit{
-			CreatedAt:        item.CreatedAt,
-			UpdatedAt:        item.UpdatedAt,
+			CreatedAt:        iso8601ms.Time(item.CreatedAt),
+			UpdatedAt:        iso8601ms.Time(item.UpdatedAt),
 			Plane:            item.Plane,
 			HashedGrantToken: item.HashedGrantToken,
 			Domain:           item.Domain,

@@ -1,6 +1,8 @@
 package apimodel
 
-import "time"
+import (
+	"github.com/zhouzhuojie/iso8601ms"
+)
 
 // QueryAPIAudit is the query struct
 type QueryAPIAudit struct {
@@ -18,12 +20,12 @@ type QueryAPIAudit struct {
 
 // APIAudit is the response apimodel
 type APIAudit struct {
-	CreatedAt        time.Time `json:"created_at,omitempty"`
-	UpdatedAt        time.Time `json:"updated_at,omitempty"`
-	Plane            string    `json:"plane,omitempty"`
-	HashedGrantToken string    `json:"hashed_grant_token,omitempty"`
-	Domain           string    `json:"domain,omitempty"`
-	HTTPPath         string    `json:"http_path,omitempty"`
-	HTTPMethod       string    `json:"http_method,omitempty"`
-	SentHTTPStatus   int       `json:"sent_http_status,omitempty"`
+	CreatedAt        iso8601ms.Time `json:"created_at,omitempty"`
+	UpdatedAt        iso8601ms.Time `json:"updated_at,omitempty"`
+	Plane            string         `json:"plane,omitempty"`
+	HashedGrantToken string         `json:"hashed_grant_token,omitempty"`
+	Domain           string         `json:"domain,omitempty"`
+	HTTPPath         string         `json:"http_path,omitempty"`
+	HTTPMethod       string         `json:"http_method,omitempty"`
+	SentHTTPStatus   int            `json:"sent_http_status,omitempty"`
 }
