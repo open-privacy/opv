@@ -201,10 +201,10 @@ var doc = `{
                 "created_at": {
                     "type": "string"
                 },
-                "deleted_at": {
+                "domain": {
                     "type": "string"
                 },
-                "domain": {
+                "hashed_grant_token": {
                     "type": "string"
                 },
                 "http_method": {
