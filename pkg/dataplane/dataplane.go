@@ -9,11 +9,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	dataplanedocs "github.com/open-privacy/opv/cmd/dataplane/docs"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
-	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // DataPlane represents the data plane struct
@@ -88,9 +86,6 @@ func (dp *DataPlane) prepareEcho() {
 	apiv1.GET("/facts/:id", dp.ShowFact)
 	apiv1.POST("/fact_types", dp.CreateFactType)
 	apiv1.GET("/fact_types", dp.QueryFactTypes)
-
-	dataplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.DataPlanePort)
-	dp.Echo.GET("/swagger/*", echoSwagger.WrapHandler)
 }
 
 func (dp *DataPlane) preparePrometheus() {

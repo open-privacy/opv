@@ -87,7 +87,7 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 	}
 
 	if err := dp.validateFactType(ctx, ft.Slug, cf.Value); err != nil {
-		return apimodel.NewHTTPError(err)
+		return apimodel.NewHTTPError(echo.NewHTTPError(http.StatusBadRequest, err.Error()))
 	}
 
 	encryptedValue, err := dp.Encryptor.Encrypt(s.Nonce, cf.Value)

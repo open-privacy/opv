@@ -33,11 +33,15 @@ var ENV = struct {
 	HasherName    string `env:"OPV_HASHER_NAME" envDefault:"keccak256"`
 	HasherScryptN int    `env:"OPV_HASHER_SCRYPT_N" envDefault:"32768"`
 
-	ControlPlanePort        int  `env:"OPV_CONTROL_PLANE_PORT" envDefault:"27999"`
-	ControlPlaneCORSEnabled bool `env:"OPV_CONTROL_PLANE_CORS_ENABLED" envDefault:"true"`
+	ControlPlanePort                   int      `env:"OPV_CONTROL_PLANE_PORT" envDefault:"27999"`
+	ControlPlaneCORSEnabled            bool     `env:"OPV_CONTROL_PLANE_CORS_ENABLED" envDefault:"true"`
+	ControlPlaneSwaggerHostOverride    string   `env:"OPV_CONTROL_PLANE_SWAGGER_HOST_OVERRIDE" envDefault:""`
+	ControlPlaneSwaggerSchemesOverride []string `env:"OPV_CONTROL_PLANE_SWAGGER_SCHEMES_OVERRIDE" envDefault:"http,https" envSeparator:","`
 
-	DataPlanePort        int  `env:"OPV_DATA_PLANE_PORT" envDefault:"28000"`
-	DataPlaneCORSEnabled bool `env:"OPV_DATA_PLANE_CORS_ENABLED" envDefault:"true"`
+	DataPlanePort                   int      `env:"OPV_DATA_PLANE_PORT" envDefault:"28000"`
+	DataPlaneCORSEnabled            bool     `env:"OPV_DATA_PLANE_CORS_ENABLED" envDefault:"true"`
+	DataPlaneSwaggerHostOverride    string   `env:"OPV_DATA_PLANE_SWAGGER_HOST_OVERRIDE" envDefault:""`
+	DataPlaneSwaggerSchemesOverride []string `env:"OPV_DATA_PLANE_SWAGGER_SCHEMES_OVERRIDE" envDefault:"http,https" envSeparator:","`
 
 	// Supported signing methods and key types
 	// https://github.com/dgrijalva/jwt-go#signing-methods-and-key-types
