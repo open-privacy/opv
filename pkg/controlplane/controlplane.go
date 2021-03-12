@@ -9,11 +9,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	controlplanedocs "github.com/open-privacy/opv/cmd/controlplane/docs"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/crypto"
 	"github.com/open-privacy/opv/pkg/repo"
-	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // ControlPlane is the control plane for OPV
@@ -81,9 +79,6 @@ func (cp *ControlPlane) prepareEcho() {
 	apiv1.GET("/healthz", cp.Healthz)
 	apiv1.POST("/grants", cp.CreateGrant)
 	apiv1.GET("/api_audits", cp.QueryAPIAudits)
-
-	controlplanedocs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", config.ENV.Host, config.ENV.ControlPlanePort)
-	cp.Echo.GET("/swagger/*", echoSwagger.WrapHandler)
 }
 
 func (cp *ControlPlane) preparePrometheus() {

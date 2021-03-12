@@ -176,6 +176,26 @@ func TestCreateFact(t *testing.T) {
 			Expect().Body().JSON().JQ(".fact_type_slug").Equal(factTypeSlug),
 		)
 	})
+
+	t.Run("test not supported fact type slug", func(t *testing.T) {
+		scopeID := uniuri.NewLen(uniuri.UUIDLen)
+		factTypeSlug := "invalid_slug"
+
+		Test(
+			t,
+			Description("Post to dataplane to create a fact"),
+			Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id": scopeID,
+				"fact_type_slug":  factTypeSlug,
+				"value":           "123-45-6789",
+			}),
+
+			Expect().Status().Equal(http.StatusBadRequest),
+		)
+	})
 }
 
 func TestCreateFactUniqueScopeConstraint(t *testing.T) {
