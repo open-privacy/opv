@@ -242,7 +242,7 @@ func TestCreateFactUniqueScopeConstraint(t *testing.T) {
 
 				Expect().Status().Equal(http.StatusOK),
 				Expect().Body().JSON().JQ(".id").NotEqual(""),
-				Expect().Body().JSON().JQ(".scope_custom_id").Equal(""),
+				Expect().Body().JSON().JQ(".scope_custom_id").Equal(nil),
 				Expect().Body().JSON().JQ(".fact_type_slug").Equal("ssn"),
 			)
 		}

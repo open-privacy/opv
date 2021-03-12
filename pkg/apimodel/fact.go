@@ -10,7 +10,7 @@ type CreateFact struct {
 // Fact represents a fact
 type Fact struct {
 	ID            string `json:"id"`
-	ScopeCustomID string `json:"scope_custom_id"`
+	ScopeCustomID string `json:"scope_custom_id,omitempty"`
 	FactTypeSlug  string `json:"fact_type_slug"`
 	Domain        string `json:"domain"`
 	Value         string `json:"value,omitempty"`
