@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect"
+	"github.com/labstack/echo/v4"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/ent"
 )
@@ -136,10 +137,10 @@ type APIAuditRepo interface {
 }
 
 // NewRepoEnforcer creates a new RepoEnforcer
-func NewRepoEnforcer() (Repo, Enforcer, error) {
+func NewRepoEnforcer(logger echo.Logger) (Repo, Enforcer, error) {
 	switch config.ENV.DBDriver {
 	case dialect.MySQL, dialect.Postgres, dialect.SQLite:
-		re, err := newEntImpl()
+		re, err := newEntImpl(logger)
 		if err != nil {
 			return nil, nil, err
 		}

@@ -33,7 +33,7 @@ func MustNewDataPlane() *DataPlane {
 	dp.Hasher = crypto.MustNewHasher()
 	dp.Validator = validator.New()
 
-	repo, enforcer, err := repo.NewRepoEnforcer()
+	repo, enforcer, err := repo.NewRepoEnforcer(dp.Logger)
 	if err != nil {
 		panic(err)
 	}
