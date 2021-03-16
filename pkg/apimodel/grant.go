@@ -7,7 +7,7 @@ type CreateGrant struct {
 
 	// Paths represent the path the grant token can access
 	// We leverage KeyMatch2 to define paths https://github.com/casbin/casbin/blob/v2.25.5/util/builtin_operators_test.go#L88-L117
-	// For example, by default if "paths" is not set, by default it's *
+	// By default if "paths" is not set, by default it's "*". For example,
 	//
 	//     *
 	//     /api/v1/facts

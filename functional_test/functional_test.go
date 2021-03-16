@@ -52,6 +52,7 @@ var getValidToken = func(t *testing.T, allowedHttpMethods []string, paths []stri
 		Send().Body().JSON(map[string]interface{}{
 			"domain":               TESTENV.DefaultDomain,
 			"allowed_http_methods": allowedHttpMethods,
+			"paths":                paths,
 		}),
 
 		Expect().Status().Equal(http.StatusOK),
@@ -357,7 +358,7 @@ func TestCreateFactFromJSV1(t *testing.T) {
 
 		Test(
 			t,
-			Description("Post to dataplane to create a fact as a js publishable token"),
+			Description("OK to Post to dataplane to create a fact as a js publishable token"),
 			Post(TESTENV.DataplaneHostport+"/js/v1/facts"),
 			Send().Headers("Content-Type").Add("application/json"),
 			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
@@ -373,6 +374,21 @@ func TestCreateFactFromJSV1(t *testing.T) {
 
 			// scope custom id will be nil from POST /js/v1/facts
 			Expect().Body().JSON().JQ(".scope_custom_id").Equal(nil),
+		)
+
+		Test(
+			t,
+			Description("Not OK to Post to apiv1"),
+			Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id": scopeID,
+				"fact_type_slug":  factTypeSlug,
+				"value":           "123-45-6789",
+			}),
+
+			Expect().Status().Equal(http.StatusUnauthorized),
 		)
 	})
 }

@@ -2,7 +2,7 @@ package apimodel
 
 // CreateFact represents the request to create a fact
 type CreateFact struct {
-	ScopeCustomID string `json:"scope_custom_id" validate:"required"`
+	ScopeCustomID string `json:"scope_custom_id"`
 	FactTypeSlug  string `json:"fact_type_slug" validate:"required"`
 	Value         string `json:"value" validate:"required"`
 }

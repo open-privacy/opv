@@ -62,14 +62,17 @@ func (dp *DataPlane) ShowFact(c echo.Context) error {
 func (dp *DataPlane) CreateFact(c echo.Context) error {
 	ctx := c.Request().Context()
 	cf := &apimodel.CreateFact{}
-	scopeCustomID := cf.ScopeCustomID
-	if c.Get("scope_custom_id") != nil {
-		scopeCustomID = c.Get("scope_custom_id").(string)
-	}
-
 	err := c.Bind(cf)
 	if err != nil {
 		return apimodel.NewHTTPError(err)
+	}
+	if err := dp.Validator.Struct(cf); err != nil {
+		return apimodel.NewHTTPError(err)
+	}
+
+	scopeCustomID := cf.ScopeCustomID
+	if c.Get("scope_custom_id") != nil {
+		scopeCustomID = c.Get("scope_custom_id").(string)
 	}
 
 	domain := currentDomain(c)
