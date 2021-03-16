@@ -98,8 +98,15 @@ func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (g *e
 	}, nil
 }
 
-func (e *entImpl) Enforce(rvals ...interface{}) (result bool, err error) {
-	result, err = e.enforcer.Enforce(rvals...)
+func (e *entImpl) Enforce(r AuthzRequest) (result bool, err error) {
+	// sub, dom, obj, act
+	result, err = e.enforcer.Enforce(
+		r.Subject,
+		r.Domain,
+		r.Object,
+		r.Action,
+	)
+
 	if err != nil {
 		return false, UnauthorizedError{Err: err}
 	}
@@ -107,8 +114,29 @@ func (e *entImpl) Enforce(rvals ...interface{}) (result bool, err error) {
 	return result, nil
 }
 
-func (e *entImpl) AddPolicy(params ...interface{}) (bool, error) {
-	added, err := e.enforcer.AddPolicy(params...)
+func (e *entImpl) AddPolicy(p AuthzPolicy) (bool, error) {
+	// sub, dom, obj, act, eft
+	added, err := e.enforcer.AddPolicy(
+		p.Subject,
+		p.Domain,
+		p.Object,
+		p.Action,
+		p.Effect,
+	)
+
+	if err != nil {
+		return false, ValidationError{Err: err}
+	}
+	return added, nil
+}
+
+func (e *entImpl) AddGroupingPolicy(gp AuthzGroupingPolicy) (bool, error) {
+	// sub, group, dom
+	added, err := e.enforcer.AddGroupingPolicy(
+		gp.Subject,
+		gp.Group,
+		gp.Domain,
+	)
 
 	if err != nil {
 		return false, ValidationError{Err: err}

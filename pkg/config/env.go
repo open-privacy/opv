@@ -19,7 +19,7 @@ var ENV = struct {
 	DBDriver             string        `env:"OPV_DB_DRIVER" envDefault:"sqlite3"`
 	DBSetupRetryAttempts uint          `env:"OPV_DB_SETUP_RETRY_ATTEMPTS" envDefault:"9"`
 	DBSetupRetryDelay    time.Duration `env:"OPV_DB_SETUP_RETRY_DELAY" envDefault:"100ms"`
-	DBConnectionStr      string        `env:"OPV_DB_CONNECTION_STR" envDefault:"_opv.sqlite?cache=shared&_fk=1"`
+	DBConnectionStr      string        `env:"OPV_DB_CONNECTION_STR" envDefault:"file:memdb1?mode=memory&cache=shared&_fk=1"`
 
 	PrometheusEnabled bool `env:"OPV_PROMETHEUS_ENABLED" envDefault:"true"`
 

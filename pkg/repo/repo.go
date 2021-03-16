@@ -21,11 +21,33 @@ const (
 	ProxyplaneName = "proxyplane"
 )
 
+type AuthzPolicy struct {
+	Subject string
+	Domain  string
+	Object  string
+	Action  string
+	Effect  string
+}
+
+type AuthzGroupingPolicy struct {
+	Subject string
+	Domain  string
+	Group   string
+}
+
+type AuthzRequest struct {
+	Subject string
+	Domain  string
+	Object  string
+	Action  string
+}
+
 // Enforcer is an interface that enforces the authz access
 // e.g. Enforce(sub, dom, obj, act)
 type Enforcer interface {
-	AddPolicy(params ...interface{}) (bool, error)
-	Enforce(rvals ...interface{}) (bool, error)
+	AddPolicy(AuthzPolicy) (bool, error)
+	Enforce(AuthzRequest) (bool, error)
+	AddGroupingPolicy(AuthzGroupingPolicy) (bool, error)
 }
 
 // Repo is a set of repositories
