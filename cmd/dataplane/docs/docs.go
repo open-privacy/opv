@@ -369,7 +369,6 @@ var doc = `{
             "type": "object",
             "required": [
                 "fact_type_slug",
-                "scope_custom_id",
                 "value"
             ],
             "properties": {

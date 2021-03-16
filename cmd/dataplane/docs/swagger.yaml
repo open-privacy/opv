@@ -10,7 +10,6 @@ definitions:
         type: string
     required:
     - fact_type_slug
-    - scope_custom_id
     - value
     type: object
   apimodel.CreateFactType:

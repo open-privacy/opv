@@ -219,7 +219,7 @@
                     "type": "string"
                 },
                 "paths": {
-                    "description": "Paths represent the path the grant token can access\nWe leverage KeyMatch2 to define paths https://github.com/casbin/casbin/blob/v2.25.5/util/builtin_operators_test.go#L88-L117\nFor example, by default if \"paths\" is not set, by default it's *\n\n    *\n    /api/v1/facts\n    /api/v1/facts/:id\n    /api/v1/*\n    /js/v1/facts",
+                    "description": "Paths represent the path the grant token can access\nWe leverage KeyMatch2 to define paths https://github.com/casbin/casbin/blob/v2.25.5/util/builtin_operators_test.go#L88-L117\nBy default if \"paths\" is not set, by default it's \"*\". For example,\n\n    *\n    /api/v1/facts\n    /api/v1/facts/:id\n    /api/v1/*\n    /js/v1/facts",
                     "type": "array",
                     "items": {
                         "type": "string"
