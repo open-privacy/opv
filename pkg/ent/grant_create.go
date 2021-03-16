@@ -86,6 +86,12 @@ func (gc *GrantCreate) SetAllowedHTTPMethods(s string) *GrantCreate {
 	return gc
 }
 
+// SetPaths sets the "paths" field.
+func (gc *GrantCreate) SetPaths(s []string) *GrantCreate {
+	gc.mutation.SetPaths(s)
+	return gc
+}
+
 // SetID sets the "id" field.
 func (gc *GrantCreate) SetID(s string) *GrantCreate {
 	gc.mutation.SetID(s)
@@ -186,6 +192,9 @@ func (gc *GrantCreate) check() error {
 	if _, ok := gc.mutation.AllowedHTTPMethods(); !ok {
 		return &ValidationError{Name: "allowed_http_methods", err: errors.New("ent: missing required field \"allowed_http_methods\"")}
 	}
+	if _, ok := gc.mutation.Paths(); !ok {
+		return &ValidationError{Name: "paths", err: errors.New("ent: missing required field \"paths\"")}
+	}
 	if v, ok := gc.mutation.ID(); ok {
 		if err := grant.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf("ent: validator failed for field \"id\": %w", err)}
@@ -275,6 +284,14 @@ func (gc *GrantCreate) createSpec() (*Grant, *sqlgraph.CreateSpec) {
 			Column: grant.FieldAllowedHTTPMethods,
 		})
 		_node.AllowedHTTPMethods = value
+	}
+	if value, ok := gc.mutation.Paths(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: grant.FieldPaths,
+		})
+		_node.Paths = value
 	}
 	return _node, _spec
 }

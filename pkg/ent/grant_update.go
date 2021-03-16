@@ -71,6 +71,12 @@ func (gu *GrantUpdate) SetAllowedHTTPMethods(s string) *GrantUpdate {
 	return gu
 }
 
+// SetPaths sets the "paths" field.
+func (gu *GrantUpdate) SetPaths(s []string) *GrantUpdate {
+	gu.mutation.SetPaths(s)
+	return gu
+}
+
 // Mutation returns the GrantMutation object of the builder.
 func (gu *GrantUpdate) Mutation() *GrantMutation {
 	return gu.mutation
@@ -202,6 +208,13 @@ func (gu *GrantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: grant.FieldAllowedHTTPMethods,
 		})
 	}
+	if value, ok := gu.mutation.Paths(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: grant.FieldPaths,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{grant.Label}
@@ -261,6 +274,12 @@ func (guo *GrantUpdateOne) SetVersion(s string) *GrantUpdateOne {
 // SetAllowedHTTPMethods sets the "allowed_http_methods" field.
 func (guo *GrantUpdateOne) SetAllowedHTTPMethods(s string) *GrantUpdateOne {
 	guo.mutation.SetAllowedHTTPMethods(s)
+	return guo
+}
+
+// SetPaths sets the "paths" field.
+func (guo *GrantUpdateOne) SetPaths(s []string) *GrantUpdateOne {
+	guo.mutation.SetPaths(s)
 	return guo
 }
 
@@ -398,6 +417,13 @@ func (guo *GrantUpdateOne) sqlSave(ctx context.Context) (_node *Grant, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: grant.FieldAllowedHTTPMethods,
+		})
+	}
+	if value, ok := guo.mutation.Paths(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: grant.FieldPaths,
 		})
 	}
 	_node = &Grant{config: guo.config}

@@ -97,6 +97,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			grant.FieldDomain:             {Type: field.TypeString, Column: grant.FieldDomain},
 			grant.FieldVersion:            {Type: field.TypeString, Column: grant.FieldVersion},
 			grant.FieldAllowedHTTPMethods: {Type: field.TypeString, Column: grant.FieldAllowedHTTPMethods},
+			grant.FieldPaths:              {Type: field.TypeJSON, Column: grant.FieldPaths},
 		},
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
@@ -511,6 +512,11 @@ func (f *GrantFilter) WhereVersion(p entql.StringP) {
 // WhereAllowedHTTPMethods applies the entql string predicate on the allowed_http_methods field.
 func (f *GrantFilter) WhereAllowedHTTPMethods(p entql.StringP) {
 	f.Where(p.Field(grant.FieldAllowedHTTPMethods))
+}
+
+// WherePaths applies the entql json.RawMessage predicate on the paths field.
+func (f *GrantFilter) WherePaths(p entql.BytesP) {
+	f.Where(p.Field(grant.FieldPaths))
 }
 
 // addPredicate implements the predicateAdder interface.

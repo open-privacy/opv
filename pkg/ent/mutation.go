@@ -2335,6 +2335,7 @@ type GrantMutation struct {
 	domain               *string
 	version              *string
 	allowed_http_methods *string
+	paths                *[]string
 	clearedFields        map[string]struct{}
 	done                 bool
 	oldValue             func(context.Context) (*Grant, error)
@@ -2691,6 +2692,42 @@ func (m *GrantMutation) ResetAllowedHTTPMethods() {
 	m.allowed_http_methods = nil
 }
 
+// SetPaths sets the "paths" field.
+func (m *GrantMutation) SetPaths(s []string) {
+	m.paths = &s
+}
+
+// Paths returns the value of the "paths" field in the mutation.
+func (m *GrantMutation) Paths() (r []string, exists bool) {
+	v := m.paths
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaths returns the old "paths" field's value of the Grant entity.
+// If the Grant object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GrantMutation) OldPaths(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPaths is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPaths requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaths: %w", err)
+	}
+	return oldValue.Paths, nil
+}
+
+// ResetPaths resets all changes to the "paths" field.
+func (m *GrantMutation) ResetPaths() {
+	m.paths = nil
+}
+
 // Op returns the operation name.
 func (m *GrantMutation) Op() Op {
 	return m.op
@@ -2705,7 +2742,7 @@ func (m *GrantMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GrantMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, grant.FieldCreatedAt)
 	}
@@ -2726,6 +2763,9 @@ func (m *GrantMutation) Fields() []string {
 	}
 	if m.allowed_http_methods != nil {
 		fields = append(fields, grant.FieldAllowedHTTPMethods)
+	}
+	if m.paths != nil {
+		fields = append(fields, grant.FieldPaths)
 	}
 	return fields
 }
@@ -2749,6 +2789,8 @@ func (m *GrantMutation) Field(name string) (ent.Value, bool) {
 		return m.Version()
 	case grant.FieldAllowedHTTPMethods:
 		return m.AllowedHTTPMethods()
+	case grant.FieldPaths:
+		return m.Paths()
 	}
 	return nil, false
 }
@@ -2772,6 +2814,8 @@ func (m *GrantMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldVersion(ctx)
 	case grant.FieldAllowedHTTPMethods:
 		return m.OldAllowedHTTPMethods(ctx)
+	case grant.FieldPaths:
+		return m.OldPaths(ctx)
 	}
 	return nil, fmt.Errorf("unknown Grant field %s", name)
 }
@@ -2829,6 +2873,13 @@ func (m *GrantMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAllowedHTTPMethods(v)
+		return nil
+	case grant.FieldPaths:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaths(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Grant field %s", name)
@@ -2908,6 +2959,9 @@ func (m *GrantMutation) ResetField(name string) error {
 		return nil
 	case grant.FieldAllowedHTTPMethods:
 		m.ResetAllowedHTTPMethods()
+		return nil
+	case grant.FieldPaths:
+		m.ResetPaths()
 		return nil
 	}
 	return fmt.Errorf("unknown Grant field %s", name)

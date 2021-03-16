@@ -25,6 +25,8 @@ const (
 	FieldVersion = "version"
 	// FieldAllowedHTTPMethods holds the string denoting the allowed_http_methods field in the database.
 	FieldAllowedHTTPMethods = "allowed_http_methods"
+	// FieldPaths holds the string denoting the paths field in the database.
+	FieldPaths = "paths"
 	// Table holds the table name of the grant in the database.
 	Table = "grants"
 )
@@ -39,6 +41,7 @@ var Columns = []string{
 	FieldDomain,
 	FieldVersion,
 	FieldAllowedHTTPMethods,
+	FieldPaths,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

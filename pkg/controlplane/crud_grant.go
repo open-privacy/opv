@@ -42,6 +42,7 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 		Domain:             cg.Domain,
 		Version:            token.Version,
 		AllowedHTTPMethods: cg.AllowedHTTPMethods,
+		Paths:              cg.Paths,
 	})
 	if err != nil {
 		return apimodel.NewHTTPError(err)
@@ -51,5 +52,6 @@ func (cp *ControlPlane) CreateGrant(c echo.Context) error {
 		Token:              token.String(),
 		Domain:             g.Domain,
 		AllowedHTTPMethods: cg.AllowedHTTPMethods,
+		Paths:              g.Paths,
 	})
 }

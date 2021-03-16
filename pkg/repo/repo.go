@@ -102,6 +102,7 @@ type CreateGrantOption struct {
 	Domain             string
 	Version            string
 	AllowedHTTPMethods []string
+	Paths              []string
 }
 
 // CreateAPIAuditOption ...

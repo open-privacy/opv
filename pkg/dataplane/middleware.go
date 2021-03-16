@@ -95,3 +95,13 @@ func (dp *DataPlane) middlewareAPIAudit() echo.MiddlewareFunc {
 		}
 	}
 }
+
+// middlewareSetContext sets the echo.Context k/v pairs
+func (dp *DataPlane) middlewareSetContext(k string, v interface{}) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Set(k, v)
+			return next(c)
+		}
+	}
+}
