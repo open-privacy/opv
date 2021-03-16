@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -30,6 +31,8 @@ type Grant struct {
 	Version string `json:"version,omitempty"`
 	// AllowedHTTPMethods holds the value of the "allowed_http_methods" field.
 	AllowedHTTPMethods string `json:"allowed_http_methods,omitempty"`
+	// Paths holds the value of the "paths" field.
+	Paths []string `json:"paths,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -37,6 +40,8 @@ func (*Grant) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case grant.FieldPaths:
+			values[i] = &[]byte{}
 		case grant.FieldID, grant.FieldHashedGrantToken, grant.FieldDomain, grant.FieldVersion, grant.FieldAllowedHTTPMethods:
 			values[i] = &sql.NullString{}
 		case grant.FieldCreatedAt, grant.FieldUpdatedAt, grant.FieldDeletedAt:
@@ -105,6 +110,15 @@ func (gr *Grant) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				gr.AllowedHTTPMethods = value.String
 			}
+		case grant.FieldPaths:
+
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field paths", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &gr.Paths); err != nil {
+					return fmt.Errorf("unmarshal field paths: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -148,6 +162,8 @@ func (gr *Grant) String() string {
 	builder.WriteString(gr.Version)
 	builder.WriteString(", allowed_http_methods=")
 	builder.WriteString(gr.AllowedHTTPMethods)
+	builder.WriteString(", paths=")
+	builder.WriteString(fmt.Sprintf("%v", gr.Paths))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -25,6 +25,20 @@ definitions:
         type: array
       domain:
         type: string
+      paths:
+        description: |-
+          Paths represent the path the grant token can access
+          We leverage KeyMatch2 to define paths https://github.com/casbin/casbin/blob/v2.25.5/util/builtin_operators_test.go#L88-L117
+          By default if "paths" is not set, by default it's "*". For example,
+
+              *
+              /api/v1/facts
+              /api/v1/facts/:id
+              /api/v1/*
+              /js/v1/facts
+        items:
+          type: string
+        type: array
     type: object
   apimodel.Grant:
     properties:
@@ -34,6 +48,10 @@ definitions:
         type: array
       domain:
         type: string
+      paths:
+        items:
+          type: string
+        type: array
       token:
         type: string
     type: object

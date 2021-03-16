@@ -66,11 +66,19 @@ func (dp *DataPlane) CreateFact(c echo.Context) error {
 	if err != nil {
 		return apimodel.NewHTTPError(err)
 	}
+	if err := dp.Validator.Struct(cf); err != nil {
+		return apimodel.NewHTTPError(err)
+	}
+
+	scopeCustomID := cf.ScopeCustomID
+	if c.Get("scope_custom_id") != nil {
+		scopeCustomID = c.Get("scope_custom_id").(string)
+	}
 
 	domain := currentDomain(c)
 
 	s, err := dp.Repo.CreateScope(ctx, &repo.CreateScopeOption{
-		ScopeCustomID: cf.ScopeCustomID,
+		ScopeCustomID: scopeCustomID,
 		Domain:        domain,
 	})
 	if err != nil {

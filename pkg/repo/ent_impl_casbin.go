@@ -34,7 +34,7 @@ g = _, _, _
 e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 [matchers]
-m = g(r.sub, p.sub, r.dom) && keyMatch(r.dom, p.dom) && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)
+m = g(r.sub, p.sub, r.dom) && keyMatch2(r.dom, p.dom) && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)
 `
 
 func newCasbin(db *sql.DB) (*casbin.SyncedEnforcer, error) {
@@ -78,16 +78,24 @@ func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (g *e
 	defer func() { err = e.HandleError(err) }()
 
 	m := mergeAllowedHTTPMethods(opt.AllowedHTTPMethods)
-	_, err = e.enforcer.AddPolicy(
-		opt.HashedGrantToken,
-		opt.Domain,
-		"*",
-		m,
-		"allow",
-	)
 
-	if err != nil {
-		return nil, err
+	// If the paths is not specified, we then assume it's for all the paths "*"
+	if len(opt.Paths) == 0 {
+		opt.Paths = []string{"*"}
+	}
+
+	for _, path := range opt.Paths {
+		_, err = e.AddPolicy(AuthzPolicy{
+			Subject: opt.HashedGrantToken,
+			Domain:  opt.Domain,
+			Object:  path,
+			Action:  m,
+			Effect:  "allow",
+		})
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &ent.Grant{
@@ -95,6 +103,7 @@ func (e *entImpl) CreateGrant(ctx context.Context, opt *CreateGrantOption) (g *e
 		Domain:             opt.Domain,
 		Version:            opt.Version,
 		AllowedHTTPMethods: m,
+		Paths:              opt.Paths,
 	}, nil
 }
 

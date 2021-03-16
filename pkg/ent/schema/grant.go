@@ -19,6 +19,7 @@ func (Grant) Fields() []ent.Field {
 		field.String("domain"),
 		field.String("version"),
 		field.String("allowed_http_methods"),
+		field.Strings("paths"),
 	}
 }
 

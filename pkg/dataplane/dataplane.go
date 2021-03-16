@@ -73,7 +73,11 @@ func (dp *DataPlane) prepareEcho() {
 	if config.ENV.DataPlaneCORSEnabled {
 		dp.Echo.Use(middleware.CORS())
 	}
+	dp.prepareAPIV1()
+	dp.prepareJSV1()
+}
 
+func (dp *DataPlane) prepareAPIV1() {
 	apiv1 := dp.Echo.Group("/api/v1")
 	apiv1.Use(dp.middlewareAPIAudit())
 	apiv1.GET("/healthz", dp.Healthz)
@@ -86,6 +90,13 @@ func (dp *DataPlane) prepareEcho() {
 	apiv1.GET("/facts/:id", dp.ShowFact)
 	apiv1.POST("/fact_types", dp.CreateFactType)
 	apiv1.GET("/fact_types", dp.QueryFactTypes)
+}
+
+func (dp *DataPlane) prepareJSV1() {
+	jsv1 := dp.Echo.Group("/js/v1")
+	jsv1.Use(dp.middlewareAPIAudit())
+	jsv1.Use(dp.middlewareGrantValidation())
+	jsv1.POST("/facts", dp.CreateFact, dp.middlewareSetContext("scope_custom_id", ""))
 }
 
 func (dp *DataPlane) preparePrometheus() {

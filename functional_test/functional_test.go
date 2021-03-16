@@ -34,9 +34,12 @@ func generateScopeID() string {
 }
 
 var getValidTokenMemo = make(map[string]string)
-var getValidToken = func(t *testing.T, allowedHttpMethods []string) string {
-	methods := strings.Join(allowedHttpMethods, "")
-	token, ok := getValidTokenMemo[methods]
+var getValidToken = func(t *testing.T, allowedHttpMethods []string, paths []string) string {
+	cacheKey := strings.Join(
+		append(allowedHttpMethods, paths...),
+		"",
+	)
+	token, ok := getValidTokenMemo[cacheKey]
 	if ok {
 		return token
 	}
@@ -49,6 +52,7 @@ var getValidToken = func(t *testing.T, allowedHttpMethods []string) string {
 		Send().Body().JSON(map[string]interface{}{
 			"domain":               TESTENV.DefaultDomain,
 			"allowed_http_methods": allowedHttpMethods,
+			"paths":                paths,
 		}),
 
 		Expect().Status().Equal(http.StatusOK),
@@ -57,7 +61,7 @@ var getValidToken = func(t *testing.T, allowedHttpMethods []string) string {
 	)
 	time.Sleep(config.ENV.AuthzCasbinAutoloadInterval + time.Second)
 
-	getValidTokenMemo[methods] = token
+	getValidTokenMemo[cacheKey] = token
 	return token
 }
 
@@ -152,7 +156,7 @@ func TestCreateGrant(t *testing.T) {
 }
 
 func TestCreateFact(t *testing.T) {
-	token := getValidToken(t, []string{"POST"})
+	token := getValidToken(t, []string{"POST"}, nil)
 
 	t.Run("happy code path", func(t *testing.T) {
 		scopeID := uniuri.NewLen(uniuri.UUIDLen)
@@ -199,7 +203,7 @@ func TestCreateFact(t *testing.T) {
 }
 
 func TestCreateFactUniqueScopeConstraint(t *testing.T) {
-	token := getValidToken(t, []string{"POST"})
+	token := getValidToken(t, []string{"POST"}, nil)
 
 	t.Run("happy code path", func(t *testing.T) {
 		scopeID := generateScopeID()
@@ -286,7 +290,7 @@ func TestCreateFactUniqueScopeConstraint(t *testing.T) {
 }
 
 func TestCreateFactWithSlugValidation(t *testing.T) {
-	token := getValidToken(t, []string{"POST"})
+	token := getValidToken(t, []string{"POST"}, nil)
 
 	t.Run("ssn fact type slug", func(t *testing.T) {
 		t.Run("valid ssns", func(t *testing.T) {
@@ -345,8 +349,52 @@ func TestCreateFactWithSlugValidation(t *testing.T) {
 	})
 }
 
+func TestCreateFactFromJSV1(t *testing.T) {
+	token := getValidToken(t, []string{"POST"}, []string{"/js/v1/facts"})
+
+	t.Run("happy code path", func(t *testing.T) {
+		scopeID := uniuri.NewLen(uniuri.UUIDLen)
+		factTypeSlug := "ssn"
+
+		Test(
+			t,
+			Description("OK to Post to dataplane to create a fact as a js publishable token"),
+			Post(TESTENV.DataplaneHostport+"/js/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id": scopeID,
+				"fact_type_slug":  factTypeSlug,
+				"value":           "123-45-6789",
+			}),
+
+			Expect().Status().Equal(http.StatusOK),
+			Expect().Body().JSON().JQ(".id").NotEqual(""),
+			Expect().Body().JSON().JQ(".fact_type_slug").Equal(factTypeSlug),
+
+			// scope custom id will be nil from POST /js/v1/facts
+			Expect().Body().JSON().JQ(".scope_custom_id").Equal(nil),
+		)
+
+		Test(
+			t,
+			Description("Not OK to Post to apiv1"),
+			Post(TESTENV.DataplaneHostport+"/api/v1/facts"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Headers("X-OPV-GRANT-TOKEN").Add(token),
+			Send().Body().JSON(map[string]interface{}{
+				"scope_custom_id": scopeID,
+				"fact_type_slug":  factTypeSlug,
+				"value":           "123-45-6789",
+			}),
+
+			Expect().Status().Equal(http.StatusUnauthorized),
+		)
+	})
+}
+
 func TestGetFact(t *testing.T) {
-	token := getValidToken(t, []string{"POST", "GET"})
+	token := getValidToken(t, []string{"POST", "GET"}, nil)
 	factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
 	scopeID := generateScopeID()
 	factID := assertCreateFact(t, token, scopeID, factValue)
@@ -366,7 +414,7 @@ func TestGetFact(t *testing.T) {
 }
 
 func TestMalformattedJSON(t *testing.T) {
-	token := getValidToken(t, []string{"POST"})
+	token := getValidToken(t, []string{"POST"}, nil)
 
 	Test(
 		t,

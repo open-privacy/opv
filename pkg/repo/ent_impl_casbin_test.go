@@ -17,7 +17,7 @@ func TestEntImplCasbinRule(t *testing.T) {
 		_, err = entImpl.AddPolicy(AuthzPolicy{
 			Subject: hashedToken,
 			Domain:  "example.com",
-			Object:  "/api/v1/facts",
+			Object:  "/api/v1/facts/*",
 			Action:  mergeAllowedHTTPMethods([]string{"*"}),
 			Effect:  "allow",
 		})
@@ -28,8 +28,17 @@ func TestEntImplCasbinRule(t *testing.T) {
 		shouldPass, err := entImpl.Enforce(AuthzRequest{
 			Subject: hashedToken,
 			Domain:  "example.com",
-			Object:  "/api/v1/facts",
+			Object:  "/api/v1/facts/",
 			Action:  "POST",
+		})
+		assert.True(t, shouldPass)
+		assert.NoError(t, err)
+
+		shouldPass, err = entImpl.Enforce(AuthzRequest{
+			Subject: hashedToken,
+			Domain:  "example.com",
+			Object:  "/api/v1/facts/somesubpath",
+			Action:  "GET",
 		})
 		assert.True(t, shouldPass)
 		assert.NoError(t, err)

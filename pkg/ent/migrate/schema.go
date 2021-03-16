@@ -198,6 +198,7 @@ var (
 		{Name: "domain", Type: field.TypeString},
 		{Name: "version", Type: field.TypeString},
 		{Name: "allowed_http_methods", Type: field.TypeString},
+		{Name: "paths", Type: field.TypeJSON},
 	}
 	// GrantsTable holds the schema information for the "grants" table.
 	GrantsTable = &schema.Table{
