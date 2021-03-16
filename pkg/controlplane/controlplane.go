@@ -33,7 +33,7 @@ func MustNewControlPlane() *ControlPlane {
 	cp.Hasher = crypto.MustNewHasher()
 	cp.Validator = validator.New()
 
-	repo, enforcer, err := repo.NewRepoEnforcer()
+	repo, enforcer, err := repo.NewRepoEnforcer(cp.Logger)
 	if err != nil {
 		panic(err)
 	}

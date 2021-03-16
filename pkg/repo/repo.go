@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect"
+	"github.com/labstack/echo/v4"
 	"github.com/open-privacy/opv/pkg/config"
 	"github.com/open-privacy/opv/pkg/ent"
 )
@@ -20,11 +21,33 @@ const (
 	ProxyplaneName = "proxyplane"
 )
 
+type AuthzPolicy struct {
+	Subject string
+	Domain  string
+	Object  string
+	Action  string
+	Effect  string
+}
+
+type AuthzGroupingPolicy struct {
+	Subject string
+	Domain  string
+	Group   string
+}
+
+type AuthzRequest struct {
+	Subject string
+	Domain  string
+	Object  string
+	Action  string
+}
+
 // Enforcer is an interface that enforces the authz access
 // e.g. Enforce(sub, dom, obj, act)
 type Enforcer interface {
-	AddPolicy(params ...interface{}) (bool, error)
-	Enforce(rvals ...interface{}) (bool, error)
+	AddPolicy(AuthzPolicy) (bool, error)
+	Enforce(AuthzRequest) (bool, error)
+	AddGroupingPolicy(AuthzGroupingPolicy) (bool, error)
 }
 
 // Repo is a set of repositories
@@ -136,10 +159,10 @@ type APIAuditRepo interface {
 }
 
 // NewRepoEnforcer creates a new RepoEnforcer
-func NewRepoEnforcer() (Repo, Enforcer, error) {
+func NewRepoEnforcer(logger echo.Logger) (Repo, Enforcer, error) {
 	switch config.ENV.DBDriver {
 	case dialect.MySQL, dialect.Postgres, dialect.SQLite:
-		re, err := newEntImpl()
+		re, err := newEntImpl(logger)
 		if err != nil {
 			return nil, nil, err
 		}

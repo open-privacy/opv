@@ -30,14 +30,19 @@ func (dp *DataPlane) middlewareGrantValidation() echo.MiddlewareFunc {
 
 			sub := token.Hash(dp.Hasher)
 			act := c.Request().Method
-			obj := c.Request().URL.Path
+			obj := c.Request().URL.Path // obj will be like "/api/v1/facts/fact_somerandomid"
 			dom := token.Domain
 
 			c.Set(contextAuthzSub, sub)
 			c.Set(contextAuthzAct, act)
 			c.Set(contextAuthzObj, obj)
 			c.Set(contextAuthzDom, dom)
-			return dp.Enforcer.Enforce(sub, dom, obj, act)
+			return dp.Enforcer.Enforce(repo.AuthzRequest{
+				Subject: sub,
+				Action:  act,
+				Object:  obj,
+				Domain:  dom,
+			})
 		},
 	})
 }
