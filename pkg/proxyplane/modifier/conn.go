@@ -9,7 +9,11 @@ import (
 	"github.com/open-privacy/opv/pkg/config"
 )
 
-const headerOPVGrantToken = "x-opv-grant-token"
+const (
+	headerOPVGrantToken  = "x-opv-grant-token"
+	headerOPVUserAgent   = "OPV-ProxyPlane"
+	headerOPVContentType = "application/json"
+)
 
 type conn struct {
 	dpGrantToken string
@@ -41,7 +45,8 @@ func (c *conn) createFact(factTypeSlug string, value string) (factID string, err
 		return "", err
 	}
 	req.Header.Add(headerOPVGrantToken, c.dpGrantToken)
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Type", headerOPVContentType)
+	req.Header.Add("User-Agent", headerOPVUserAgent)
 
 	resp, err := c.client.Do(req)
 	if resp != nil {
@@ -73,6 +78,7 @@ func (c *conn) getFact(factID string) (value string, err error) {
 		return "", err
 	}
 	req.Header.Add(headerOPVGrantToken, c.dpGrantToken)
+	req.Header.Add("User-Agent", headerOPVUserAgent)
 
 	resp, err := c.client.Do(req)
 	if resp != nil {

@@ -74,6 +74,8 @@ func (h *HTTPProxy) Stop() {
 }
 
 func (h *HTTPProxy) Start() {
+	router.UserAgentHeaderValue = []string{"OPV Proxy Plane"}
+
 	// krakend only supports gin router for now
 	routerFactory := krakendgin.NewFactory(krakendgin.Config{
 		Engine:         h.engine,

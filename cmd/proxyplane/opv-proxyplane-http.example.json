@@ -8,14 +8,6 @@
   ],
   "cache_ttl": 3600,
   "timeout": "3s",
-  "extra_config": {
-    "github_com/devopsfaith/krakend-gologging": {
-      "level": "ERROR",
-      "prefix": "[OPV]",
-      "syslog": false,
-      "stdout": true
-    }
-  },
   "endpoints": [
     {
       "endpoint": "/tokenize",
