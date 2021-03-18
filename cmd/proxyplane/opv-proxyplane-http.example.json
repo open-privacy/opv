@@ -1,0 +1,77 @@
+{
+  "version": 2,
+  "name": "OPV Proxy Plane",
+  "port": 28001,
+  "debug": false,
+  "host": [
+    "127.0.0.1"
+  ],
+  "cache_ttl": 3600,
+  "timeout": "3s",
+  "extra_config": {
+    "github_com/devopsfaith/krakend-gologging": {
+      "level": "ERROR",
+      "prefix": "[OPV]",
+      "syslog": false,
+      "stdout": true
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/tokenize",
+      "method": "POST",
+      "backend": [
+        {
+          "host": [
+            "https://httpbin.org"
+          ],
+          "url_pattern": "/post",
+          "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+              "opv.body.Modifier": {
+                "scope": [
+                  "request"
+                ],
+                "items": [
+                  {
+                    "json_pointer_path": "/user/ssn",
+                    "fact_type_slug": "ssn",
+                    "action": "tokenize"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/detokenize",
+      "method": "POST",
+      "backend": [
+        {
+          "host": [
+            "https://httpbin.org"
+          ],
+          "url_pattern": "/post",
+          "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+              "opv.body.Modifier": {
+                "scope": [
+                  "request"
+                ],
+                "items": [
+                  {
+                    "json_pointer_path": "/user/ssn",
+                    "fact_type_slug": "ssn",
+                    "action": "detokenize"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
