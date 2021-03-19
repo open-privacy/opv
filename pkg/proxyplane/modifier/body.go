@@ -15,6 +15,10 @@ import (
 	"github.com/open-privacy/opv/pkg/config"
 )
 
+func init() {
+	parse.Register("opv.body.Modifier", NewOPVBodyModifierFromJSON)
+}
+
 type OPVBodyModifier struct {
 	Scope []parse.ModifierType  `json:"scope" validate:"gt=0,dive,oneof=request response"`
 	Items []OPVBodyModifierItem `json:"items"`

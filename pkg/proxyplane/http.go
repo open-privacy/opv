@@ -4,6 +4,13 @@ import (
 	"context"
 	"time"
 
+	_ "github.com/open-privacy/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
+
+	ginzap "github.com/gin-contrib/zap"
+	"github.com/gin-gonic/gin"
+	"github.com/open-privacy/opv/pkg/config"
+	"go.uber.org/zap"
+
 	martian "github.com/devopsfaith/krakend-martian"
 	karakendviper "github.com/devopsfaith/krakend-viper"
 	krakendconfig "github.com/devopsfaith/krakend/config"
@@ -12,12 +19,6 @@ import (
 	"github.com/devopsfaith/krakend/router"
 	krakendgin "github.com/devopsfaith/krakend/router/gin"
 	"github.com/devopsfaith/krakend/transport/http/client"
-	ginzap "github.com/gin-contrib/zap"
-	"github.com/gin-gonic/gin"
-	"github.com/google/martian/parse"
-	"github.com/open-privacy/opv/pkg/config"
-	"github.com/open-privacy/opv/pkg/proxyplane/modifier"
-	"go.uber.org/zap"
 )
 
 const (
@@ -67,13 +68,7 @@ func MustNewHTTPProxy() *HTTPProxy {
 		engine: r,
 		logger: &zapLogger{SugaredLogger: logger.Sugar()},
 	}
-	h.registerModifiers()
 	return h
-}
-
-func (h *HTTPProxy) registerModifiers() {
-	// To register all the opv.*.Modifiers from the pkg/proxyplane/modifier package
-	parse.Register("opv.body.Modifier", modifier.NewOPVBodyModifierFromJSON)
 }
 
 func (h *HTTPProxy) Stop() {
