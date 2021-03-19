@@ -7,22 +7,27 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/Jeffail/gabs"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/martian/parse"
+	"github.com/open-privacy/opv/pkg/config"
 )
 
 type OPVBodyModifier struct {
+	Scope []parse.ModifierType  `json:"scope" validate:"gt=0,dive,oneof=request response"`
 	Items []OPVBodyModifierItem `json:"items"`
-	Scope []parse.ModifierType  `json:"scope"`
 
-	conn *conn
+	OPVDataplaneGrantToken        string `json:"-" validate:"required"`
+	OPVDataplaneGrantTokenFromEnv string `json:"opv_dataplane_grant_token_from_env"`
+	OPVDataplaneBaseURL           string `json:"opv_dataplane_base_url"`
 }
 
 type OPVBodyModifierItem struct {
-	JSONPointerPath string `json:"json_pointer_path"`
-	FactTypeSlug    string `json:"fact_type_slug"`
-	Action          string `json:"action"`
+	JSONPointerPath string `json:"json_pointer_path" validate:"required"`
+	FactTypeSlug    string `json:"fact_type_slug" validate:"required"`
+	Action          string `json:"action" validate:"required,oneof=tokenize detokenize"`
 }
 
 func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, error) {
@@ -35,6 +40,8 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 		return nil, err
 	}
 
+	conn := newConn(o.OPVDataplaneGrantToken, o.OPVDataplaneBaseURL)
+
 	for _, item := range o.Items {
 		switch item.Action {
 		case "tokenize":
@@ -43,7 +50,7 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 				return nil, err
 			}
 			value := node.String()
-			factID, err := o.conn.createFact(item.FactTypeSlug, value)
+			factID, err := conn.createFact(item.FactTypeSlug, value)
 			if err != nil {
 				return nil, err
 			}
@@ -54,7 +61,7 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 				return nil, err
 			}
 			factID := node.Data().(string)
-			value, err := o.conn.getFact(factID)
+			value, err := conn.getFact(factID)
 			if err != nil {
 				return nil, err
 			}
@@ -92,6 +99,19 @@ func NewOPVBodyModifierFromJSON(b []byte) (*parse.Result, error) {
 	if err := json.Unmarshal(b, mod); err != nil {
 		return nil, err
 	}
-	mod.conn = mustNewConn()
+
+	if mod.OPVDataplaneBaseURL == "" {
+		mod.OPVDataplaneBaseURL = config.ENV.ProxyPlaneDefaultDPBaseURL
+	}
+	if mod.OPVDataplaneGrantTokenFromEnv == "" {
+		mod.OPVDataplaneGrantTokenFromEnv = "OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN"
+	}
+	mod.OPVDataplaneGrantToken = os.Getenv(mod.OPVDataplaneGrantTokenFromEnv)
+
+	validate := validator.New()
+	if err := validate.Struct(mod); err != nil {
+		return nil, err
+	}
+
 	return parse.NewResult(mod, mod.Scope)
 }

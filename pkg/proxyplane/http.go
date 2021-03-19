@@ -20,6 +20,11 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	OPVProxyplaneUserAgent            = "OPV Proxy Plane"
+	OPVProxyplaneExtraConfigNamespace = "github.com/open-privacy/opv"
+)
+
 type HTTPProxy struct {
 	engine *gin.Engine
 	logger krakendlogging.Logger
@@ -67,6 +72,7 @@ func MustNewHTTPProxy() *HTTPProxy {
 }
 
 func (h *HTTPProxy) registerModifiers() {
+	// To register all the opv.*.Modifiers from the pkg/proxyplane/modifier package
 	parse.Register("opv.body.Modifier", modifier.NewOPVBodyModifierFromJSON)
 }
 
@@ -74,7 +80,7 @@ func (h *HTTPProxy) Stop() {
 }
 
 func (h *HTTPProxy) Start() {
-	router.UserAgentHeaderValue = []string{"OPV Proxy Plane"}
+	router.UserAgentHeaderValue = []string{OPVProxyplaneUserAgent}
 
 	// krakend only supports gin router for now
 	routerFactory := krakendgin.NewFactory(krakendgin.Config{
@@ -82,7 +88,10 @@ func (h *HTTPProxy) Start() {
 		Logger:         h.logger,
 		HandlerFactory: krakendgin.EndpointHandler,
 		ProxyFactory: proxy.NewDefaultFactory(
-			martian.NewBackendFactory(h.logger, client.DefaultHTTPRequestExecutor(client.NewHTTPClient)),
+			martian.NewConfiguredBackendFactory(h.logger, func(b *krakendconfig.Backend) client.HTTPRequestExecutor {
+				b.ExtraConfig[martian.Namespace] = b.ExtraConfig[OPVProxyplaneExtraConfigNamespace]
+				return client.DefaultHTTPRequestExecutor(client.NewHTTPClient)
+			}),
 			h.logger,
 		),
 		RunServer: router.RunServer,

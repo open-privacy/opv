@@ -19,7 +19,7 @@
           ],
           "url_pattern": "/post",
           "extra_config": {
-            "github.com/devopsfaith/krakend-martian": {
+            "github.com/open-privacy/opv": {
               "opv.body.Modifier": {
                 "scope": [
                   "request"
@@ -47,7 +47,7 @@
           ],
           "url_pattern": "/post",
           "extra_config": {
-            "github.com/devopsfaith/krakend-martian": {
+            "github.com/open-privacy/opv": {
               "opv.body.Modifier": {
                 "scope": [
                   "request"

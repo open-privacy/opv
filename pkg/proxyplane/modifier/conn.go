@@ -3,10 +3,11 @@ package modifier
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strings"
+	"sync"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/open-privacy/opv/pkg/config"
 )
 
 const (
@@ -15,21 +16,26 @@ const (
 	headerOPVContentType = "application/json"
 )
 
+var (
+	client     *retryablehttp.Client
+	clientOnce sync.Once
+)
+
 type conn struct {
 	dpGrantToken string
 	dpURL        string
 	client       *retryablehttp.Client
 }
 
-func mustNewConn() *conn {
-	if config.ENV.ProxyPlaneDPGrantToken == "" {
-		panic("OPV_PROXY_PLANE_DP_GRANT_TOKEN should not be empty")
-	}
+func newConn(dpGrantToken string, dpURL string) *conn {
+	clientOnce.Do(func() {
+		client = retryablehttp.NewClient()
+	})
 
 	return &conn{
-		dpGrantToken: config.ENV.ProxyPlaneDPGrantToken,
-		dpURL:        config.ENV.ProxyPlaneDPURL,
-		client:       retryablehttp.NewClient(),
+		dpGrantToken: dpGrantToken,
+		dpURL:        dpURL,
+		client:       client,
 	}
 }
 
@@ -54,6 +60,10 @@ func (c *conn) createFact(factTypeSlug string, value string) (factID string, err
 	}
 	if err != nil {
 		return "", err
+	}
+	if resp.StatusCode >= 400 {
+		respBody, _ := ioutil.ReadAll(resp.Body)
+		return "", fmt.Errorf("createFact api failed %s", string(respBody))
 	}
 
 	f := struct {
@@ -86,6 +96,10 @@ func (c *conn) getFact(factID string) (value string, err error) {
 	}
 	if err != nil {
 		return "", err
+	}
+	if resp.StatusCode >= 400 {
+		respBody, _ := ioutil.ReadAll(resp.Body)
+		return "", fmt.Errorf("getFact api failed %s", string(respBody))
 	}
 
 	f := struct {
