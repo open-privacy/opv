@@ -14,7 +14,7 @@ func init() {
 
 // ENV is the whole configuration of the app
 var ENV = struct {
-	Host string `env:"OPV_HOST" envDefault:"localhost"`
+	Host string `env:"OPV_HOST" envDefault:"127.0.0.1"`
 
 	DBDriver             string        `env:"OPV_DB_DRIVER" envDefault:"sqlite3"`
 	DBSetupRetryAttempts uint          `env:"OPV_DB_SETUP_RETRY_ATTEMPTS" envDefault:"9"`

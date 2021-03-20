@@ -31,13 +31,7 @@ jobs:
           go-version: 1.16
 
       - name: Functional Test
-        run: |
-          make build
-          make run &
-          sleep 5
-          make local_functional_test
-          kill -9 `lsof -i:28000 -t`
-          kill -9 `lsof -i:27999 -t`
+        run: make local_functional_test
 
   docs_lint:
     runs-on: ubuntu-latest
