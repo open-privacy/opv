@@ -2,6 +2,8 @@ package proxyplane
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"time"
 
 	_ "github.com/open-privacy/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
@@ -19,6 +21,7 @@ import (
 	"github.com/devopsfaith/krakend/router"
 	krakendgin "github.com/devopsfaith/krakend/router/gin"
 	"github.com/devopsfaith/krakend/transport/http/client"
+	"github.com/devopsfaith/krakend/transport/http/server"
 )
 
 const (
@@ -89,11 +92,47 @@ func (h *HTTPProxy) Start() {
 			}),
 			h.logger,
 		),
-		RunServer: router.RunServer,
+		RunServer: runServer,
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	routerFactory.NewWithContext(ctx).Run(h.cfg)
+}
+
+func runServer(ctx context.Context, cfg krakendconfig.ServiceConfig, handler http.Handler) error {
+	done := make(chan error)
+	s := &http.Server{
+		Addr:              fmt.Sprintf("%s:%d", config.ENV.Host, cfg.Port),
+		Handler:           handler,
+		ReadTimeout:       cfg.ReadTimeout,
+		WriteTimeout:      cfg.WriteTimeout,
+		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
+		IdleTimeout:       cfg.IdleTimeout,
+		TLSConfig:         server.ParseTLSConfig(cfg.TLS),
+	}
+
+	if s.TLSConfig == nil {
+		go func() {
+			done <- s.ListenAndServe()
+		}()
+	} else {
+		if cfg.TLS.PublicKey == "" {
+			return server.ErrPublicKey
+		}
+		if cfg.TLS.PrivateKey == "" {
+			return server.ErrPrivateKey
+		}
+		go func() {
+			done <- s.ListenAndServeTLS(cfg.TLS.PublicKey, cfg.TLS.PrivateKey)
+		}()
+	}
+
+	select {
+	case err := <-done:
+		return err
+	case <-ctx.Done():
+		return s.Shutdown(context.Background())
+	}
 }

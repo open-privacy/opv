@@ -108,9 +108,10 @@ func NewOPVBodyModifierFromJSON(b []byte) (*parse.Result, error) {
 		mod.OPVDataplaneBaseURL = config.ENV.ProxyPlaneDefaultDPBaseURL
 	}
 	if mod.OPVDataplaneGrantTokenFromEnv == "" {
-		mod.OPVDataplaneGrantTokenFromEnv = "OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN"
+		mod.OPVDataplaneGrantToken = config.ENV.ProxyPlaneDefaultDPGrantToken
+	} else {
+		mod.OPVDataplaneGrantToken = os.Getenv(mod.OPVDataplaneGrantTokenFromEnv)
 	}
-	mod.OPVDataplaneGrantToken = os.Getenv(mod.OPVDataplaneGrantTokenFromEnv)
 
 	validate := validator.New()
 	if err := validate.Struct(mod); err != nil {

@@ -3,9 +3,6 @@
   "name": "OPV Proxy Plane",
   "port": 28001,
   "debug": false,
-  "host": [
-    "127.0.0.1"
-  ],
   "cache_ttl": 3600,
   "timeout": "3s",
   "endpoints": [
