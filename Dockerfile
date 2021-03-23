@@ -13,16 +13,16 @@ FROM frolvlad/alpine-glibc:alpine-3.10
 RUN apk add --no-cache curl
 VOLUME ["/data"]
 
-
-ENV OPV_DB_DRIVER=sqlite3
 ENV OPV_HOST=0.0.0.0
+ENV OPV_DB_DRIVER=sqlite3
 ENV OPV_DB_CONNECTION_STR=/data/_opv.sqlite?cache=shared&_fk=1
 
-COPY --from=go_builder /data/opv/build/dataplane /usr/local/bin/dataplane
+COPY --from=go_builder /data/opv/build/dataplane    /usr/local/bin/dataplane
 COPY --from=go_builder /data/opv/build/controlplane /usr/local/bin/controlplane
+COPY --from=go_builder /data/opv/build/proxyplane   /usr/local/bin/proxyplane
 
 EXPOSE 27999
 EXPOSE 28000
+EXPOSE 28001
 
 CMD dataplane
-

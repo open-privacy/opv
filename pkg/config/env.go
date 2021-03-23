@@ -45,7 +45,7 @@ var ENV = struct {
 
 	AuthzCasbinAutoloadInterval time.Duration `env:"OPV_AUTHZ_CASBIN_AUTOLOAD_INTERVAL" envDefault:"3s"`
 
-	ProxyPlaneHTTPConfig          string `env:"OPV_PROXY_PLANE_HTTP_Config" envDefault:"./cmd/proxyplane/opv-proxyplane-http.example.json"`
+	ProxyPlaneHTTPConfig          string `env:"OPV_PROXY_PLANE_HTTP_CONFIG" envDefault:"./cmd/proxyplane/opv-proxyplane-http.example.json"`
 	ProxyPlaneDefaultDPBaseURL    string `env:"OPV_PROXY_PLANE_DEFAULT_DP_BASE_URL" envDefault:"http://127.0.0.1:28000"`
 	ProxyPlaneDefaultDPGrantToken string `env:"OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN" envDefault:""`
 }{}
