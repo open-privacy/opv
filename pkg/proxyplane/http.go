@@ -53,7 +53,7 @@ func MustNewHTTPProxy() *HTTPProxy {
 	if err != nil {
 		panic(err)
 	}
-
+	cfg.Port = config.ENV.ProxyPlaneHTTPPort
 	var logger *zap.Logger
 	if cfg.Debug {
 		gin.SetMode("debug")
