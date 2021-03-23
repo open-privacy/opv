@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"github.com/open-privacy/opv/pkg/config"
+	"github.com/open-privacy/opv/pkg/proxyplane"
+	"github.com/tj/go-gracefully"
+)
 
 func main() {
-	fmt.Println("not implemented")
+	pp := proxyplane.MustNewProxyPlane()
+	pp.Start()
+	defer pp.Stop()
+
+	gracefully.Timeout = config.ENV.GracefullyShutdownTimeout
+	gracefully.Shutdown()
 }

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	. "github.com/Eun/go-hit"
+	"github.com/avast/retry-go"
 	"github.com/dchest/uniuri"
 	"github.com/open-privacy/opv/pkg/config"
 )
@@ -18,7 +19,7 @@ func generateScopeID() string {
 }
 
 var getValidTokenMemo = make(map[string]string)
-var getValidToken = func(t *testing.T, allowedHttpMethods []string, paths []string) string {
+var getValidToken = func(allowedHttpMethods []string, paths []string) string {
 	cacheKey := strings.Join(
 		append(allowedHttpMethods, paths...),
 		"",
@@ -28,23 +29,28 @@ var getValidToken = func(t *testing.T, allowedHttpMethods []string, paths []stri
 		return token
 	}
 
-	Test(
-		t,
-		Description("Post to controlplane to create a grant"),
-		Post(TESTENV.ControlplaneHostport+"/api/v1/grants"),
-		Send().Headers("Content-Type").Add("application/json"),
-		Send().Body().JSON(map[string]interface{}{
-			"domain":               TESTENV.DefaultDomain,
-			"allowed_http_methods": allowedHttpMethods,
-			"paths":                paths,
-		}),
+	err := retry.Do(func() error {
+		return Do(
 
-		Expect().Status().Equal(http.StatusOK),
-		Expect().Body().JSON().JQ(".token").Len().GreaterThan(0),
-		Store().Response().Body().JSON().JQ(".token").In(&token),
-	)
+			Description("Post to controlplane to create a grant"),
+			Post(TESTENV.ControlplaneHostport+"/api/v1/grants"),
+			Send().Headers("Content-Type").Add("application/json"),
+			Send().Body().JSON(map[string]interface{}{
+				"domain":               TESTENV.DefaultDomain,
+				"allowed_http_methods": allowedHttpMethods,
+				"paths":                paths,
+			}),
+
+			Expect().Status().Equal(http.StatusOK),
+			Expect().Body().JSON().JQ(".token").Len().GreaterThan(0),
+			Store().Response().Body().JSON().JQ(".token").In(&token),
+		)
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	time.Sleep(config.ENV.AuthzCasbinAutoloadInterval + time.Second)
-
 	getValidTokenMemo[cacheKey] = token
 	return token
 }
@@ -116,7 +122,7 @@ func TestCreateGrant(t *testing.T) {
 }
 
 func TestCreateFact(t *testing.T) {
-	token := getValidToken(t, []string{"POST"}, nil)
+	token := getValidToken([]string{"POST"}, nil)
 
 	t.Run("happy code path", func(t *testing.T) {
 		scopeID := uniuri.NewLen(uniuri.UUIDLen)
@@ -163,7 +169,7 @@ func TestCreateFact(t *testing.T) {
 }
 
 func TestCreateFactUniqueScopeConstraint(t *testing.T) {
-	token := getValidToken(t, []string{"POST"}, nil)
+	token := getValidToken([]string{"POST"}, nil)
 
 	t.Run("happy code path", func(t *testing.T) {
 		scopeID := generateScopeID()
@@ -250,7 +256,7 @@ func TestCreateFactUniqueScopeConstraint(t *testing.T) {
 }
 
 func TestCreateFactWithSlugValidation(t *testing.T) {
-	token := getValidToken(t, []string{"POST"}, nil)
+	token := getValidToken([]string{"POST"}, nil)
 
 	t.Run("ssn fact type slug", func(t *testing.T) {
 		t.Run("valid ssns", func(t *testing.T) {
@@ -310,7 +316,7 @@ func TestCreateFactWithSlugValidation(t *testing.T) {
 }
 
 func TestCreateFactFromJSV1(t *testing.T) {
-	token := getValidToken(t, []string{"POST"}, []string{"/js/v1/facts"})
+	token := getValidToken([]string{"POST"}, []string{"/js/v1/facts"})
 
 	t.Run("happy code path", func(t *testing.T) {
 		scopeID := uniuri.NewLen(uniuri.UUIDLen)
@@ -354,7 +360,7 @@ func TestCreateFactFromJSV1(t *testing.T) {
 }
 
 func TestGetFact(t *testing.T) {
-	token := getValidToken(t, []string{"POST", "GET"}, nil)
+	token := getValidToken([]string{"POST", "GET"}, nil)
 	factValue := fmt.Sprintf("%d%s", time.Now().UnixNano(), "_secret")
 	scopeID := generateScopeID()
 	factID := assertCreateFact(t, token, scopeID, factValue)
@@ -374,7 +380,7 @@ func TestGetFact(t *testing.T) {
 }
 
 func TestMalformattedJSON(t *testing.T) {
-	token := getValidToken(t, []string{"POST"}, nil)
+	token := getValidToken([]string{"POST"}, nil)
 
 	Test(
 		t,

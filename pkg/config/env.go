@@ -43,18 +43,9 @@ var ENV = struct {
 	DataPlaneSwaggerHostOverride    string   `env:"OPV_DATA_PLANE_SWAGGER_HOST_OVERRIDE" envDefault:""`
 	DataPlaneSwaggerSchemesOverride []string `env:"OPV_DATA_PLANE_SWAGGER_SCHEMES_OVERRIDE" envDefault:"http,https" envSeparator:","`
 
-	// Supported signing methods and key types
-	// https://github.com/dgrijalva/jwt-go#signing-methods-and-key-types
-	// Each signing method expects a different object type for its signing keys.
-	//
-	//     The HMAC signing method (HS256,HS384,HS512) expect []byte the same values for signing and validation
-	//     The RSA signing method (RS256,RS384,RS512) expect *rsa.PrivateKey for signing and *rsa.PublicKey for validation
-	//     The ECDSA signing method (ES256,ES384,ES512) expect *ecdsa.PrivateKey for signing and *ecdsa.PublicKey for validation
-	GrantJWTSigningMethod string `env:"OPV_GRANT_JWT_SIGNING_METHOD" envDefault:"HS256"`
-	GrantJWTSigningKey    string `env:"OPV_GRANT_JWT_SIGNING_KEY" envDefault:"please_change_to_random_32bytes"`
-	GrantJWTValidationKey string `env:"OPV_GRANT_JWT_VALIDATION_KEY" envDefault:"please_change_to_random_32bytes"`
-
 	AuthzCasbinAutoloadInterval time.Duration `env:"OPV_AUTHZ_CASBIN_AUTOLOAD_INTERVAL" envDefault:"3s"`
 
-	ProxyPlanePort int `env:"OPV_PROXY_PLANE_PORT" envDefault:"28001"`
+	ProxyPlaneHTTPConfig          string `env:"OPV_PROXY_PLANE_HTTP_Config" envDefault:"./cmd/proxyplane/opv-proxyplane-http.example.json"`
+	ProxyPlaneDefaultDPBaseURL    string `env:"OPV_PROXY_PLANE_DEFAULT_DP_BASE_URL" envDefault:"http://127.0.0.1:28000"`
+	ProxyPlaneDefaultDPGrantToken string `env:"OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN" envDefault:""`
 }{}
