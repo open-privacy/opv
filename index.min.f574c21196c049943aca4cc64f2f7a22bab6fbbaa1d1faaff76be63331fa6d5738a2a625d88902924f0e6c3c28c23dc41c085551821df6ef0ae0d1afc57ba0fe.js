@@ -13,7 +13,8 @@ cd ./benchmark docker-compse up --build `},{id:1,href:"/docs/development/datapla
  Grant Grant Token Grant Permissions  Data Plane Data plane (default port: 28000) is a group of controllers that handle the crud logic related to PII information.
 Data plane securely manages the following data models:
  Scope Fact Fact Types  Proxy Plane (TODO) Proxy plane will handle multiple protocols' (e.g. HTTP, SMTP, and etc.) requests and responses rewrite on-the-fly with PII tokenization rules.
-`},{id:5,href:"/docs/development/playground/",title:"Playground",description:"OPV Playground",content:`TODO
+`},{id:5,href:"/docs/development/playground/",title:"Playground",description:"OPV Playground",content:`PII Tokenization Demo Testing via the Data Plane of https://playground.openprivacy.io.
+ Checkr API Proxy Demo TODO
 `},{id:6,href:"/docs/overview/env/",title:"4. Env Configuration",description:"OPV Environment Variables Configuration",content:`OPV&rsquo;s configuration is currently done via environment variables. Please follow the source code and comments.
 env.go
 `},{id:7,href:"/docs/development/source/",title:"Source Code",description:"Go Source Code Development.",content:`Development related commands can be found in the Makefile file.
