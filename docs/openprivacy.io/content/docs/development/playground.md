@@ -13,7 +13,7 @@ toc: true
 
 Testing via the Data Plane of `https://playground.openprivacy.io`.
 
-<iframe width="100%" height="500" src="//jsfiddle.net/howvu08j/embedded/result,js,html,css/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+<iframe width="100%" height="400" src="//jsfiddle.net/howvu08j/embedded/result,js,html,css/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
 
 ----
 
