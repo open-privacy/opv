@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/Jeffail/gabs"
 	"github.com/go-playground/validator/v10"
@@ -35,7 +36,7 @@ type OPVBodyModifierItem struct {
 }
 
 func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, error) {
-	if contentType != "application/json" {
+	if !strings.HasPrefix(contentType, "application/json") {
 		return nil, fmt.Errorf("Content-Type %s not supported", contentType)
 	}
 

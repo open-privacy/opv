@@ -14,6 +14,7 @@ require (
 	github.com/casbin/casbin/v2 v2.19.7
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
 	github.com/devopsfaith/krakend v1.3.0
+	github.com/devopsfaith/krakend-cors v0.0.0-20210126212640-09bb3851d085
 	github.com/devopsfaith/krakend-martian v0.0.0-20191207191841-92e3287c36d9
 	github.com/devopsfaith/krakend-viper v0.0.0-20200605164302-854fa4ff4a66
 	github.com/gin-contrib/zap v0.0.1

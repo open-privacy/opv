@@ -13,6 +13,7 @@ import (
 	"github.com/open-privacy/opv/pkg/config"
 	"go.uber.org/zap"
 
+	gincors "github.com/devopsfaith/krakend-cors/gin"
 	martian "github.com/devopsfaith/krakend-martian"
 	karakendviper "github.com/devopsfaith/krakend-viper"
 	krakendconfig "github.com/devopsfaith/krakend/config"
@@ -92,7 +93,7 @@ func (h *HTTPProxy) Start() {
 			}),
 			h.logger,
 		),
-		RunServer: runServer,
+		RunServer: krakendgin.RunServerFunc(gincors.NewRunServerWithLogger(runServer, h.logger)),
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
