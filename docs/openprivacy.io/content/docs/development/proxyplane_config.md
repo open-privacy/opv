@@ -1,11 +1,11 @@
 ---
-title: "Control Plane API"
-description: "Control Plane API"
+title: "Proxy Plane Config"
+description: "Proxy Plane Config"
 images: []
 menu:
   docs:
     parent: "development"
-weight: 3
+weight: 4
 toc: false
 ---
 

@@ -1,12 +1,12 @@
 ---
-title: "Source Code"
+title: "Working with Source Code"
 description: "Go Source Code Development."
 lead: "Go Source Code Development."
 images: []
 menu:
   docs:
     parent: "development"
-weight: 4
+weight: 5
 toc: true
 ---
 
@@ -17,9 +17,10 @@ Development related commands can be found in the [Makefile](https://github.com/o
 Make sure you have `go`, `make`, `docker`, and `docker-compose` installed.
 
 ```sh
-# Prepare dependencies and compile opv
-
+# Prepare dependencies
 make vendor
+
+# Compile and run the data plane and control plane
 make run
 ```
 
@@ -27,6 +28,13 @@ One can open the local swagger UI to test the APIs:
 
 - Default DataPlane Swagger URL: [http://127.0.0.1:28000/swagger/index.html](http://127.0.0.1:28000/swagger/index.html)
 - Default ControlPlane Swagger URL: [http://127.0.0.1:27999/swagger/index.html](http://127.0.0.1:27999/swagger/index.html)
+
+```sh
+# Compile and run the proxy plane
+# It requires at least a "GET/POST /api/v1/facts" grant token to work
+
+OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN=v1:sandbox.example.com:Iy8TJZcuhicocCklFdwA make run_proxyplane
+```
 
 ## Generate swagger 2.0
 
@@ -54,6 +62,19 @@ make ent
 
 Note that [ent](https://entgo.io/docs/migrate/#auto-migration) will run the auto migration for schema changes.
 
+## Generate dbdoc with tbls
+
+This is to generate the dbdoc for [Database Visualization →]({{< ref "database" >}}). We leverage a tool
+called [https://github.com/k1LoW/tbls](https://github.com/k1LoW/tbls).
+
+```sh
+make run
+
+# Once make run is running, open a new terminal to generate the
+# database tables visualization from the default _opv.sqlite db locally.
+make tbls
+```
+
 ## Tests
 
 Unit tests:
@@ -65,5 +86,13 @@ make test
 Functional tests (i.e. the integration tests):
 
 ```sh
+# Note the functional tests will try to start 3 planes if they don't open ports locally
+
 make local_functional_test
 ```
+
+## CI/CD
+
+All the CI are run on github. Please refer to [https://github.com/open-privacy/opv/blob/main/.github/workflows/ci.yml](https://github.com/open-privacy/opv/blob/main/.github/workflows/ci.yml).
+
+Currently the playground is deployed and triggered by [https://github.com/open-privacy/opv/blob/main/.github/workflows/deploy_opv_playground.yml](https://github.com/open-privacy/opv/blob/main/.github/workflows/deploy_opv_playground.yml).
