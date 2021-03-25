@@ -6,8 +6,12 @@
     <div class="col-lg-8">
       <h1 class="mt-0">{{ .Title }}</h1>
       <p class="lead">{{ .Params.lead | safeHTML }}</p>
-      <a class="btn btn-primary btn-lg px-4 mb-2" href='{{ "/docs/overview/introduction/" | absURL }}' role="button">Get
-        started</a>
+      <a class="btn btn-primary btn-lg px-4 mb-2" href='{{ "/docs/overview/introduction/" | absURL }}' role="button">
+        Docs
+      </a>
+      <a class="btn btn-primary btn-lg px-4 mb-2" href='{{ "/docs/development/playground/" | absURL }}' role="button">
+        Play Ground
+      </a>
     </div>
     <div class="col-lg-7">
       <img src="/images/Security.svg" class="img-fluid" alt="security.svg">
@@ -92,7 +96,14 @@
           Structural PII Validation (50+ PII types)
         </div>
         <div class="mb-3 pr-3">
+          Control Plane, Data Plane, Proxy Plane
+        </div>
+        <div class="mb-3 pr-3">
           OPV Collect JavaScript Widgets
+          <span class="badge badge-dark float-right">v1 roadmap</span>
+        </div>
+        <div class="mb-3 pr-3">
+          Client Side Encryption and Hashing
           <span class="badge badge-dark float-right">v1 roadmap</span>
         </div>
         <div class="mb-3 pr-3">
@@ -101,10 +112,6 @@
         </div>
         <div class="mb-3 pr-3">
           DSRHub Workflows for GDPR/CCPA
-          <span class="badge badge-dark float-right">v1 roadmap</span>
-        </div>
-        <div class="mb-3 pr-3">
-          Proxy Plane of HTTP Rewrites
           <span class="badge badge-dark float-right">v1 roadmap</span>
         </div>
       </div>

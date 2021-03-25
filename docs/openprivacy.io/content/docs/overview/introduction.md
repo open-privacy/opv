@@ -9,11 +9,52 @@ weight: 1
 toc: true
 ---
 
-Open Privacy Vault - Secure, Performant, Open Source PII as a Service.
+Open Privacy Vault (OPV) - Secure, Performant, Open Source PII as a Service.
+The goal of OPV is to provide an open standard of PII management. With Structural PII
+validation, performant APIs, pluggable databases, extendabale encryption and hashing engine,
+flexible policy and authorization, we are aiming to bring the highest open standard for
+the fair usage of PII.
 
 ## Quick Start
 
 ### Running Local OPV
+
+Note that all the configuration of OPV is done through environment variables.
+For example, setting `OPV_DB_DRIVER=mysql`. See [Env Configuration →]({{< ref "env" >}}).
+
+Start with docker.
+
+```sh
+# Control Plane
+
+docker run -it \
+  -v /tmp/opv_data:/data \
+  -p 27999:27999 \
+  openprivacyio/opv \
+  controlplane
+```
+
+```sh
+# Data Plane
+
+docker run -it \
+  -v /tmp/opv_data:/data \
+  -p 28000:28000 \
+  openprivacyio/opv \
+  dataplane
+```
+
+```sh
+# Proxy Plane (Depends on Data Plane, and a grant token created from Control Plane)
+
+docker run -it \
+  -v /tmp/opv_data:/data \
+  -p 28001:28001 \
+  -e OPV_PROXY_PLANE_DEFAULT_DP_BASE_URL='http://127.0.0.1:28000' \
+  -e OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN='grant_token_that_can_read_write_facts' \
+  openprivacyio/opv \
+  proxyplane
+```
 
 Start from source code:
 
@@ -21,15 +62,29 @@ Start from source code:
 git clone https://github.com/open-privacy/opv
 cd opv
 make vendor
+
+# Start the control plane and data plane
 make run
+
+# Start the proxyplane (optional)
+OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN=<grant_token_that_can_read_write_facts> make run_proxyplane
 ```
 
-Start from docker image. You may need to start control plane and data plane separatedly.
+Try it with the playground:
 
-```sh
-docker run -it -v /tmp/opv_data:/data -p 28000:28000 openprivacyio/opv dataplane
-docker run -it -v /tmp/opv_data:/data -p 27999:27999 openprivacyio/opv controlplane
+- [https://playground.openprivacy.io/swagger/index.html](https://playground.openprivacy.io/swagger/index.html)
+- A testing domain `sandbox.example.com` grant token ( `v1:sandbox.example.com:Iy8TJZcuhicocCklFdwA` ) can be used to test the playground. It has the permission to access to all the paths and http methods of the dataplane within the domain of `sandbox.example.com`.
+
+```json
+{
+  "token": "v1:sandbox.example.com:Iy8TJZcuhicocCklFdwA",
+  "domain": "sandbox.example.com",
+  "allowed_http_methods": ["*"],
+  "paths": ["*"]
+}
 ```
+
+<img src="/images/dataplane_swagger.png" class="img-fluid" alt="arch.png">
 
 ### APIs
 
@@ -37,6 +92,7 @@ For more information, please take a look at
 
 - [Data Plane API →]({{< ref "dataplane_api" >}})
 - [Control Plane API →]({{< ref "controlplane_api" >}})
+- [Proxy Plane Config →]({{< ref "proxyplane_config" >}})
 
 Now you can test the APIs with `curl`.
 
@@ -47,16 +103,18 @@ curl -X POST 'http://127.0.0.1:27999/api/v1/grants' \
 --header 'Content-Type: application/json' \
 --data-raw '{
         "allowed_http_methods": ["*"],
-        "domain": "test.com"
+        "paths": ["*"],
+        "domain": "sandbox.example.com"
 }'
 
 
 # The response will give you a grant token for data plane access
 # You can pass the token via HTTP header X-OPV-GRANT-TOKEN
 {
-  "token": "v1:test.com:6yBQzIcZUaypri8iysut",
-  "domain": "test.com",
-  "allowed_http_methods": ["*"]
+  "token": "v1:sandbox.example.com:Iy8TJZcuhicocCklFdwA",
+  "domain": "sandbox.example.com",
+  "allowed_http_methods": ["*"],
+  "paths": ["*"]
 }
 ```
 
@@ -66,24 +124,32 @@ curl -X POST 'http://127.0.0.1:27999/api/v1/grants' \
 
 curl -X POST 'http://127.0.0.1:28000/api/v1/facts' \
 -H 'Content-Type: application/json' \
--H 'X-OPV-GRANT-TOKEN: v1:test.com:your_new_token' \
+-H 'X-OPV-GRANT-TOKEN: v1:sandbox.example.com:Iy8TJZcuhicocCklFdwA' \
 --data-raw '{
         "fact_type_slug": "ssn",
         "value": "123-45-6789"
 }'
 ```
 
-### Swagger UI
-
 One can open the local swagger UI to test the APIs:
 
-- Default DataPlane Swagger URL: [http://127.0.0.1:28000/swagger/index.html](http://127.0.0.1:28000/swagger/index.html)
-- Default ControlPlane Swagger URL: [http://127.0.0.1:27999/swagger/index.html](http://127.0.0.1:27999/swagger/index.html)
+- Default Control Plane Swagger URL:
+  - [http://127.0.0.1:27999/swagger/index.html](http://127.0.0.1:27999/swagger/index.html)
+- Default Data Plane Swagger URL:
+  - [http://127.0.0.1:28000/swagger/index.html](http://127.0.0.1:28000/swagger/index.html)
+
+One can also test the proxyplane:
+
+- Default Proxy Plane Port: [http://127.0.0.1:28001](http://127.0.0.1:28001)
+  - The routes of the proxy plane are defined at [opv-proxyplane-http.example.json](https://github.com/open-privacy/opv/blob/53eb70c1ce9aaaa897863982efb468df487ce7c0/cmd/proxyplane/opv-proxyplane-http.example.json#L105). Learn more at [Proxy Plane Config →]({{< ref "proxyplane_config" >}}).
 
 ## Performance
 
+### Endpoint Latency
+
 We are expecting to see `P99 < 10ms` latency when sending GET requests to `/api/v1/facts/:id`,
-which is the most heavily used endpoint to retrieve PIIs from a tokinized `fact`.
+which is the most heavily used endpoint to retrieve PIIs from a tokinized `fact`. We did some simple
+benchmarking (nowhere near perfert of course), to keep tracking the performance of the GET endpoints.
 
 ```sh
 #!/bin/sh
@@ -91,7 +157,7 @@ which is the most heavily used endpoint to retrieve PIIs from a tokinized `fact`
 # Make sure you have vegeta downlaoded. https://github.com/tsenart/vegeta
 # Replace the X-Opv-Grant-Token and fact_id for the benchmark script
 
-echo $'GET http://127.0.0.1:28000/api/v1/facts/fact_1LqMuvudjA1xdtqbjd0l \nX-Opv-Grant-Token: v1:example.com:gCPMdjk1650km2IA3sgZ' \
+echo $'GET http://127.0.0.1:28000/api/v1/facts/fact_1LqMuvudjA1xdtqbjd0l \nX-Opv-Grant-Token: v1:sandbox.example.com:Iy8TJZcuhicocCklFdwA' \
     | vegeta attack -duration=10s | vegeta report
 
 # Example of the result
@@ -109,7 +175,24 @@ echo $'GET http://127.0.0.1:28000/api/v1/facts/fact_1LqMuvudjA1xdtqbjd0l \nX-Opv
 
 <img src="/images/BenchmarkFlameGraph.png" class="img-fluid" alt="benchmark_flamegraph.png">
 
-One can also launch the benchmark tests with prometheus and grafana to closely monitor the performance.
+### Prometheus Monitoring
+
+By default, prometheus metrics are enabled for both data plane and control plane (controlled
+by the environment variable `OPV_PROMETHEUS_ENABLED`). You can easily connect your prometheus
+scraper with the following config:
+
+```yaml
+scrape_configs:
+  - job_name: opv-metrics
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - "opv_controlplane:27999"   # replace it with the actual controlplane's base URL
+          - "opv_dataplane:28000"      # replace it with the actual dataplane's base URL
+```
+
+For local benchmarking, we created a docker-compose network to test the prometheus and grafana,
+and we can closely monitor the performance regression.
 
 ```sh
 cd ./benchmark

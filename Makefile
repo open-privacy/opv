@@ -1,7 +1,10 @@
-.PHONY: ent vendor swag test build gen run
+.PHONY: ent tbls swag vendor test build gen run local_functional_test
 
 ent:
 	docker-compose run ent
+
+tbls:
+	docker-compose run tbls
 
 swag:
 	docker-compose run swag
