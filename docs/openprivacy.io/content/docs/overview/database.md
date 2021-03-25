@@ -26,12 +26,13 @@ OPV_DB_CONNECTION_STR
 
 
 Examples:
-OPV_DB_DRIVER         OPV_DB_CONNECTION_STR
-=================     ===============================================================
-"sqlite3"             "file:memdb1?mode=memory&cache=shared&_fk=1"
-"sqlite3"             "_opv.sqlite?mode=memory&cache=shared&_fk=1"
-"mysql"               "root:@tcp(127.0.0.1:3306)/opv?parseTime=true"
-"postgres"            "postgres://user:password@host:5432/opv?sslmode=disable"
+
+OPV_DB_DRIVER  OPV_DB_CONNECTION_STR
+=============  ==============================================
+"sqlite3"      "file:memdb1?mode=memory&cache=shared&_fk=1"
+"sqlite3"      "_opv.sqlite?mode=memory&cache=shared&_fk=1"
+"mysql"        "root:@tcp(127.0.0.1:3306)/opv?parseTime=true"
+"postgres"     "postgres://user:password@host:5432/opv"
 ```
 
 ## Database Visualization
