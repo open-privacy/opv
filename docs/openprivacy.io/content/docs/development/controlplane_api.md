@@ -6,7 +6,7 @@ menu:
   docs:
     parent: "development"
 weight: 3
-toc: false
+toc: true
 ---
 
 TODO
