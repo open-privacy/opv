@@ -6,7 +6,7 @@ menu:
   docs:
     parent: "development"
 weight: 2
-toc: false
+toc: true
 ---
 
 Sample Instructions:
@@ -25,5 +25,5 @@ Sample Instructions:
 
 <iframe src="https://playground.openprivacy.io/swagger/index.html"
         class="mb-10"
-        frameBorder="0" title="OPV Data Plane API" width="750" height="900">
+        frameBorder="0" title="OPV Data Plane API" width="100%" height="900">
 </iframe>
