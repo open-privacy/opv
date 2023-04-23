@@ -10,19 +10,18 @@ import (
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	gincors "github.com/krakendio/krakend-cors/v2/gin"
 	"github.com/open-privacy/opv/pkg/config"
 	"go.uber.org/zap"
 
-	gincors "github.com/devopsfaith/krakend-cors/gin"
-	martian "github.com/devopsfaith/krakend-martian"
-	karakendviper "github.com/devopsfaith/krakend-viper"
-	krakendconfig "github.com/devopsfaith/krakend/config"
-	krakendlogging "github.com/devopsfaith/krakend/logging"
-	"github.com/devopsfaith/krakend/proxy"
-	"github.com/devopsfaith/krakend/router"
-	krakendgin "github.com/devopsfaith/krakend/router/gin"
-	"github.com/devopsfaith/krakend/transport/http/client"
-	"github.com/devopsfaith/krakend/transport/http/server"
+	martian "github.com/krakendio/krakend-martian/v2"
+	karakendviper "github.com/krakendio/krakend-viper/v2"
+	krakendconfig "github.com/luraproject/lura/v2/config"
+	krakendlogging "github.com/luraproject/lura/v2/logging"
+	"github.com/luraproject/lura/v2/proxy"
+	krakendgin "github.com/luraproject/lura/v2/router/gin"
+	"github.com/luraproject/lura/v2/transport/http/client"
+	"github.com/luraproject/lura/v2/transport/http/server"
 )
 
 const (
@@ -77,9 +76,8 @@ func MustNewHTTPProxy() *HTTPProxy {
 
 func (h *HTTPProxy) Stop() {
 }
-
 func (h *HTTPProxy) Start() {
-	router.UserAgentHeaderValue = []string{OPVProxyplaneUserAgent}
+	// router.UserAgentHeaderValue = []string{OPVProxyplaneUserAgent}
 
 	// krakend only supports gin router for now
 	routerFactory := krakendgin.NewFactory(krakendgin.Config{

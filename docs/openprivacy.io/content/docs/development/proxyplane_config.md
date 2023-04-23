@@ -30,7 +30,7 @@ At the root level, one can enable many configuration like `debug`, `cache_ttl`, 
   "cache_ttl": 3600,
   "timeout": "3s",
   "extra_config": {
-    "github_com/devopsfaith/krakend-cors": {
+    "github_com/krakendio/krakend-cors": {
       "allow_origins": [
         "http*"
       ],
