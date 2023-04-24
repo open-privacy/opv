@@ -6,22 +6,22 @@ import (
 	"net/http"
 	"time"
 
-	// _ "github.com/roney492/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
+	_ "github.com/roney492/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
 
+	gincors "github.com/devopsfaith/krakend-cors/gin"
+	martian "github.com/devopsfaith/krakend-martian"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	gincors "github.com/krakendio/krakend-cors/v2/gin"
+	karakendviper "github.com/krakendio/krakend-viper/v2"
+	krakendconfig "github.com/luraproject/lura/config"
+	krakendlogging "github.com/luraproject/lura/logging"
+	"github.com/luraproject/lura/proxy"
+	"github.com/luraproject/lura/router"
+	krakendgin "github.com/luraproject/lura/router/gin"
+	"github.com/luraproject/lura/transport/http/client"
+	"github.com/luraproject/lura/transport/http/server"
 	"github.com/roney492/opv/pkg/config"
 	"go.uber.org/zap"
-
-	martian "github.com/krakendio/krakend-martian/v2"
-	karakendviper "github.com/krakendio/krakend-viper/v2"
-	krakendconfig "github.com/luraproject/lura/v2/config"
-	krakendlogging "github.com/luraproject/lura/v2/logging"
-	"github.com/luraproject/lura/v2/proxy"
-	krakendgin "github.com/luraproject/lura/v2/router/gin"
-	"github.com/luraproject/lura/v2/transport/http/client"
-	"github.com/luraproject/lura/v2/transport/http/server"
 )
 
 const (
@@ -76,8 +76,9 @@ func MustNewHTTPProxy() *HTTPProxy {
 
 func (h *HTTPProxy) Stop() {
 }
+
 func (h *HTTPProxy) Start() {
-	// router.UserAgentHeaderValue = []string{OPVProxyplaneUserAgent}
+	router.UserAgentHeaderValue = []string{OPVProxyplaneUserAgent}
 
 	// krakend only supports gin router for now
 	routerFactory := krakendgin.NewFactory(krakendgin.Config{
