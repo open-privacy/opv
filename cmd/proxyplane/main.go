@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/open-privacy/opv/pkg/config"
-	"github.com/open-privacy/opv/pkg/proxyplane"
+	"github.com/roney492/opv/pkg/config"
+	"github.com/roney492/opv/pkg/proxyplane"
 	"github.com/tj/go-gracefully"
 )
 

@@ -19,7 +19,7 @@ schemaType = "Organization"
 schemaLogo = "logo-opv.png"
 schemaTwitter = ""
 schemaLinkedIn = ""
-schemaGitHub = "https://github.com/open-privacy"
+schemaGitHub = "https://github.com/roney492"
 schemaSection = "blog"
 
 ## Sitelinks Search Box
@@ -44,7 +44,7 @@ alert = false
 alertText = ""
 
 # Edit Page
-docsRepo = "https://github.com/open-privacy/opv"
+docsRepo = "https://github.com/roney492/opv"
 editPage = true
 
 [options]

@@ -1,12 +1,12 @@
 {
   "version": 3,
   "name": "OPV Proxy Plane",
-  "debug": false,
+  "debug": true,
   "cache_ttl": 3600,
   "timeout": "3s",
   "endpoints": [
     {
-      "endpoint": "/tokenize_checkr_api",
+      "endpoint": "/tokenize",
       "headers_to_pass": [
         "*"
       ],
@@ -20,7 +20,7 @@
           "url_pattern": "/post",
           "encoding": "no-op",
           "extra_config": {
-            "open-privacy/opv": {
+            "open-privacy": {
               "opv.body.Modifier": {
                 "scope": [
                   "request"

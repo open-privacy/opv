@@ -8,12 +8,12 @@ import (
 	_ "github.com/lib/pq"              // postgres driver
 	_ "github.com/mattn/go-sqlite3"    // sqlite3 driver
 
-	"github.com/open-privacy/opv/pkg/ent"
-	"github.com/open-privacy/opv/pkg/ent/apiaudit"
-	"github.com/open-privacy/opv/pkg/ent/fact"
-	"github.com/open-privacy/opv/pkg/ent/facttype"
-	"github.com/open-privacy/opv/pkg/ent/predicate"
-	"github.com/open-privacy/opv/pkg/ent/scope"
+	"github.com/roney492/opv/pkg/ent"
+	"github.com/roney492/opv/pkg/ent/apiaudit"
+	"github.com/roney492/opv/pkg/ent/fact"
+	"github.com/roney492/opv/pkg/ent/facttype"
+	"github.com/roney492/opv/pkg/ent/predicate"
+	"github.com/roney492/opv/pkg/ent/scope"
 )
 
 func (e *entImpl) CreateFact(ctx context.Context, opt *CreateFactOption) (f *ent.Fact, err error) {

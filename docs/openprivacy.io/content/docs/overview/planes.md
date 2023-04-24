@@ -2,7 +2,7 @@
 title: "3. Planes"
 description: "OPV Planes"
 images: []
-menu: 
+menu:
   docs:
     parent: "overview"
 weight: 3
@@ -115,7 +115,7 @@ requests and responses. For example, one can define a `opv.body.Modifier` rule l
 the following JSON config (for more information [Proxy Plane Config →]({{< ref "proxyplane_config" >}})):
 
 ```json
-"github.com/open-privacy/opv": {
+"github.com/roney492/opv": {
   "opv.body.Modifier": {
     "scope": [
       "request"

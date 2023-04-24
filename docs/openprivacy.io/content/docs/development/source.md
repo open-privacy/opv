@@ -10,7 +10,7 @@ weight: 5
 toc: true
 ---
 
-Development related commands can be found in the [Makefile](https://github.com/open-privacy/opv/blob/main/Makefile) file.
+Development related commands can be found in the [Makefile](https://github.com/roney492/opv/blob/main/Makefile) file.
 
 ## Compile from the source
 
@@ -51,7 +51,7 @@ Notice that dataplane and controlplane's entrypoints are separated, and they are
 
 ## Generate ent models
 
-If you want to migrate or change the schema of the data models, please change the [schema files](https://github.com/open-privacy/opv/tree/main/pkg/ent/schema)
+If you want to migrate or change the schema of the data models, please change the [schema files](https://github.com/roney492/opv/tree/main/pkg/ent/schema)
 and then run the following command to re-generate the ent related data models.
 
 ```sh
@@ -93,6 +93,6 @@ make local_functional_test
 
 ## CI/CD
 
-All the CI are run on github. Please refer to [https://github.com/open-privacy/opv/blob/main/.github/workflows/ci.yml](https://github.com/open-privacy/opv/blob/main/.github/workflows/ci.yml).
+All the CI are run on github. Please refer to [https://github.com/roney492/opv/blob/main/.github/workflows/ci.yml](https://github.com/roney492/opv/blob/main/.github/workflows/ci.yml).
 
-Currently the playground is deployed and triggered by [https://github.com/open-privacy/opv/blob/main/.github/workflows/deploy_opv_playground.yml](https://github.com/open-privacy/opv/blob/main/.github/workflows/deploy_opv_playground.yml).
+Currently the playground is deployed and triggered by [https://github.com/roney492/opv/blob/main/.github/workflows/deploy_opv_playground.yml](https://github.com/roney492/opv/blob/main/.github/workflows/deploy_opv_playground.yml).

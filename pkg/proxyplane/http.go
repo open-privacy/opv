@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	_ "github.com/open-privacy/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
+	// _ "github.com/roney492/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	gincors "github.com/krakendio/krakend-cors/v2/gin"
-	"github.com/open-privacy/opv/pkg/config"
+	"github.com/roney492/opv/pkg/config"
 	"go.uber.org/zap"
 
 	martian "github.com/krakendio/krakend-martian/v2"
@@ -26,7 +26,7 @@ import (
 
 const (
 	OPVProxyplaneUserAgent            = "OPV Proxy Plane"
-	OPVProxyplaneExtraConfigNamespace = "github.com/open-privacy/opv"
+	OPVProxyplaneExtraConfigNamespace = "github.com/roney492/opv"
 )
 
 type HTTPProxy struct {

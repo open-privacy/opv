@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/open-privacy/opv/pkg/ent/apiaudit"
+	"github.com/roney492/opv/pkg/ent/apiaudit"
 )
 
 // APIAudit is the model entity for the APIAudit schema.

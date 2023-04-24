@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/open-privacy/opv/pkg/ent/fact"
-	"github.com/open-privacy/opv/pkg/ent/facttype"
-	"github.com/open-privacy/opv/pkg/ent/scope"
+	"github.com/roney492/opv/pkg/ent/fact"
+	"github.com/roney492/opv/pkg/ent/facttype"
+	"github.com/roney492/opv/pkg/ent/scope"
 )
 
 // Fact is the model entity for the Fact schema.

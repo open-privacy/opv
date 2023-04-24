@@ -1,4 +1,4 @@
-module github.com/open-privacy/opv
+module github.com/roney492/opv
 
 go 1.20
 
@@ -128,5 +128,3 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/devopsfaith/krakend => github.com/luraproject/lura v1.4.1
