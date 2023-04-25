@@ -11,7 +11,7 @@ import (
 	. "github.com/Eun/go-hit"
 	"github.com/avast/retry-go"
 	"github.com/dchest/uniuri"
-	"github.com/roney492/opv/pkg/config"
+	"github.com/open-privacy/opv/pkg/config"
 )
 
 func generateScopeID() string {

@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/roney492/opv/pkg/ent/grant"
-	"github.com/roney492/opv/pkg/ent/predicate"
+	"github.com/open-privacy/opv/pkg/ent/grant"
+	"github.com/open-privacy/opv/pkg/ent/predicate"
 )
 
 // GrantQuery is the builder for querying Grant entities.

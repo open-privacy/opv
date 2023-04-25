@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/roney492/opv/pkg/config"
-	"github.com/roney492/opv/pkg/controlplane"
-	"github.com/roney492/opv/pkg/dataplane"
-	"github.com/roney492/opv/pkg/proxyplane"
+	"github.com/open-privacy/opv/pkg/config"
+	"github.com/open-privacy/opv/pkg/controlplane"
+	"github.com/open-privacy/opv/pkg/dataplane"
+	"github.com/open-privacy/opv/pkg/proxyplane"
 )
 
 // TESTENV is the env configuration for functional testing

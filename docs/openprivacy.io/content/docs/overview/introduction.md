@@ -59,7 +59,7 @@ docker run -it \
 Start from source code:
 
 ```sh
-git clone https://github.com/roney492/opv
+git clone https://github.com/open-privacy/opv
 cd opv
 make vendor
 
@@ -141,7 +141,7 @@ One can open the local swagger UI to test the APIs:
 One can also test the proxyplane:
 
 - Default Proxy Plane Port: [http://127.0.0.1:28001](http://127.0.0.1:28001)
-  - The routes of the proxy plane are defined at [opv-proxyplane-http.example.json](https://github.com/roney492/opv/blob/53eb70c1ce9aaaa897863982efb468df487ce7c0/cmd/proxyplane/opv-proxyplane-http.example.json#L105). Learn more at [Proxy Plane Config →]({{< ref "proxyplane_config" >}}).
+  - The routes of the proxy plane are defined at [opv-proxyplane-http.example.json](https://github.com/open-privacy/opv/blob/53eb70c1ce9aaaa897863982efb468df487ce7c0/cmd/proxyplane/opv-proxyplane-http.example.json#L105). Learn more at [Proxy Plane Config →]({{< ref "proxyplane_config" >}}).
 
 ## Performance
 

@@ -10,7 +10,7 @@ toc: true
 ---
 
 The configuration that the Proxy Plane needs to start is a single configuration
-file (e.g. [opv-proxyplane-http.example.json](https://github.com/roney492/opv/blob/53eb70c1ce9aaaa897863982efb468df487ce7c0/cmd/proxyplane/opv-proxyplane-http.example.json#L105)).
+file (e.g. [opv-proxyplane-http.example.json](https://github.com/open-privacy/opv/blob/53eb70c1ce9aaaa897863982efb468df487ce7c0/cmd/proxyplane/opv-proxyplane-http.example.json#L105)).
 
 OPV currently enables the proxy plane via [KrakenD](https://www.krakend.io/docs/configuration/overview/),
 thus the configuration file needs to be compatible with the KrakenD config format. One
@@ -85,7 +85,7 @@ Notes
 
 - `host` defines the upstream host.
 - `url_pattern` defines the upstream path. One can also leverage KrakenD's advance url pattern matching to build templates for url paths. See [Parameter forwarding](https://www.krakend.io/docs/endpoints/parameter-forwarding/#mandatory-query-string-parameters).
-- `extra_config > github.com/roney492/opv` defines a set of OPV proxy modifiers. We follow the standard of [https://github.com/google/martian](https://github.com/google/martian), which means the full list of modifiers can be found here:
+- `extra_config > github.com/open-privacy/opv` defines a set of OPV proxy modifiers. We follow the standard of [https://github.com/google/martian](https://github.com/google/martian), which means the full list of modifiers can be found here:
   - [Built-in martian modifiers](https://github.com/google/martian/wiki/Modifier-Reference)
     - `log.Logger`
     - `cookie.Modifier`
@@ -122,7 +122,7 @@ Notes
           ],
           "url_pattern": "/post",
           "extra_config": {
-            "github.com/roney492/opv": {
+            "github.com/open-privacy/opv": {
               "opv.body.Modifier": {
                 "opv_dataplane_grant_token_from_env": "SOME_GRANT_TOKEN_SECRET",
                 "opv_dataplane_base_url": "http://127.0.0.1:28000",

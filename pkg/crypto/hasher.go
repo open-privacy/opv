@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/roney492/opv/pkg/config"
+	"github.com/open-privacy/opv/pkg/config"
 	"golang.org/x/crypto/scrypt"
 	"golang.org/x/crypto/sha3"
 )

@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/roney492/opv/pkg/apimodel"
-	"github.com/roney492/opv/pkg/ent"
-	"github.com/roney492/opv/pkg/repo"
+	"github.com/open-privacy/opv/pkg/apimodel"
+	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/repo"
 	"github.com/zhouzhuojie/iso8601ms"
 )
 

@@ -13,7 +13,7 @@ import (
 	"github.com/Jeffail/gabs"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/martian/parse"
-	"github.com/roney492/opv/pkg/config"
+	"github.com/open-privacy/opv/pkg/config"
 )
 
 func init() {
@@ -21,12 +21,11 @@ func init() {
 }
 
 type OPVBodyModifier struct {
-	Scope []parse.ModifierType  `json:"scope" validate:"gt=0,dive,oneof=request response"`
-	Items []OPVBodyModifierItem `json:"items"`
-
-	OPVDataplaneGrantToken        string `json:"-" validate:"required"`
-	OPVDataplaneGrantTokenFromEnv string `json:"opv_dataplane_grant_token_from_env"`
-	OPVDataplaneBaseURL           string `json:"opv_dataplane_base_url"`
+	Scope                         []parse.ModifierType  `json:"scope" validate:"gt=0,dive,oneof=request response"`
+	Items                         []OPVBodyModifierItem `json:"items"`
+	OPVDataplaneGrantToken        string                `json:"-" validate:"required"`
+	OPVDataplaneGrantTokenFromEnv string                `json:"opv_dataplane_grant_token_from_env"`
+	OPVDataplaneBaseURL           string                `json:"opv_dataplane_base_url"`
 }
 
 type OPVBodyModifierItem struct {

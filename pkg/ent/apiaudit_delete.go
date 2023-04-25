@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/roney492/opv/pkg/ent/apiaudit"
-	"github.com/roney492/opv/pkg/ent/predicate"
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
+	"github.com/open-privacy/opv/pkg/ent/predicate"
 )
 
 // APIAuditDelete is the builder for deleting a APIAudit entity.

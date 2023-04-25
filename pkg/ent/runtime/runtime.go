@@ -2,7 +2,7 @@
 
 package runtime
 
-// The schema-stitching logic is generated in github.com/roney492/opv/pkg/ent/runtime.go
+// The schema-stitching logic is generated in github.com/open-privacy/opv/pkg/ent/runtime.go
 
 const (
 	Version = "v0.7.0"                                          // Version of ent codegen.

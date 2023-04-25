@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/roney492/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/ent"
 )
 
 // The APIAuditFunc type is an adapter to allow the use of ordinary

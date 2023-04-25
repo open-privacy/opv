@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/crypto/nacl/secretbox"
 
-	"github.com/roney492/opv/pkg/config"
+	"github.com/open-privacy/opv/pkg/config"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/roney492/opv/pkg/ent"
+	"github.com/open-privacy/opv/pkg/ent"
 
 	"entgo.io/ent/entql"
 	"entgo.io/ent/privacy"

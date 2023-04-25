@@ -12,4 +12,4 @@ toc: true
 OPV's configuration is currently done via environment variables.
 Please follow the source code and comments.
 
-[env.go](https://github.com/roney492/opv/blob/main/pkg/config/env.go)
+[env.go](https://github.com/open-privacy/opv/blob/main/pkg/config/env.go)

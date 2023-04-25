@@ -7,7 +7,7 @@ import (
 
 	"github.com/dchest/uniuri"
 	"github.com/labstack/echo/v4"
-	"github.com/roney492/opv/pkg/crypto"
+	"github.com/open-privacy/opv/pkg/crypto"
 )
 
 // GrantToken represents a secret token

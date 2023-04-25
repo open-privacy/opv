@@ -26,7 +26,7 @@ Playground demo of tokenization and detokenization via the Data Plane: `https://
 
 Playground demo of sending API requests to Checkr via the Proxy Plane: `proxy-playground.openprivacy.io`.
 
-- The definition of the proxy routing can be found at [opv-proxyplane-http.example.json](https://github.com/roney492/opv/blob/53eb70c1ce9aaaa897863982efb468df487ce7c0/cmd/proxyplane/opv-proxyplane-http.example.json#L105).
+- The definition of the proxy routing can be found at [opv-proxyplane-http.example.json](https://github.com/open-privacy/opv/blob/53eb70c1ce9aaaa897863982efb468df487ce7c0/cmd/proxyplane/opv-proxyplane-http.example.json#L105).
 - We simulated that once the internal system have tokenzied `facts` (i.e. sensitive PIIs), it can talks to a dedicated proxy plane route for automated detokenization when sending the requests to external vendors like [Checkr API](https://api.checkr.com).
 - You can also inspect the network requests directly from your browser (tldr - press `F12`) to check the actual payload.
 

@@ -44,7 +44,7 @@ alert = false
 alertText = ""
 
 # Edit Page
-docsRepo = "https://github.com/roney492/opv"
+docsRepo = "https://github.com/open-privacy/opv"
 editPage = true
 
 [options]

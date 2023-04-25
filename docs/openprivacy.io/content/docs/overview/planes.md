@@ -115,7 +115,7 @@ requests and responses. For example, one can define a `opv.body.Modifier` rule l
 the following JSON config (for more information [Proxy Plane Config →]({{< ref "proxyplane_config" >}})):
 
 ```json
-"github.com/roney492/opv": {
+"github.com/open-privacy/opv": {
   "opv.body.Modifier": {
     "scope": [
       "request"

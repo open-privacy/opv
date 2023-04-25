@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/roney492/opv/pkg/ent/grant"
+	"github.com/open-privacy/opv/pkg/ent/grant"
 )
 
 // GrantCreate is the builder for creating a Grant entity.

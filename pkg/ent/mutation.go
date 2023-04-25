@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/roney492/opv/pkg/ent/apiaudit"
-	"github.com/roney492/opv/pkg/ent/fact"
-	"github.com/roney492/opv/pkg/ent/facttype"
-	"github.com/roney492/opv/pkg/ent/grant"
-	"github.com/roney492/opv/pkg/ent/predicate"
-	"github.com/roney492/opv/pkg/ent/scope"
+	"github.com/open-privacy/opv/pkg/ent/apiaudit"
+	"github.com/open-privacy/opv/pkg/ent/fact"
+	"github.com/open-privacy/opv/pkg/ent/facttype"
+	"github.com/open-privacy/opv/pkg/ent/grant"
+	"github.com/open-privacy/opv/pkg/ent/predicate"
+	"github.com/open-privacy/opv/pkg/ent/scope"
 
 	"entgo.io/ent"
 )
