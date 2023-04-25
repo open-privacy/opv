@@ -40,15 +40,14 @@ func newConn(dpGrantToken string, dpURL string) *conn {
 }
 
 func (c *conn) createFact(factTypeSlug string, value string) (factID string, err error) {
+	reqBody := fmt.Sprintf(`{"fact_type_slug":"%s", "value": %s}`, factTypeSlug, value)
 	req, err := retryablehttp.NewRequest(
 		"POST",
 		c.dpURL+"/api/v1/facts",
-		strings.NewReader(
-			fmt.Sprintf(`{"fact_type_slug":"%s", "value": %s}`, factTypeSlug, value),
-		),
+		strings.NewReader(reqBody),
 	)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create HTTP request: %v", err)
 	}
 	req.Header.Add(headerOPVGrantToken, c.dpGrantToken)
 	req.Header.Add("Content-Type", headerOPVContentType)
@@ -59,11 +58,11 @@ func (c *conn) createFact(factTypeSlug string, value string) (factID string, err
 		defer resp.Body.Close()
 	}
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to send HTTP request: %v", err)
 	}
 	if resp.StatusCode >= 400 {
 		respBody, _ := ioutil.ReadAll(resp.Body)
-		return "", fmt.Errorf("createFact api failed %s", string(respBody))
+		return "", fmt.Errorf("createFact API failed with status %d: %s", resp.StatusCode, string(respBody))
 	}
 
 	f := struct {
@@ -72,7 +71,7 @@ func (c *conn) createFact(factTypeSlug string, value string) (factID string, err
 
 	err = json.NewDecoder(resp.Body).Decode(&f)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to parse API response: %v", err)
 	}
 
 	return f.ID, nil
@@ -85,7 +84,7 @@ func (c *conn) getFact(factID string) (value string, err error) {
 		strings.NewReader(""),
 	)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create HTTP request: %v", err)
 	}
 	req.Header.Add(headerOPVGrantToken, c.dpGrantToken)
 	req.Header.Add("User-Agent", headerOPVUserAgent)
@@ -95,11 +94,11 @@ func (c *conn) getFact(factID string) (value string, err error) {
 		defer resp.Body.Close()
 	}
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to send HTTP request: %v", err)
 	}
 	if resp.StatusCode >= 400 {
 		respBody, _ := ioutil.ReadAll(resp.Body)
-		return "", fmt.Errorf("getFact api failed %s", string(respBody))
+		return "", fmt.Errorf("getFact API failed with status %d: %s", resp.StatusCode, string(respBody))
 	}
 
 	f := struct {
@@ -108,7 +107,7 @@ func (c *conn) getFact(factID string) (value string, err error) {
 
 	err = json.NewDecoder(resp.Body).Decode(&f)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to parse API response: %v", err)
 	}
 
 	return f.Value, nil
