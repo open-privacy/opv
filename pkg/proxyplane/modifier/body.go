@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/Jeffail/gabs"
 	"github.com/go-playground/validator/v10"
@@ -46,36 +47,56 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 
 	conn := newConn(o.OPVDataplaneGrantToken, o.OPVDataplaneBaseURL)
 
-	for _, item := range o.Items {
-		switch item.Action {
-		case "tokenize":
-			node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
-			if err != nil {
-				return nil, err
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+
+	for i := range o.Items {
+		wg.Add(1)
+
+		go func(item *OPVBodyModifierItem) {
+			defer wg.Done()
+
+			switch item.Action {
+			case "tokenize":
+				node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
+				if err != nil {
+					return
+				}
+				value := node.String()
+
+				factID, err := conn.createFact(item.FactTypeSlug, value)
+				if err != nil {
+					return
+				}
+
+				mu.Lock()
+				jsonParsed.SetJSONPointer(factID, item.JSONPointerPath)
+				mu.Unlock()
+
+			case "detokenize":
+				node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
+				if err != nil {
+					return
+				}
+
+				factID := node.Data().(string)
+
+				value, err := conn.getFact(factID)
+				if err != nil {
+					return
+				}
+
+				mu.Lock()
+				jsonParsed.SetJSONPointer(value, item.JSONPointerPath)
+				mu.Unlock()
 			}
-			value := node.String()
-			factID, err := conn.createFact(item.FactTypeSlug, value)
-			if err != nil {
-				return nil, err
-			}
-			jsonParsed.SetJSONPointer(factID, item.JSONPointerPath)
-		case "detokenize":
-			node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
-			if err != nil {
-				return nil, err
-			}
-			factID := node.Data().(string)
-			value, err := conn.getFact(factID)
-			if err != nil {
-				return nil, err
-			}
-			jsonParsed.SetJSONPointer(value, item.JSONPointerPath)
-		}
+		}(&o.Items[i])
 	}
+
+	wg.Wait()
 
 	return jsonParsed.Bytes(), nil
 }
-
 func (o *OPVBodyModifier) ModifyRequest(req *http.Request) error {
 	body, err := o.Render(req.Header.Get("Content-Type"), req.Body)
 	if err != nil {
