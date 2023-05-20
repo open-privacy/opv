@@ -38,7 +38,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.10.1 // indirect
+	ariga.io/atlas v0.10.0 // indirect
 	github.com/Eun/go-convert v0.0.0-20200421145326-bef6c56666ee // indirect
 	github.com/Eun/go-doppelgangerreader v0.0.0-20190911075941-30f1527f16b2 // indirect
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
