@@ -20,9 +20,9 @@ services:
     ports:
       - "5435:5432"
   opv_dataplane:
-    image: opv-local
+    # image: opv-local
     container_name: opv_dataplane
-    # image: openprivacyio/opv
+    image: roney492/opv
     networks:
       opv_default:
     command: dataplane
@@ -37,9 +37,9 @@ services:
       - OPV_DB_CONNECTION_STR=postgres://opv_sys:postgres_test_password@db:5432/opv?sslmode=disable
       - OPV_ENCRYPTOR_SECRETBOX_KEYS=GKVB40Yk4JUQno9CVIKxH2uK343GHMVE,Y3XkLGAVQYnRNt1kXO6xyHhoY2pYeieh
   opv_controlplane:
-    image: opv-local
+    # image: opv-local
     container_name: opv_controlplane
-    # image: openprivacyio/opv
+    image: roney492/opv
     networks:
       opv_default:
     ports:
@@ -53,8 +53,8 @@ services:
       - OPV_ENCRYPTOR_SECRETBOX_KEYS=GKVB40Yk4JUQno9CVIKxH2uK343GHMVE,Y3XkLGAVQYnRNt1kXO6xyHhoY2pYeieh
   opv_proxyplane:
     container_name: opv_contropv_proxyplane
-    image: opv-local
-    # image: openprivacyio/opv
+    # image: opv-local
+    image: roney492/opv
     networks:
       opv_default:
     ports:
