@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -30,9 +31,17 @@ type OPVBodyModifier struct {
 }
 
 type OPVBodyModifierItem struct {
-	JSONPointerPath string `json:"json_pointer_path" validate:"required"`
-	FactTypeSlug    string `json:"fact_type_slug" validate:"required"`
-	Action          string `json:"action" validate:"required,oneof=tokenize detokenize"`
+	JSONPointerPath  string `json:"json_pointer_path" validate:"required"`
+	ArrayPointerPath string `json:"array_pointer_path" validate:"omitempty,startswith=/,regex=^[a-z-_]+$"`
+	FactTypeSlug     string `json:"fact_type_slug" validate:"required"`
+	Action           string `json:"action" validate:"required,oneof=tokenize detokenize"`
+}
+
+func getValueFromArray(array string, data *gabs.Container) (interface{}, error) {
+	keys := strings.Split(array, "/")  // Split the array string by "/"
+	value := data.Path(keys[1]).Data() // Get the value corresponding to the key
+
+	return value, nil
 }
 
 func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, error) {
@@ -58,37 +67,103 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 
 			switch item.Action {
 			case "tokenize":
-				node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
-				if err != nil {
-					return
-				}
-				value := node.String()
+				if item.ArrayPointerPath != "" {
+					fmt.Println(item.ArrayPointerPath)
+					fmt.Println("Array")
+					nodes, err := jsonParsed.JSONPointer(item.ArrayPointerPath)
+					if err != nil {
+						return
+					}
+					children, _ := nodes.Children()
+					for index, child := range children {
+						fmt.Println(item.JSONPointerPath)
+						fmt.Println(child)
+						childNode, err := getValueFromArray(item.JSONPointerPath, child)
+						if err != nil {
+							fmt.Println("Error:", err)
+							return
+						}
+						if childNode != "{}" {
+							value := ("\"" + string(childNode.(string)) + "\"")
+							fmt.Println(value)
+							fmt.Println(index)
+							factID, err := conn.createFact(item.FactTypeSlug, value)
+							if err != nil {
+								return
+							}
+							mu.Lock()
+							fmt.Println(factID)
+							fmt.Println(item.ArrayPointerPath + "/" + strconv.Itoa(index) + item.JSONPointerPath)
+							jsonParsed.SetJSONPointer(factID, item.ArrayPointerPath+"/"+strconv.Itoa(index)+item.JSONPointerPath)
+							mu.Unlock()
+						}
+					}
+				} else {
+					fmt.Println("Not array")
+					node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
+					value := node.String()
 
-				factID, err := conn.createFact(item.FactTypeSlug, value)
-				if err != nil {
-					return
-				}
+					factID, err := conn.createFact(item.FactTypeSlug, value)
+					if err != nil {
+						return
+					}
 
-				mu.Lock()
-				jsonParsed.SetJSONPointer(factID, item.JSONPointerPath)
-				mu.Unlock()
+					mu.Lock()
+					jsonParsed.SetJSONPointer(factID, item.JSONPointerPath)
+					mu.Unlock()
+				}
 
 			case "detokenize":
-				node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
-				if err != nil {
-					return
+				if item.ArrayPointerPath != "" {
+					fmt.Println(item.ArrayPointerPath)
+					fmt.Println("Array")
+					nodes, err := jsonParsed.JSONPointer(item.ArrayPointerPath)
+					fmt.Println(nodes)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					children, _ := nodes.Children()
+					for index, child := range children {
+						fmt.Println(child)
+						childNode, err := getValueFromArray(item.JSONPointerPath, child)
+						if err != nil {
+							fmt.Println("Error:", err)
+							return
+						}
+						if childNode != "{}" {
+							fmt.Println(index)
+							factID := childNode.(string)
+							value, err := conn.getFact(factID)
+							fmt.Println(value)
+							if err != nil {
+								return
+							}
+							mu.Lock()
+							fmt.Println(factID)
+							fmt.Println(item.ArrayPointerPath + "/" + strconv.Itoa(index) + item.JSONPointerPath)
+							jsonParsed.SetJSONPointer(value, item.ArrayPointerPath+"/"+strconv.Itoa(index)+item.JSONPointerPath)
+							mu.Unlock()
+						}
+					}
+				} else {
+					fmt.Println("Not array")
+					node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
+					if err != nil {
+						return
+					}
+
+					factID := node.Data().(string)
+
+					value, err := conn.getFact(factID)
+					if err != nil {
+						return
+					}
+
+					mu.Lock()
+					jsonParsed.SetJSONPointer(value, item.JSONPointerPath)
+					mu.Unlock()
 				}
-
-				factID := node.Data().(string)
-
-				value, err := conn.getFact(factID)
-				if err != nil {
-					return
-				}
-
-				mu.Lock()
-				jsonParsed.SetJSONPointer(value, item.JSONPointerPath)
-				mu.Unlock()
 			}
 		}(&o.Items[i])
 	}
