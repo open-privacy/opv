@@ -9,7 +9,7 @@ RUN make build
 ######################################
 # Copy from builder to alpine image
 ######################################
-FROM frolvlad/alpine-glibc:alpine-3.10
+FROM frolvlad/alpine-glibc:alpine-3.16
 RUN apk add --no-cache curl
 VOLUME ["/data"]
 
