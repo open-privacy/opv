@@ -83,7 +83,8 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 							fmt.Println("Error:", err)
 							return
 						}
-						if childNode != "{}" {
+						if childNode != nil && childNode != "{}" {
+							fmt.Println(childNode)
 							value := ("\"" + string(childNode.(string)) + "\"")
 							fmt.Println(value)
 							fmt.Println(index)
@@ -131,7 +132,7 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 							fmt.Println("Error:", err)
 							return
 						}
-						if childNode != "{}" {
+						if childNode != nil && childNode != "{}" {
 							fmt.Println(index)
 							factID := childNode.(string)
 							value, err := conn.getFact(factID)
