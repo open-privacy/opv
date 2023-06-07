@@ -16,29 +16,36 @@ services:
     ports:
       - "27999:27999"
     command: controlplane
-
-  prometheus:
-    image: prom/prometheus:v2.25.0
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    
+  httpbin:
+    container_name: opv_httpbin
+    image: roney49/httpbin-json
     ports:
-      - 9000:9090
-    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+     - 80:8080
+    networks:
+      opv_default:
+  # prometheus:
+  #   image: prom/prometheus:v2.25.0
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #   ports:
+  #     - 9000:9090
+  #   command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
 
-  grafana:
-    image: grafana/grafana
-    depends_on:
-      - prometheus
-    ports:
-      - 3000:3000
-    volumes:
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-    env_file:
-      - ./grafana/config.monitoring
-    user: "472"
-    deploy:
-      placement:
-        constraints:
-          - node.role==manager
-      restart_policy:
-        condition: on-failure
+  # grafana:
+  #   image: grafana/grafana
+  #   depends_on:
+  #     - prometheus
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./grafana/provisioning/:/etc/grafana/provisioning/
+  #   env_file:
+  #     - ./grafana/config.monitoring
+  #   user: "472"
+  #   deploy:
+  #     placement:
+  #       constraints:
+  #         - node.role==manager
+  #     restart_policy:
+  #       condition: on-failure

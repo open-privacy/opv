@@ -76,7 +76,7 @@ services:
   # Ensure to add "http://opv_httpbin" in the proxyplane config file
   httpbin:
     container_name: opv_httpbin
-    image: kennethreitz/httpbin
+    image: roney49/httpbin-json
     networks:
       opv_default:
   prometheus:

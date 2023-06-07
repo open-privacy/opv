@@ -27,7 +27,7 @@
       "backend": [
         {
           "host": [
-            "http://localhost"
+            "http://opv_httpbin"
           ],
           "url_pattern": "/post",
           "encoding": "no-op",
@@ -104,7 +104,7 @@
       "backend": [
         {
           "host": [
-            "http://localhost"
+            "http://opv_httpbin"
           ],
           "url_pattern": "/post",
           "encoding": "no-op",
