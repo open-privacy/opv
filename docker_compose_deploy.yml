@@ -65,6 +65,8 @@ services:
     restart: 'always'
     environment:
       - OPV_HOST=0.0.0.0
+      - OPV_JWT_AUTH=false
+      - OPV_JWT_URL=http://example.com/jwk.json
       - OPV_PROXY_PLANE_HTTP_CONFIG=/data/opv-proxyplane.json
       - OPV_PROXY_PLANE_DEFAULT_DP_BASE_URL=http://opv_dataplane:28000
       - OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN=v1:test.cdmx.in:AlfrpzxzJx8Drqv4OMzo

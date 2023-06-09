@@ -16,6 +16,9 @@ func init() {
 var ENV = struct {
 	Host string `env:"OPV_HOST" envDefault:"0.0.0.0"`
 
+	JwtURL  string `env:"OPV_JWT_URL" envDefault:"https://atk.cdmx.io/application/o/opv/jwks/"`
+	JwtAuth bool   `env:"OPV_JWT_AUTH" envDefault: "true"`
+
 	DBDriver             string        `env:"OPV_DB_DRIVER" envDefault:"sqlite3"`
 	DBSetupRetryAttempts uint          `env:"OPV_DB_SETUP_RETRY_ATTEMPTS" envDefault:"9"`
 	DBSetupRetryDelay    time.Duration `env:"OPV_DB_SETUP_RETRY_DELAY" envDefault:"100ms"`

@@ -20,6 +20,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/go-sql-driver/mysql v1.7.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/martian v2.1.0+incompatible
 	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/labstack/echo-contrib v0.15.0
@@ -63,7 +64,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect
