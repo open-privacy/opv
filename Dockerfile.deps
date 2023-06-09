@@ -2,5 +2,5 @@ FROM golang:1.20
 WORKDIR /data/opv
 RUN curl -sf https://gobinaries.com/myitcv/gobin | sh
 RUN go mod download github.com/luraproject/lura
-RUN gobin entgo.io/ent/cmd/ent@v0.12.2
-RUN gobin github.com/swaggo/swag/cmd/swag@v1.16.1
+RUN gobin entgo.io/ent/cmd/ent@v0.12.3
+RUN gobin github.com/swaggo/swag/cmd/swag@v0.22.3
