@@ -3,6 +3,7 @@ package modifier
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -38,8 +39,19 @@ type OPVBodyModifierItem struct {
 }
 
 func getValueFromArray(array string, data *gabs.Container) (interface{}, error) {
-	keys := strings.Split(array, "/")  // Split the array string by "/"
-	value := data.Path(keys[1]).Data() // Get the value corresponding to the key
+	keys := strings.Split(array, "/") // Split the array string by "/"
+	if len(keys) == 0 {
+		return nil, errors.New("Invalid array string")
+	}
+	node := data // Start with the root node
+
+	// Traverse the keys
+	for _, key := range keys {
+		if key != "" {
+			node = node.Path(key) // Get the child node
+		}
+	}
+	value := node.Data() // Get the value corresponding to the final key
 	return value, nil
 }
 
