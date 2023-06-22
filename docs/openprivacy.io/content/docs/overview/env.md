@@ -2,7 +2,7 @@
 title: "4. Env Configuration"
 description: "OPV Environment Variables Configuration"
 images: []
-menu: 
+menu:
   docs:
     parent: "overview"
 weight: 4

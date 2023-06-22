@@ -3,7 +3,7 @@ title: "2. Architecture"
 description: "OPV Architecture"
 lead: ""
 images: []
-menu: 
+menu:
   docs:
     parent: "overview"
 weight: 2

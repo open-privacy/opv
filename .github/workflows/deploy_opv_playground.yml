@@ -1,10 +1,10 @@
 name: Deploy OPV Playground
-on:
-  workflow_run:
-    workflows: ["Publish Docker image"]
-    branches: [main]
-    types:
-      - completed
+# on:
+#   workflow_run:
+#     workflows: ["Publish Docker image"]
+#     branches: [main]
+#     types:
+#       - completed
 jobs:
   deploy_opv_playground:
     runs-on: ubuntu-latest

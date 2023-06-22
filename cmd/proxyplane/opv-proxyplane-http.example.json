@@ -1,194 +1,38 @@
 {
   "version": 2,
   "name": "OPV Proxy Plane",
-  "debug": false,
-  "cache_ttl": 3600,
-  "timeout": "3s",
+  "debug": true,
+  "cache_ttl": 360,
+  "timeout": "20s",
   "extra_config": {
-    "github_com/devopsfaith/krakend-cors": {
-      "allow_origins": [
-        "http*"
-      ],
-      "allow_headers": [
-        "Origin",
-        "Authorization",
-        "Content-Type",
-        "Accept"
-      ],
-      "expose_headers": [
-        "Content-Type",
-        "Content-Length"
-      ],
-      "allow_credentials": true
+    "github.com/devopsfaith/krakend-gologging": {
+      "level": "WARNING",
+      "prefix": "[OPV Proxy Plane]",
+      "syslog": false,
+      "stdout": true,
+      "format": "default"
+    },
+    "github.com/devopsfaith/krakend/http": {
+      "return_error_details": true
     }
   },
   "endpoints": [
     {
-      "endpoint": "/tokenize_checkr_api",
-      "headers_to_pass": [
-        "*"
-      ],
-      "output_encoding": "no-op",
-      "method": "POST",
-      "backend": [
-        {
-          "host": [
-            "https://httpbin.org"
-          ],
-          "url_pattern": "/post",
-          "encoding": "no-op",
-          "extra_config": {
-            "github.com/open-privacy/opv": {
-              "opv.body.Modifier": {
-                "scope": [
-                  "request"
-                ],
-                "items": [
-                  {
-                    "json_pointer_path": "/first_name",
-                    "fact_type_slug": "ascii",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/middle_name",
-                    "fact_type_slug": "ascii",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/last_name",
-                    "fact_type_slug": "ascii",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/email",
-                    "fact_type_slug": "email",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/phone",
-                    "fact_type_slug": "phonenumber",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/zipcode",
-                    "fact_type_slug": "numeric",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/dob",
-                    "fact_type_slug": "ascii",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/ssn",
-                    "fact_type_slug": "ssn",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/driver_license_number",
-                    "fact_type_slug": "ascii",
-                    "action": "tokenize"
-                  },
-                  {
-                    "json_pointer_path": "/driver_license_state",
-                    "fact_type_slug": "ascii",
-                    "action": "tokenize"
-                  }
-                ]
-              }
-            }
-          }
-        }
-      ]
-    },
-    {
-      "endpoint": "/detokenize_checkr_api",
-      "headers_to_pass": [
-        "*"
-      ],
-      "output_encoding": "no-op",
-      "method": "POST",
-      "backend": [
-        {
-          "host": [
-            "https://api.checkr.com"
-          ],
-          "url_pattern": "/v1/candidates",
-          "encoding": "no-op",
-          "extra_config": {
-            "github.com/open-privacy/opv": {
-              "opv.body.Modifier": {
-                "scope": [
-                  "request"
-                ],
-                "items": [
-                  {
-                    "json_pointer_path": "/first_name",
-                    "fact_type_slug": "ascii",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/middle_name",
-                    "fact_type_slug": "ascii",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/last_name",
-                    "fact_type_slug": "ascii",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/email",
-                    "fact_type_slug": "email",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/phone",
-                    "fact_type_slug": "phonenumber",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/zipcode",
-                    "fact_type_slug": "numeric",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/dob",
-                    "fact_type_slug": "ascii",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/ssn",
-                    "fact_type_slug": "ssn",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/driver_license_number",
-                    "fact_type_slug": "ascii",
-                    "action": "detokenize"
-                  },
-                  {
-                    "json_pointer_path": "/driver_license_state",
-                    "fact_type_slug": "ascii",
-                    "action": "detokenize"
-                  }
-                ]
-              }
-            }
-          }
-        }
-      ]
-    },
-    {
       "endpoint": "/tokenize",
+      "headers_to_pass": [
+        "*"
+      ],
+      "output_encoding": "no-op",
       "method": "POST",
       "backend": [
         {
           "host": [
-            "https://httpbin.org"
+            "http://opv_httpbin"
           ],
           "url_pattern": "/post",
+          "encoding": "no-op",
           "extra_config": {
+            
             "github.com/open-privacy/opv": {
               "opv.body.Modifier": {
                 "scope": [
@@ -196,8 +40,51 @@
                 ],
                 "items": [
                   {
-                    "json_pointer_path": "/user/ssn",
-                    "fact_type_slug": "ssn",
+                    "json_pointer_path": "/name_first",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "tokenize"
+                  },
+                  {
+                    "json_pointer_path": "/name_last",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "tokenize"
+                  },
+                  {
+                    "json_pointer_path": "/email",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "email",
+                    "action": "tokenize"
+                  },
+                  {
+                    "json_pointer_path": "/mobile",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "phonenumber",
+                    "action": "tokenize"
+                  },
+                  {
+                    "json_pointer_path": "/address",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "tokenize"
+                  },
+                  {
+                    "json_pointer_path": "/city",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "tokenize"
+                  },
+                  {
+                    "json_pointer_path": "/country",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "tokenize"
+                  },
+                  {
+                    "json_pointer_path": "/state",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
                     "action": "tokenize"
                   }
                 ]
@@ -209,13 +96,18 @@
     },
     {
       "endpoint": "/detokenize",
+      "headers_to_pass": [
+        "*"
+      ],
+      "output_encoding": "no-op",
       "method": "POST",
       "backend": [
         {
           "host": [
-            "https://httpbin.org"
+            "http://opv_httpbin"
           ],
           "url_pattern": "/post",
+          "encoding": "no-op",
           "extra_config": {
             "github.com/open-privacy/opv": {
               "opv.body.Modifier": {
@@ -224,8 +116,51 @@
                 ],
                 "items": [
                   {
-                    "json_pointer_path": "/user/ssn",
-                    "fact_type_slug": "ssn",
+                    "json_pointer_path": "/name_first",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "detokenize"
+                  },
+                  {
+                    "json_pointer_path": "/name_last",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "detokenize"
+                  },
+                  {
+                    "json_pointer_path": "/email",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "email",
+                    "action": "detokenize"
+                  },
+                  {
+                    "json_pointer_path": "/mobile",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "phonenumber",
+                    "action": "detokenize"
+                  },
+                  {
+                    "json_pointer_path": "/address",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "detokenize"
+                  },
+                  {
+                    "json_pointer_path": "/city",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "detokenize"
+                  },
+                  {
+                    "json_pointer_path": "/country",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
+                    "action": "detokenize"
+                  },
+                  {
+                    "json_pointer_path": "/state",
+                    "array_pointer_path": "/data", 
+                    "fact_type_slug": "ascii",
                     "action": "detokenize"
                   }
                 ]

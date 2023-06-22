@@ -2,7 +2,7 @@
 title: "3. Planes"
 description: "OPV Planes"
 images: []
-menu: 
+menu:
   docs:
     parent: "overview"
 weight: 3

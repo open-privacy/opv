@@ -3,12 +3,15 @@ package modifier
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Jeffail/gabs"
 	"github.com/go-playground/validator/v10"
@@ -21,18 +24,35 @@ func init() {
 }
 
 type OPVBodyModifier struct {
-	Scope []parse.ModifierType  `json:"scope" validate:"gt=0,dive,oneof=request response"`
-	Items []OPVBodyModifierItem `json:"items"`
-
-	OPVDataplaneGrantToken        string `json:"-" validate:"required"`
-	OPVDataplaneGrantTokenFromEnv string `json:"opv_dataplane_grant_token_from_env"`
-	OPVDataplaneBaseURL           string `json:"opv_dataplane_base_url"`
+	Scope                         []parse.ModifierType  `json:"scope" validate:"gt=0,dive,oneof=request response"`
+	Items                         []OPVBodyModifierItem `json:"items"`
+	OPVDataplaneGrantToken        string                `json:"-" validate:"required"`
+	OPVDataplaneGrantTokenFromEnv string                `json:"opv_dataplane_grant_token_from_env"`
+	OPVDataplaneBaseURL           string                `json:"opv_dataplane_base_url"`
 }
 
 type OPVBodyModifierItem struct {
-	JSONPointerPath string `json:"json_pointer_path" validate:"required"`
-	FactTypeSlug    string `json:"fact_type_slug" validate:"required"`
-	Action          string `json:"action" validate:"required,oneof=tokenize detokenize"`
+	JSONPointerPath  string `json:"json_pointer_path" validate:"required"`
+	ArrayPointerPath string `json:"array_pointer_path" validate:"omitempty,startswith=/,regex=^[a-z-_]+$"`
+	FactTypeSlug     string `json:"fact_type_slug" validate:"required"`
+	Action           string `json:"action" validate:"required,oneof=tokenize detokenize"`
+}
+
+func getValueFromArray(array string, data *gabs.Container) (interface{}, error) {
+	keys := strings.Split(array, "/") // Split the array string by "/"
+	if len(keys) == 0 {
+		return nil, errors.New("Invalid array string")
+	}
+	node := data // Start with the root node
+
+	// Traverse the keys
+	for _, key := range keys {
+		if key != "" {
+			node = node.Path(key) // Get the child node
+		}
+	}
+	value := node.Data() // Get the value corresponding to the final key
+	return value, nil
 }
 
 func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, error) {
@@ -47,36 +67,103 @@ func (o *OPVBodyModifier) Render(contentType string, body io.Reader) ([]byte, er
 
 	conn := newConn(o.OPVDataplaneGrantToken, o.OPVDataplaneBaseURL)
 
-	for _, item := range o.Items {
-		switch item.Action {
-		case "tokenize":
-			node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
-			if err != nil {
-				return nil, err
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+
+	for i := range o.Items {
+		wg.Add(1)
+
+		go func(item *OPVBodyModifierItem) {
+			defer wg.Done()
+
+			switch item.Action {
+			case "tokenize":
+				if item.ArrayPointerPath != "" {
+					nodes, err := jsonParsed.JSONPointer(item.ArrayPointerPath)
+					if err != nil {
+						return
+					}
+					children, _ := nodes.Children()
+					for index, child := range children {
+						childNode, err := getValueFromArray(item.JSONPointerPath, child)
+						if err != nil {
+							fmt.Println("Error:", err)
+							return
+						}
+						if childNode != nil && childNode != "{}" {
+							value := ("\"" + string(childNode.(string)) + "\"")
+							factID, err := conn.createFact(item.FactTypeSlug, value)
+							if err != nil {
+								return
+							}
+							mu.Lock()
+							jsonParsed.SetJSONPointer(factID, item.ArrayPointerPath+"/"+strconv.Itoa(index)+item.JSONPointerPath)
+							mu.Unlock()
+						}
+					}
+				} else {
+					node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
+					value := node.String()
+
+					factID, err := conn.createFact(item.FactTypeSlug, value)
+					if err != nil {
+						return
+					}
+					mu.Lock()
+					jsonParsed.SetJSONPointer(factID, item.JSONPointerPath)
+					mu.Unlock()
+				}
+
+			case "detokenize":
+				if item.ArrayPointerPath != "" {
+					nodes, err := jsonParsed.JSONPointer(item.ArrayPointerPath)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					children, _ := nodes.Children()
+					for index, child := range children {
+						childNode, err := getValueFromArray(item.JSONPointerPath, child)
+						if err != nil {
+							fmt.Println("Error:", err)
+							return
+						}
+						if childNode != nil && childNode != "{}" {
+							factID := childNode.(string)
+							value, err := conn.getFact(factID)
+							if err != nil {
+								return
+							}
+							mu.Lock()
+							jsonParsed.SetJSONPointer(value, item.ArrayPointerPath+"/"+strconv.Itoa(index)+item.JSONPointerPath)
+							mu.Unlock()
+						}
+					}
+				} else {
+					node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
+					if err != nil {
+						return
+					}
+
+					factID := node.Data().(string)
+
+					value, err := conn.getFact(factID)
+					if err != nil {
+						return
+					}
+
+					mu.Lock()
+					jsonParsed.SetJSONPointer(value, item.JSONPointerPath)
+					mu.Unlock()
+				}
 			}
-			value := node.String()
-			factID, err := conn.createFact(item.FactTypeSlug, value)
-			if err != nil {
-				return nil, err
-			}
-			jsonParsed.SetJSONPointer(factID, item.JSONPointerPath)
-		case "detokenize":
-			node, err := jsonParsed.JSONPointer(item.JSONPointerPath)
-			if err != nil {
-				return nil, err
-			}
-			factID := node.Data().(string)
-			value, err := conn.getFact(factID)
-			if err != nil {
-				return nil, err
-			}
-			jsonParsed.SetJSONPointer(value, item.JSONPointerPath)
-		}
+		}(&o.Items[i])
 	}
+
+	wg.Wait()
 
 	return jsonParsed.Bytes(), nil
 }
-
 func (o *OPVBodyModifier) ModifyRequest(req *http.Request) error {
 	body, err := o.Render(req.Header.Get("Content-Type"), req.Body)
 	if err != nil {

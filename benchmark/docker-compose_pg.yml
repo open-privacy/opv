@@ -1,0 +1,113 @@
+version: "3"
+volumes:
+  opv_db:
+services:
+  db:
+    container_name: opv_db
+    image: 'postgres:12.4'
+    # command: -c ssl=on -c ssl_cert_file=/var/lib/postgresql/server.crt -c ssl_key_file=/var/lib/postgresql/server.key
+    environment:
+      POSTGRES_PASSWORD: 'postgres_test_password'
+      POSTGRES_USER: 'opv_sys'
+      POSTGRES_DB: 'opv'
+    # volumes:
+    #   - opv_db:/var/lib/postgresql/data
+      # - ./ca/server.crt:/var/lib/postgresql/server.crt
+      # - ./ca/server.key:/var/lib/postgresql/server.key
+    restart: 'always'
+    networks:
+      opv_default:
+    ports:
+      - "5435:5432"
+  opv_dataplane:
+    container_name: opv_dataplane
+    image: roney49/opv
+    networks:
+      opv_default:
+    command: dataplane
+    volumes:
+      - "./opv_data:/data"
+    restart: 'always'
+    ports:
+      - "28000:28000"
+    environment:
+      - OPV_PROMETHEUS_ENABLED=true
+      - OPV_DATA_PLANE_CORS_ENABLED=false
+      - OPV_HOST=0.0.0.0
+      - OPV_DB_DRIVER=postgres
+      - OPV_DB_CONNECTION_STR=postgres://opv_sys:test_password@db:5432/opv?sslmode=disable
+      - OPV_ENCRYPTOR_SECRETBOX_KEYS=GKVB40Yk4JUQno9CVIKxH2uK343GHMVE,Y3XkLGAVQYnRNt1kXO6xyHhoY2pYeieh
+  opv_controlplane:
+    container_name: opv_controlplane
+    image: roney49/opv
+    networks:
+      opv_default:
+    ports:
+      - "27999:27999"
+    command: controlplane
+    restart: 'always'
+    environment:
+      - OPV_PROMETHEUS_ENABLED=true
+      - OPV_CONTROL_PLANE_CORS_ENABLED=false
+      - OPV_HOST=0.0.0.0
+      - OPV_DB_DRIVER=postgres
+      - OPV_DB_CONNECTION_STR=postgres://opv_sys:test_password@db:5432/opv?sslmode=disable
+      - OPV_ENCRYPTOR_SECRETBOX_KEYS=GKVB40Yk4JUQno9CVIKxH2uK343GHMVE,Y3XkLGAVQYnRNt1kXO6xyHhoY2pYeieh
+  opv_proxyplane:
+    container_name: opv_contropv_proxyplane
+    image: roney49/opv
+    networks:
+      opv_default:
+    ports:
+      - "28001:28001"
+    command: proxyplane
+    volumes:
+      - "./opv_data:/data"
+    restart: 'always'
+    environment:
+      - OPV_HOST=0.0.0.0
+      - OPV_JWT_AUTH=false
+      - OPV_JWT_URL=http://example.com/jwk.json
+      - OPV_PROXY_PLANE_HTTP_CONFIG=/data/opv-proxyplane.json
+      - OPV_PROXY_PLANE_DEFAULT_DP_BASE_URL=http://opv_dataplane:28000
+      - OPV_PROXY_PLANE_DEFAULT_DP_GRANT_TOKEN=v1:test.cdmx.in:AlfrpzxzJx8Drqv4OMzo
+  # Hosting own httpbin configuration for faster performance/responses
+  # Ensure to add "http://opv_httpbin" in the proxyplane config file
+  httpbin:
+    container_name: opv_httpbin
+    image: roney49/httpbin-json
+    networks:
+      opv_default:
+  prometheus:
+    container_name: opv_prometheus
+    image: prom/prometheus:v2.25.0
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 5020:9090
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+    networks:
+      opv_default:
+  grafana:
+    container_name: opv_grafana
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3020:3000
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    user: "472"
+    networks:
+      opv_default:
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+networks:
+  opv_default:
+     external: true
