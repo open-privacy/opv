@@ -1,7 +1,7 @@
 ######################################
 # Prepare go_builder
 ######################################
-FROM golang:1.20 as go_builder
+FROM golang:1.22 as go_builder
 WORKDIR /data/opv
 ADD . .
 RUN make build

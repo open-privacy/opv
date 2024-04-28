@@ -1,4 +1,4 @@
-FROM golang:1.20
+FROM golang:1.22
 WORKDIR /data/opv
 RUN curl -sf https://gobinaries.com/myitcv/gobin | sh
 RUN go mod download github.com/luraproject/lura
