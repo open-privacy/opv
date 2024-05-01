@@ -16,7 +16,7 @@ import (
 	"github.com/Jeffail/gabs"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/martian/parse"
-	"github.com/open-privacy/opv/pkg/config"
+	"github.com/roney492/opv/pkg/config"
 )
 
 func init() {

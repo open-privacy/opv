@@ -5,9 +5,9 @@ package enttest
 import (
 	"context"
 
-	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/roney492/opv/pkg/ent"
 	// required by schema hooks.
-	_ "github.com/open-privacy/opv/pkg/ent/runtime"
+	_ "github.com/roney492/opv/pkg/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

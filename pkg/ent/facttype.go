@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/open-privacy/opv/pkg/ent/facttype"
+	"github.com/roney492/opv/pkg/ent/facttype"
 )
 
 // FactType is the model entity for the FactType schema.

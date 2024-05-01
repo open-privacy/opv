@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	_ "github.com/open-privacy/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
+	_ "github.com/roney492/opv/pkg/proxyplane/modifier" // import it to register all the internal martian modifiers
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"github.com/open-privacy/opv/pkg/config"
+	"github.com/roney492/opv/pkg/config"
 	"go.uber.org/zap"
 
 	gincors "github.com/devopsfaith/krakend-cors/gin"
@@ -33,7 +33,7 @@ import (
 
 const (
 	OPVProxyplaneUserAgent            = "OPV Proxy Plane"
-	OPVProxyplaneExtraConfigNamespace = "github.com/open-privacy/opv"
+	OPVProxyplaneExtraConfigNamespace = "github.com/roney492/opv"
 )
 
 type HTTPProxy struct {

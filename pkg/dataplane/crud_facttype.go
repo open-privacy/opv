@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/open-privacy/opv/pkg/apimodel"
-	"github.com/open-privacy/opv/pkg/repo"
+	"github.com/roney492/opv/pkg/apimodel"
+	"github.com/roney492/opv/pkg/repo"
 )
 
 // QueryFactTypes godoc

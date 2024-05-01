@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/open-privacy/opv/pkg/ent/facttype"
-	"github.com/open-privacy/opv/pkg/ent/predicate"
+	"github.com/roney492/opv/pkg/ent/facttype"
+	"github.com/roney492/opv/pkg/ent/predicate"
 )
 
 // FactTypeDelete is the builder for deleting a FactType entity.

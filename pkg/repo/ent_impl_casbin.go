@@ -13,8 +13,8 @@ import (
 	_ "github.com/lib/pq"              // postgres driver
 	_ "github.com/mattn/go-sqlite3"    // sqlite3 driver
 
-	"github.com/open-privacy/opv/pkg/config"
-	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/roney492/opv/pkg/config"
+	"github.com/roney492/opv/pkg/ent"
 )
 
 const defaultCasbinModel = `

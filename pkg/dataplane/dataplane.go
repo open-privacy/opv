@@ -9,9 +9,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"github.com/open-privacy/opv/pkg/config"
-	"github.com/open-privacy/opv/pkg/crypto"
-	"github.com/open-privacy/opv/pkg/repo"
+	"github.com/roney492/opv/pkg/config"
+	"github.com/roney492/opv/pkg/crypto"
+	"github.com/roney492/opv/pkg/repo"
 )
 
 // DataPlane represents the data plane struct

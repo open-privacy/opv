@@ -33,7 +33,7 @@
           "encoding": "no-op",
           "extra_config": {
             
-            "github.com/open-privacy/opv": {
+            "github.com/roney492/opv": {
               "opv.body.Modifier": {
                 "scope": [
                   "request"
@@ -109,7 +109,7 @@
           "url_pattern": "/post",
           "encoding": "no-op",
           "extra_config": {
-            "github.com/open-privacy/opv": {
+            "github.com/roney492/opv": {
               "opv.body.Modifier": {
                 "scope": [
                   "request"

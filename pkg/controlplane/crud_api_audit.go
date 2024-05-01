@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/open-privacy/opv/pkg/apimodel"
-	"github.com/open-privacy/opv/pkg/ent"
-	"github.com/open-privacy/opv/pkg/repo"
+	"github.com/roney492/opv/pkg/apimodel"
+	"github.com/roney492/opv/pkg/ent"
+	"github.com/roney492/opv/pkg/repo"
 )
 
 // QueryAPIAudits is the endpoint for querying a list of api audit logs

@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/open-privacy/opv/pkg/ent/migrate"
+	"github.com/roney492/opv/pkg/ent/migrate"
 
-	"github.com/open-privacy/opv/pkg/ent/apiaudit"
-	"github.com/open-privacy/opv/pkg/ent/fact"
-	"github.com/open-privacy/opv/pkg/ent/facttype"
-	"github.com/open-privacy/opv/pkg/ent/grant"
-	"github.com/open-privacy/opv/pkg/ent/scope"
+	"github.com/roney492/opv/pkg/ent/apiaudit"
+	"github.com/roney492/opv/pkg/ent/fact"
+	"github.com/roney492/opv/pkg/ent/facttype"
+	"github.com/roney492/opv/pkg/ent/grant"
+	"github.com/roney492/opv/pkg/ent/scope"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"

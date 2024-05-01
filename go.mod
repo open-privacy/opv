@@ -1,4 +1,4 @@
-module github.com/open-privacy/opv
+module github.com/roney492/opv
 
 go 1.22
 

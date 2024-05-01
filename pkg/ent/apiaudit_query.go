@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/open-privacy/opv/pkg/ent/apiaudit"
-	"github.com/open-privacy/opv/pkg/ent/predicate"
+	"github.com/roney492/opv/pkg/ent/apiaudit"
+	"github.com/roney492/opv/pkg/ent/predicate"
 )
 
 // APIAuditQuery is the builder for querying APIAudit entities.

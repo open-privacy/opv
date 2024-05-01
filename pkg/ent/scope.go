@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/open-privacy/opv/pkg/ent/scope"
+	"github.com/roney492/opv/pkg/ent/scope"
 )
 
 // Scope is the model entity for the Scope schema.

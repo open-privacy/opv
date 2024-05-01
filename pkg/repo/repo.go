@@ -6,8 +6,8 @@ import (
 
 	"entgo.io/ent/dialect"
 	"github.com/labstack/echo/v4"
-	"github.com/open-privacy/opv/pkg/config"
-	"github.com/open-privacy/opv/pkg/ent"
+	"github.com/roney492/opv/pkg/config"
+	"github.com/roney492/opv/pkg/ent"
 )
 
 const (
