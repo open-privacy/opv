@@ -2,12 +2,12 @@ package controlplane
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/open-privacy/opv/pkg/apimodel"
 	"github.com/open-privacy/opv/pkg/ent"
 	"github.com/open-privacy/opv/pkg/repo"
-	"github.com/zhouzhuojie/iso8601ms"
 )
 
 // QueryAPIAudits is the endpoint for querying a list of api audit logs
@@ -62,13 +62,15 @@ func mapAPIAudits(r []*ent.APIAudit) []apimodel.APIAudit {
 	if len(r) == 0 {
 		return ret
 	}
-
 	for _, item := range r {
+		createdAt := item.CreatedAt.UTC().Format("2006-01-02T15:04:05.000Z07:00")
+		updatedAt := item.UpdatedAt.UTC().Format("2006-01-02T15:04:05.000Z07:00")
+		createdTime, _ := time.Parse("2006-01-02T15:04:05.000Z07:00", createdAt)
+		updatedTime, _ := time.Parse("2006-01-02T15:04:05.000Z07:00", updatedAt)
 		ret = append(ret, apimodel.APIAudit{
 			// Standardize the time to UTC before JSON serialization
-			CreatedAt: iso8601ms.Time(item.CreatedAt.UTC()),
-			UpdatedAt: iso8601ms.Time(item.UpdatedAt.UTC()),
-
+			CreatedAt:      createdTime,
+			UpdatedAt:      updatedTime,
 			Plane:          item.Plane,
 			Domain:         item.Domain,
 			HTTPPath:       item.HTTPPath,
